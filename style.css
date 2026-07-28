@@ -235,12 +235,22 @@ html, body {
 }
 
 .btn-success {
-  background: linear-gradient(135deg, #27ae60, #16a085);
+  background: linear-gradient(135deg, #16a085, #117864);
   color: #fff;
-  border-color: #2ecc71;
-  box-shadow: 0 4px 18px rgba(46,204,113,0.4);
+  border-color: #1abc9c;
+  box-shadow: 0 4px 18px rgba(26,188,156,0.4);
 }
 .btn-success:hover {
+  box-shadow: 0 6px 24px rgba(26,188,156,0.6);
+}
+
+.btn-plant {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: #fff;
+  border-color: #27ae60;
+  box-shadow: 0 4px 18px rgba(46,204,113,0.4);
+}
+.btn-plant:hover {
   box-shadow: 0 6px 24px rgba(46,204,113,0.6);
 }
 

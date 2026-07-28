@@ -1,7 +1,7 @@
 'use strict';
 /* ============================================================
    UI.JS — Interfaz Newsgame Táctica
-   Diseño de HUD con Barra de Mando Inferior (Sin superposiciones)
+   Barra Táctica Inferior con Botones de Invasión, Captura y Reforestación
    ============================================================ */
 
 class GameUI {
@@ -71,7 +71,7 @@ class GameUI {
           </div>
         </div>
 
-        <!-- Panel de Control Newsgame (2 Botones Principales Alineados) -->
+        <!-- Panel de Control Newsgame (Invasión, Captura y Reforestación) -->
         <div id="hud-controls">
           <button class="news-btn btn-danger" id="btn-add-beaver">
             <span class="btn-icon">🔴</span>
@@ -80,7 +80,12 @@ class GameUI {
 
           <button class="news-btn btn-success" id="btn-capture-beaver">
             <span class="btn-icon">🟢</span>
-            <span class="btn-text">🪤 CAPTURAR / DESMANTELAR (Restauración)</span>
+            <span class="btn-text">🪤 CAPTURAR / DESMANTELAR</span>
+          </button>
+
+          <button class="news-btn btn-plant" id="btn-plant-tree">
+            <span class="btn-icon">🌱</span>
+            <span class="btn-text">PLANTAR LENGA</span>
           </button>
         </div>
       </div>
@@ -105,8 +110,9 @@ class GameUI {
           <p>En <strong>1946</strong>, se introdujeron <strong>20 castores</strong> en Tierra del Fuego. Sin predadores (como los osos o lobos de Canadá), la población superó los <strong>100.000 animales</strong>.</p>
           <p>El castor altera el <strong>95% de las cuencas</strong> y ha destruido <strong>30.000 hectáreas</strong> de bosque de Lenga, una especie nativa que <em>tarda 200 años en recuperarse y no rebrota del tocón</em>. El daño económico supera los <strong>USD 66.5 millones de dólares anuales</strong>.</p>
           <div class="tutorial-instructions">
-            <div class="ins-item">🔴 <strong>+ AGREGAR CASTOR</strong>: Observa cómo se deteriora e inunda el bosque a medida que aumenta la población.</div>
-            <div class="ins-item">🟢 <strong>🪤 CAPTURAR / DESMANTELAR</strong>: Aplica el plan ENEEI de captura humanitaria y remoción de diques para restaurar la biodiversidad.</div>
+            <div class="ins-item">🔴 <strong>+ AGREGAR CASTOR</strong>: El castor busca la Lenga, la tala en vivo y lleva la madera al río central construyendo diques e inundando la zona.</div>
+            <div class="ins-item">🟢 <strong>🪤 CAPTURAR / DESMANTELAR</strong>: Captura castores con el guardaparque para deteriorar los diques y recuperar el cauce natural.</div>
+            <div class="ins-item">🌱 <strong>PLANTAR LENGA</strong>: Reforesta activamente el terreno secado con renuevos de Lenga nativa.</div>
           </div>
         </div>
         <button class="tutorial-start-btn" id="btn-start-game">¡COMENZAR EXPERIENCIA INTERACTIVA!</button>
@@ -127,12 +133,14 @@ class GameUI {
 
     document.getElementById('btn-add-beaver')?.addEventListener('click', () => {
       this.game.spawnBeaver();
-      if (Math.random() < 0.4) this.game.addDam();
     });
 
     document.getElementById('btn-capture-beaver')?.addEventListener('click', () => {
       this.game.removeBeaver();
-      if (Math.random() < 0.5) this.game.removeDam();
+    });
+
+    document.getElementById('btn-plant-tree')?.addEventListener('click', () => {
+      this.game.plantTree();
     });
 
     const tlBar = document.getElementById('timeline-bar');

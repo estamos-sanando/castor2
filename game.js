@@ -1,7 +1,7 @@
 'use strict';
 /* ============================================================
    GAME.JS — Simulación Ecológica Dinámica de Bosque de Lenga
-   Masa Forestal Densidad Nativa Patagónica & Tala en Tiempo Real
+   Mapas de Río Central Unificados & Sistema de Reforestación Activa
    Basado en la noticia oficial de Argentina.gob.ar
    ============================================================ */
 
@@ -62,9 +62,10 @@ const STAGES = [
   }
 ];
 
+// Río central fluyendo verticalmente de arriba a abajo por el medio de la pantalla (x: 640)
 const RIVER_POINTS = [
-  { x: 440, y: 490 }, { x: 520, y: 515 }, { x: 600, y: 535 },
-  { x: 670, y: 515 }, { x: 740, y: 495 }, { x: 810, y: 505 }
+  { x: 640, y: 120 }, { x: 635, y: 220 }, { x: 645, y: 320 },
+  { x: 640, y: 420 }, { x: 635, y: 520 }, { x: 645, y: 620 }
 ];
 
 class BeaverGame {
@@ -107,7 +108,7 @@ class BeaverGame {
     this.newsThrottles = {};
 
     this._preloadMaps();
-    this._populateDenseForest();
+    this._populateCleanForest();
     this._startLoop();
   }
 
@@ -121,67 +122,61 @@ class BeaverGame {
     });
   }
 
-  // ── Distribución Armónica de Masas Boscosas Nativas de Lenga ──
-  _populateDenseForest() {
+  // ── Bosque Nativo a Ambos Lados del Río Central ──
+  _populateCleanForest() {
     this.entities = [];
 
-    // 1. Masa Boscosa Izquierda (Ladera densa)
-    const leftCluster = [
-      { x:60, y:280 }, { x:110, y:250 }, { x:150, y:310 }, { x:80, y:360 },
-      { x:190, y:270 }, { x:230, y:330 }, { x:140, y:410 }, { x:70, y:450 },
-      { x:260, y:280 }, { x:170, y:480 }, { x:100, y:520 }, { x:220, y:420 }
+    // Margen Izquierdo del Río Central
+    const leftBank = [
+      { x:120, y:240 }, { x:200, y:210 }, { x:280, y:280 }, { x:160, y:360 },
+      { x:340, y:220 }, { x:420, y:300 }, { x:240, y:440 }, { x:140, y:520 },
+      { x:380, y:420 }, { x:280, y:540 }, { x:460, y:480 }, { x:320, y:340 }
     ];
 
-    // 2. Masa Boscosa Norte / Fondo (Cresta de la montaña)
-    const northCluster = [
-      { x:340, y:200 }, { x:410, y:180 }, { x:480, y:210 }, { x:550, y:190 },
-      { x:620, y:210 }, { x:690, y:190 }, { x:760, y:220 }, { x:830, y:190 }
-    ];
-
-    // 3. Masa Boscosa Derecha (Ribera alta)
-    const rightCluster = [
-      { x:920, y:240 }, { x:980, y:220 }, { x:1040, y:270 }, { x:950, y:320 },
-      { x:1080, y:310 }, { x:1140, y:260 }, { x:1010, y:380 }, { x:1100, y:390 },
-      { x:940, y:440 }, { x:1040, y:460 }, { x:1160, y:360 }, { x:880, y:300 }
+    // Margen Derecho del Río Central
+    const rightBank = [
+      { x:820, y:220 }, { x:900, y:200 }, { x:980, y:260 }, { x:860, y:320 },
+      { x:1060, y:240 }, { x:1140, y:300 }, { x:940, y:420 }, { x:1040, y:440 },
+      { x:880, y:500 }, { x:1000, y:540 }, { x:1120, y:460 }, { x:780, y:380 }
     ];
 
     let v = 0;
-    [...leftCluster, ...northCluster, ...rightCluster].forEach(spot => {
+    [...leftBank, ...rightBank].forEach(spot => {
       const tree = new Tree(spot.x, spot.y, v % 8);
       v++;
       this.entities.push(tree);
     });
 
-    // Rocas y arbustos nativos bordeando los senderos
-    [[280,480],[340,460],[820,440],[900,480]].forEach(([rx,ry], i) => {
+    // Rocas y arbustos bordeando el cauce central
+    [[480,360],[520,480],[760,360],[800,480]].forEach(([rx,ry], i) => {
       this.entities.push(new Rock(rx, ry, i));
     });
-    [[220,500],[380,440],[760,460],[860,520]].forEach(([bx,by], i) => {
+    [[440,280],[500,520],[780,280],[840,520]].forEach(([bx,by], i) => {
       this.entities.push(new Bush(bx, by, i));
     });
 
-    // Castores iniciales posicionados cerca del cauce del río
-    this.spawnBeaver(480, 490);
-    this.spawnBeaver(620, 510);
+    // Castores iniciales posicionados en el río central
+    this.spawnBeaver(620, 320);
+    this.spawnBeaver(660, 420);
 
-    // Personal ENEEI en escala humana real (proporcionada al mapa)
-    const scientist = new Scientist(780, 340);
+    // Personal ENEEI
+    const scientist = new Scientist(780, 310);
     this.entities.push(scientist);
 
     const ranger = new Ranger(340, 310);
     ranger.setPatrol([
-      { x: 300, y: 290 },
+      { x: 280, y: 290 },
       { x: 440, y: 290 },
       { x: 440, y: 350 },
-      { x: 300, y: 350 }
+      { x: 280, y: 350 }
     ]);
     this.entities.push(ranger);
   }
 
   spawnBeaver(x, y, small = false) {
     const b = new Beaver(
-      x || (380 + Math.random()*450),
-      y || (440 + Math.random()*100),
+      x || (610 + (Math.random() - 0.5) * 60),
+      y || (200 + Math.random() * 350),
       small
     );
     this.entities.push(b);
@@ -193,13 +188,45 @@ class BeaverGame {
     if (beavers.length > 0) {
       const b = beavers[beavers.length - 1];
       b.dead = true;
+      // Al capturar castores, los diques en el río central comienzan a deteriorarse
+      this.removeDam();
       this.ui.showNews({
         title: '🪤 CAPTURA HUMANITARIA ENEEI',
-        text: 'Castor capturado en área piloto. La presión sobre la masa forestal de Lenga disminuye.',
+        text: 'Castor capturado en el río central. El dique se deteriora y la presión sobre el bosque de Lenga disminuye.',
         type: 'success'
       });
       this._syncEcologyState();
     }
+  }
+
+  // ── Reforestación Activa: Sembrar Brote/Renuevo de Lenga ──
+  plantTree() {
+    // Buscar un tocón o espacio vacío en las márgenes
+    const stumps = this.entities.filter(e => e instanceof Tree && (e.state === 'stump_fresh' || e.state === 'stump_old'));
+    if (stumps.length > 0) {
+      const s = stumps[0];
+      s.setState('healthy');
+      this.particles.burst(s.x, s.y - 30, 'leaf', 16);
+      this.ui.showNews({
+        title: '🌱 RENUEVO DE LENGA PLANTADO',
+        text: 'Se sembró un renuevo de Nothofagus pumilio en la zona recuperada. Protegiendo la turbera contra gramíneas exóticas.',
+        type: 'success'
+      });
+    } else {
+      // Sembrar un árbol joven en el margen
+      const isLeft = Math.random() < 0.5;
+      const px = isLeft ? (150 + Math.random() * 250) : (850 + Math.random() * 250);
+      const py = 200 + Math.random() * 320;
+      const tree = new Tree(px, py, Math.floor(Math.random() * 8));
+      this.entities.push(tree);
+      this.particles.burst(px, py - 30, 'leaf', 16);
+      this.ui.showNews({
+        title: '🌱 REFORESTACIÓN ACTIVA DE LENGA',
+        text: 'Nuevo árbol de Lenga sembrado en el bosque nativo.',
+        type: 'success'
+      });
+    }
+    this._syncEcologyState();
   }
 
   onTreeFelled(tree, beaver) {
@@ -228,11 +255,6 @@ class BeaverGame {
     if (dams.length > 0) {
       dams[dams.length - 1].remove();
       this.stats.dams = Math.max(0, this.stats.dams - 1);
-      this.ui.showNews({
-        title: '⛏️ DIQUE DESMANTELADO POR CUADRILLA',
-        text: 'Se desmanteló una represa artificial. El agua drena y el bosque inundado comienza a recuperarse.',
-        type: 'success'
-      });
       this._syncEcologyState();
     }
   }
@@ -242,7 +264,7 @@ class BeaverGame {
     let count = 0;
     for (const t of healthyTrees) {
       if (count >= 2) break;
-      if (Math.hypot(t.x - 600, t.y - 480) < 320 + this.stats.dams * 40) {
+      if (Math.abs(t.x - 640) < 280) {
         t.setState('flooded');
         count++;
       }
@@ -253,11 +275,11 @@ class BeaverGame {
     const beavers = this.entities.filter(e => e instanceof Beaver && !e.dead).length;
     const dams = this.entities.filter(e => e instanceof Dam && e.active && !e.dead).length;
     const healthyTrees = this.entities.filter(e => e instanceof Tree && e.isHealthy).length;
-    const totalTrees = 32;
+    const totalTrees = 24;
 
     this.stats.beavers = beavers;
     this.stats.dams = dams;
-    this.stats.health = Math.round((healthyTrees / totalTrees) * 100);
+    this.stats.health = Math.min(100, Math.round((healthyTrees / totalTrees) * 100));
     this.stats.economicLoss = Math.min(66.5, (beavers * 1.2) + (dams * 2.8) + (this.stats.stumps * 1.5));
 
     let targetStage = 0;
