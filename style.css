@@ -1,42 +1,37 @@
 /* ============================================================
-   STYLE.CSS — Castor Newsgame
-   Tactical HUD / Journalistic aesthetic
-   Age of Empires–inspired dark strategy UI
+   STYLE.CSS — Newsgame "Proyecto Castor"
+   Diseño Visual Limpio, Elegante, Responsivo y Adaptable
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
-/* ── Reset & Root ─────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --gold:       #d4af37;
-  --gold-light: #f0d070;
-  --dark-bg:    #0a0d0a;
-  --panel-bg:   rgba(8, 14, 8, 0.88);
-  --panel-border: rgba(212, 175, 55, 0.4);
-  --green-dark: #1a3a12;
-  --green-mid:  #2e6a1e;
-  --danger:     #e05050;
-  --warning:    #e0a020;
-  --success:    #50c060;
-  --info:       #4090d0;
-  --text:       #e8dcc8;
-  --text-dim:   #9a8a6a;
-  --radius:     6px;
-  --shadow:     0 4px 24px rgba(0,0,0,0.7), 0 1px 0 rgba(212,175,55,0.15) inset;
+  --gold: #d4af37;
+  --gold-light: #f5d77f;
+  --dark-panel: rgba(10, 16, 10, 0.90);
+  --panel-border: rgba(212, 175, 55, 0.35);
+  --danger: #e74c3c;
+  --success: #2ecc71;
+  --warning: #f39c12;
+  --info: #3498db;
+  --text: #f0f0f0;
+  --text-dim: #b0b8b0;
+  --radius: 8px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.85);
 }
 
 html, body {
   width: 100%; height: 100%;
   overflow: hidden;
-  background: #060a06;
+  background: #040804;
   font-family: 'Inter', sans-serif;
   color: var(--text);
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Game Container & Canvas ──────────────────────────────── */
+/* ── Game Container Responsivo ────────────────────────────── */
 #game-container {
   position: relative;
   width: 100vw;
@@ -45,6 +40,7 @@ html, body {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  background: #000;
 }
 
 #game-canvas {
@@ -52,134 +48,90 @@ html, body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  cursor: crosshair;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
-  image-rendering: pixelated;
 }
 
-/* ── HUD ──────────────────────────────────────────────────── */
+/* ── HUD Superior Limpio ──────────────────────────────────── */
 #hud {
   position: absolute;
   top: 0; left: 0; right: 0;
   pointer-events: none;
   z-index: 20;
-}
-
-/* Top bar */
-#hud-top {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 10px 16px 8px;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 10px;
   background: linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
 }
 
-/* Top bar header */
-#hud-header {
+#hud-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  max-width: 1200px;
 }
 
-.hud-title-box {
+.hud-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
-.hud-logo { font-size: 24px; }
+.flag-icon { font-size: 26px; }
 
-#hud-main-title {
+.brand-titles .game-title {
   font-family: 'Cinzel', serif;
   font-size: 14px;
   font-weight: 700;
   color: var(--gold);
   letter-spacing: 1.5px;
-  text-shadow: 0 0 10px rgba(212,175,55,0.4);
+  text-shadow: 0 0 12px rgba(212,175,55,0.4);
 }
 
-#hud-year-label {
-  font-size: 11px;
-  color: var(--text-dim);
-  font-weight: 600;
-  letter-spacing: 1px;
-}
-
-#hud-budget-box {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  background: linear-gradient(135deg, rgba(30,60,20,0.85), rgba(10,30,10,0.85));
-  border: 1px solid var(--gold);
-  border-radius: var(--radius);
-  padding: 4px 14px;
-  box-shadow: 0 0 12px rgba(212,175,55,0.3);
-}
-
-.budget-label {
-  font-size: 8px;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-#val-budget {
+.year-badge {
+  display: inline-block;
   font-family: 'Cinzel', serif;
-  font-size: 18px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--gold-light);
+  background: rgba(212,175,55,0.15);
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  padding: 1px 8px;
+  margin-top: 2px;
 }
 
-.action-btn.action-danger {
-  background: rgba(120,30,30,0.7);
-  border-color: var(--danger);
-}
-.action-btn.action-danger:hover {
-  background: rgba(160,40,40,0.8);
-}
-
-/* Stats row */
-.hud-stats-row {
+/* Stats Grid */
+.hud-stats-grid {
   display: flex;
   gap: 8px;
 }
 
-.hud-stat {
+.hud-stat-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: var(--panel-bg);
+  background: var(--dark-panel);
   border: 1px solid var(--panel-border);
   border-radius: var(--radius);
-  padding: 5px 10px;
-  min-width: 68px;
+  padding: 6px 12px;
+  min-width: 76px;
   box-shadow: var(--shadow);
-  transition: border-color 0.3s, background 0.3s;
 }
 
-.hud-stat.warning { border-color: var(--warning); background: rgba(100,50,0,0.6); }
-.hud-stat.danger  { border-color: var(--danger);  background: rgba(80,10,10,0.6); animation: pulse-border 1.2s infinite; }
+.stat-icon { font-size: 14px; margin-bottom: 2px; }
+.stat-val  { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; color: var(--gold-light); }
+.stat-lbl  { font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
 
-@keyframes pulse-border {
-  0%,100% { box-shadow: 0 0 0 0 rgba(220,50,50,0); }
-  50%      { box-shadow: 0 0 0 4px rgba(220,50,50,0.4); }
-}
-
-.stat-icon  { font-size: 15px; line-height: 1; }
-.stat-value { font-family: 'Cinzel', serif; font-size: 16px; font-weight: 700; color: var(--gold); }
-.stat-label { font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; }
-
-/* ── Timeline ─────────────────────────────────────────────── */
+/* ── Timeline Bar ─────────────────────────────────────────── */
 #hud-timeline {
-  position: absolute;
-  bottom: 86px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(760px, 90vw);
+  width: 100%;
+  max-width: 800px;
   pointer-events: all;
-  background: var(--panel-bg);
+  background: var(--dark-panel);
   border: 1px solid var(--panel-border);
   border-radius: var(--radius);
   padding: 8px 14px;
@@ -188,31 +140,29 @@ html, body {
 
 #timeline-bar {
   position: relative;
-  height: 10px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 5px;
+  height: 8px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 4px;
   cursor: pointer;
-  overflow: visible;
 }
 
 #timeline-fill {
   position: absolute; top: 0; left: 0;
   height: 100%;
-  background: linear-gradient(90deg, #1a4a10, var(--gold));
-  border-radius: 5px;
+  background: linear-gradient(90deg, #27ae60, var(--gold));
+  border-radius: 4px;
   transition: width 0.3s;
   pointer-events: none;
 }
 
 #timeline-thumb {
   position: absolute; top: 50%;
-  width: 18px; height: 18px;
+  width: 16px; height: 16px;
   background: var(--gold);
-  border: 2px solid #0a0d0a;
+  border: 2px solid #000;
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  cursor: grab;
-  box-shadow: 0 0 8px rgba(212,175,55,0.6);
+  box-shadow: 0 0 10px rgba(212,175,55,0.7);
   pointer-events: none;
 }
 
@@ -220,178 +170,158 @@ html, body {
   display: flex;
   justify-content: space-between;
   margin-top: 4px;
-  font-size: 10px;
+  font-size: 9.5px;
   color: var(--text-dim);
   font-family: 'Cinzel', serif;
-  letter-spacing: 0.5px;
 }
 
-/* ── Action Buttons ───────────────────────────────────────── */
-#hud-actions {
+/* ── Panel de Control Newsgame (2 Botones Principales) ───── */
+#hud-controls {
   position: absolute;
-  bottom: 12px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 8px;
+  gap: 14px;
   pointer-events: all;
-  background: var(--panel-bg);
-  border: 1px solid var(--panel-border);
-  border-radius: var(--radius);
-  padding: 8px 12px;
-  box-shadow: var(--shadow);
+  z-index: 30;
 }
 
-.action-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: rgba(30,50,20,0.7);
-  border: 1px solid rgba(212,175,55,0.25);
-  border-radius: var(--radius);
-  color: var(--text);
-  cursor: pointer;
-  padding: 8px 12px;
-  min-width: 66px;
-  gap: 3px;
-  transition: background 0.2s, border-color 0.2s, transform 0.1s;
-  font-family: inherit;
-}
-
-.action-btn:hover {
-  background: rgba(60,100,30,0.7);
-  border-color: var(--gold);
-  transform: translateY(-2px);
-}
-
-.action-btn.active {
-  background: rgba(212,175,55,0.2);
-  border-color: var(--gold);
-  box-shadow: 0 0 10px rgba(212,175,55,0.4);
-}
-
-.btn-icon   { font-size: 20px; line-height: 1; }
-.btn-label  { font-size: 9px; color: var(--text-dim); text-align: center; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
-.btn-cost   { font-size: 10px; color: var(--gold); font-weight: 600; }
-
-/* ── Mode Indicator ───────────────────────────────────────── */
-#hud-mode-indicator {
-  position: absolute;
-  top: 90px;
-  left: 50%;
-  transform: translateX(-50%);
+.news-btn {
   display: flex;
   align-items: center;
   gap: 10px;
-  pointer-events: all;
-  background: var(--panel-bg);
-  border: 1px solid var(--gold);
-  border-radius: 20px;
-  padding: 6px 16px;
-  box-shadow: 0 0 16px rgba(212,175,55,0.3);
-  transition: opacity 0.3s;
-}
-
-#hud-mode-indicator.mode-none {
-  opacity: 0;
-  pointer-events: none;
-}
-
-#mode-text {
+  padding: 14px 24px;
+  border-radius: 30px;
+  font-family: 'Cinzel', serif;
   font-size: 13px;
-  color: var(--gold-light);
-  font-weight: 500;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+  transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+  white-space: nowrap;
 }
 
-#btn-cancel-mode {
-  background: none;
-  border: 1px solid rgba(212,175,55,0.4);
-  border-radius: 50%;
-  color: var(--text-dim);
-  width: 22px; height: 22px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 12px;
-  transition: background 0.2s, color 0.2s;
+.news-btn:hover {
+  transform: translateY(-3px) scale(1.03);
 }
-#btn-cancel-mode:hover { background: rgba(212,175,55,0.2); color: var(--gold); }
 
-/* ── News Cards ───────────────────────────────────────────── */
+.news-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #c0392b, #8e44ad);
+  color: #fff;
+  border-color: #e74c3c;
+  box-shadow: 0 6px 24px rgba(231,76,60,0.4);
+}
+.btn-danger:hover {
+  box-shadow: 0 8px 30px rgba(231,76,60,0.6);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #27ae60, #16a085);
+  color: #fff;
+  border-color: #2ecc71;
+  box-shadow: 0 6px 24px rgba(46,204,113,0.4);
+}
+.btn-success:hover {
+  box-shadow: 0 8px 30px rgba(46,204,113,0.6);
+}
+
+.btn-icon { font-size: 18px; }
+
+/* ── Tarjetas Periodísticas Modales Grandes ──────────────── */
 #news-container {
   position: absolute;
-  top: 100px;
-  right: 14px;
-  width: 300px;
-  z-index: 30;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 50;
   pointer-events: none;
+  width: min(520px, 90vw);
 }
 
 .news-card {
-  background: var(--panel-bg);
-  border-left: 4px solid var(--info);
-  border-radius: var(--radius);
-  padding: 12px 14px;
-  box-shadow: var(--shadow);
-  animation: news-enter 0.4s cubic-bezier(.17,.67,.36,1.2) forwards;
   pointer-events: all;
+  background: rgba(10, 16, 10, 0.96);
+  border: 2px solid var(--gold);
+  border-radius: 12px;
+  padding: 24px 28px;
+  box-shadow: 0 0 50px rgba(0,0,0,0.9), 0 0 20px rgba(212,175,55,0.2) inset;
+  backdrop-filter: blur(10px);
+  animation: news-popup 0.4s cubic-bezier(0.17, 0.67, 0.36, 1.2) forwards;
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
 }
 
-.news-card.news-danger   { border-left-color: var(--danger); }
-.news-card.news-warning  { border-left-color: var(--warning); }
-.news-card.news-success  { border-left-color: var(--success); }
-.news-card.news-info     { border-left-color: var(--info); }
-.news-card.news-exit { animation: news-exit 0.45s ease forwards; }
-
-@keyframes news-enter {
-  from { opacity:0; transform: translateX(40px); }
-  to   { opacity:1; transform: translateX(0); }
-}
-@keyframes news-exit {
-  to   { opacity:0; transform: translateX(60px); }
+.news-card.news-exit {
+  animation: news-popout 0.4s ease forwards;
 }
 
-.news-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
+@keyframes news-popup {
+  from { opacity: 0; transform: scale(0.85) translateY(20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
 }
-.news-icon  { font-size: 16px; }
-.news-title { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 600; color: var(--gold); line-height: 1.3; }
-.news-text  { font-size: 11px; color: var(--text-dim); line-height: 1.5; }
+@keyframes news-popout {
+  to   { opacity: 0; transform: scale(0.9) translateY(-20px); }
+}
 
-.news-progress {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 3px;
-  background: rgba(255,255,255,0.1);
+.news-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--gold);
+  background: rgba(212,175,55,0.12);
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  padding: 3px 8px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
 }
-.news-progress-fill {
-  height: 100%;
-  width: 100%;
-  background: var(--gold);
+
+.news-title {
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gold-light);
+  line-height: 1.35;
+  margin-bottom: 10px;
+  text-shadow: 0 0 10px rgba(212,175,55,0.3);
+}
+
+.news-text {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.news-footer {
+  font-size: 10.5px;
+  color: var(--text-dim);
+  text-align: right;
+  font-style: italic;
+  letter-spacing: 0.5px;
 }
 
 /* ── Tutorial Overlay ─────────────────────────────────────── */
 #tutorial-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.85);
+  background: rgba(0,0,0,0.88);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 100;
-  backdrop-filter: blur(6px);
-  animation: fade-in 0.5s ease;
+  backdrop-filter: blur(8px);
+  animation: fade-in 0.4s ease;
 }
 
-#tutorial-overlay.fade-out { animation: fade-out 0.6s ease forwards; }
+#tutorial-overlay.fade-out { animation: fade-out 0.5s ease forwards; }
 
 @keyframes fade-in  { from { opacity:0 } to { opacity:1 } }
 @keyframes fade-out { to   { opacity:0 } }
@@ -399,227 +329,84 @@ html, body {
 .tutorial-box {
   max-width: 580px;
   width: 90%;
-  background: linear-gradient(135deg, rgba(10,18,10,0.98), rgba(20,35,15,0.98));
-  border: 1px solid var(--panel-border);
-  border-radius: 12px;
-  padding: 40px 48px;
-  box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 30px rgba(212,175,55,0.1) inset;
-  animation: slide-up 0.5s cubic-bezier(.17,.67,.36,1.2);
+  background: linear-gradient(135deg, rgba(8,14,8,0.98), rgba(18,30,15,0.98));
+  border: 2px solid var(--gold);
+  border-radius: 14px;
+  padding: 36px 40px;
+  box-shadow: 0 0 60px rgba(0,0,0,0.9), 0 0 30px rgba(212,175,55,0.15) inset;
 }
 
-@keyframes slide-up {
-  from { transform: translateY(40px); opacity:0; }
-  to   { transform: none; opacity:1; }
-}
-
-.tutorial-header {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.tutorial-logo { font-size: 52px; display: block; margin-bottom: 10px; }
+.tutorial-header { text-align: center; margin-bottom: 20px; }
+.tutorial-logo { font-size: 44px; display: block; margin-bottom: 8px; }
 
 .tutorial-header h2 {
   font-family: 'Cinzel', serif;
   font-size: 22px;
-  color: var(--gold);
-  text-shadow: 0 0 20px rgba(212,175,55,0.4);
-  letter-spacing: 1px;
-  margin-bottom: 4px;
+  color: var(--gold-light);
+  letter-spacing: 1.5px;
 }
 
-.tutorial-subtitle {
-  font-size: 12px;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-}
+.tutorial-subtitle { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; }
 
-.tutorial-body p {
-  font-size: 13.5px;
-  line-height: 1.7;
-  color: var(--text);
-  margin-bottom: 14px;
-}
-
+.tutorial-body p { font-size: 13.5px; line-height: 1.65; color: var(--text); margin-bottom: 12px; }
 .tutorial-body strong { color: var(--gold-light); }
 .tutorial-body em { color: #aaddaa; font-style: italic; }
 
-.tutorial-controls {
-  background: rgba(0,0,0,0.3);
-  border: 1px solid rgba(212,175,55,0.15);
+.tutorial-instructions {
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(212,175,55,0.2);
   border-radius: var(--radius);
-  padding: 14px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
-.ctrl {
-  font-size: 12px;
-  color: var(--text-dim);
-}
-.ctrl strong { color: var(--text); }
+.ins-item { font-size: 12.5px; line-height: 1.5; color: var(--text-dim); }
+.ins-item strong { color: var(--text); }
 
 .tutorial-start-btn {
   display: block;
   width: 100%;
-  margin-top: 28px;
+  margin-top: 24px;
   padding: 14px;
-  background: linear-gradient(135deg, #2e6a1e, #1a4a10);
+  background: linear-gradient(135deg, #27ae60, #1e8449);
   border: 1px solid var(--gold);
-  border-radius: var(--radius);
-  color: var(--gold);
+  border-radius: 30px;
+  color: #fff;
   font-family: 'Cinzel', serif;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
-  box-shadow: 0 0 20px rgba(212,175,55,0.2);
+  box-shadow: 0 0 24px rgba(46,204,113,0.3);
+  transition: transform 0.15s, box-shadow 0.15s;
 }
 
 .tutorial-start-btn:hover {
-  background: linear-gradient(135deg, #4a8a2a, #2a5a18);
-  box-shadow: 0 0 30px rgba(212,175,55,0.4);
   transform: translateY(-2px);
+  box-shadow: 0 0 34px rgba(46,204,113,0.5);
 }
 
-/* ── End Screen ───────────────────────────────────────────── */
-#end-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.90);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  backdrop-filter: blur(8px);
-}
-
-.end-box {
-  max-width: 560px;
-  width: 90%;
-  background: linear-gradient(135deg, rgba(10,18,10,0.98), rgba(20,35,15,0.98));
-  border: 1px solid var(--panel-border);
-  border-radius: 12px;
-  padding: 40px 44px;
-  box-shadow: 0 0 60px rgba(0,0,0,0.8);
-  animation: slide-up 0.5s ease;
-}
-
-.end-collapse  { border-color: rgba(200,50,50,0.5);  box-shadow: 0 0 40px rgba(200,50,50,0.15); }
-.end-restoration { border-color: rgba(50,200,80,0.5); box-shadow: 0 0 40px rgba(50,200,80,0.15); }
-
-.end-header {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.end-icon { font-size: 52px; display: block; margin-bottom: 10px; }
-
-.end-header h2 {
-  font-family: 'Cinzel', serif;
-  font-size: 24px;
-  color: var(--gold);
-  letter-spacing: 2px;
-  margin-bottom: 4px;
-}
-
-.end-year {
-  font-family: 'Cinzel', serif;
-  font-size: 14px;
-  color: var(--text-dim);
-}
-
-.end-stats {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  margin-bottom: 20px;
-}
-
-.end-stat {
-  background: rgba(0,0,0,0.3);
-  border: 1px solid rgba(212,175,55,0.15);
-  border-radius: var(--radius);
-  padding: 10px 14px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 13px;
-}
-
-.end-stat span { color: var(--text-dim); }
-.end-stat strong { color: var(--gold); font-family: 'Cinzel', serif; }
-
-.end-message {
-  font-size: 13px;
-  line-height: 1.7;
-  color: var(--text-dim);
-  margin-bottom: 16px;
-}
-
-.end-data {
-  font-size: 11px;
-  color: rgba(212,175,55,0.6);
-  background: rgba(212,175,55,0.06);
-  border: 1px solid rgba(212,175,55,0.15);
-  border-radius: var(--radius);
-  padding: 8px 12px;
-  margin-bottom: 20px;
-}
-
-.end-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.end-btn {
-  flex: 1;
-  padding: 12px;
-  background: linear-gradient(135deg, #2e6a1e, #1a4a10);
-  border: 1px solid var(--gold);
-  border-radius: var(--radius);
-  color: var(--gold);
-  font-family: 'Cinzel', serif;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  cursor: pointer;
-  text-align: center;
-  text-decoration: none;
-  transition: background 0.2s, transform 0.1s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.end-btn:hover { background: linear-gradient(135deg, #4a8a2a, #2a5a18); transform: translateY(-2px); }
-.end-btn-secondary { background: rgba(30,30,20,0.6); }
-.end-btn-secondary:hover { background: rgba(50,50,30,0.8); }
-
-/* ── Scrollbar ────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
-::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.3); border-radius: 3px; }
-
-/* ── Responsive ───────────────────────────────────────────── */
-@media (max-width: 700px) {
-  .hud-stats-row { gap: 4px; }
-  .hud-stat { min-width: 54px; padding: 4px 6px; }
-  .stat-value { font-size: 13px; }
-  #hud-actions { gap: 4px; padding: 6px 8px; }
-  .action-btn { min-width: 52px; padding: 6px 8px; }
-  .btn-icon { font-size: 16px; }
-  #hud-timeline { width: 92vw; bottom: 76px; }
-  .tutorial-box, .end-box { padding: 24px 20px; }
-  #news-container { width: 230px; }
+/* ── Responsivo Adaptable para Móviles y Tablets ──────────── */
+@media (max-width: 768px) {
+  #hud-top { flex-direction: column; gap: 8px; align-items: flex-start; }
+  .hud-stats-grid { width: 100%; justify-content: space-between; }
+  .hud-stat-card { min-width: 60px; padding: 4px 8px; }
+  .stat-val { font-size: 13px; }
+  .stat-lbl { font-size: 8px; }
+  #hud-controls { width: 90%; flex-direction: column; gap: 8px; bottom: 12px; }
+  .news-btn { padding: 12px 16px; font-size: 11.5px; justify-content: center; width: 100%; }
+  .tutorial-box { padding: 24px 20px; }
+  .news-card { padding: 18px 20px; }
+  .news-title { font-size: 15px; }
+  .news-text { font-size: 12px; }
 }
 
 @media (max-width: 480px) {
-  #hud-actions { flex-wrap: wrap; justify-content: center; width: 94vw; }
-  .action-btn { min-width: 46px; }
-  .btn-label { display: none; }
+  .brand-titles .game-title { font-size: 12px; }
+  .flag-icon { font-size: 20px; }
+  #hud-timeline { padding: 6px 10px; }
+  #timeline-labels { font-size: 8px; }
 }
