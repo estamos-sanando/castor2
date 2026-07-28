@@ -127,19 +127,22 @@ class BeaverGame {
     for (let i = 0; i < 6; i++) {
       const x = 60 + Math.random() * (this.W - 120);
       const y = 100 + Math.random() * 250;
-      const rock = new Entity(x, y);
-      rock.sprite = SpritePainter.rock();
-      rock.baseY = y;
+      const rock = new Rock(x, y, i);
       this.entities.push(rock);
     }
 
     for (let i = 0; i < 8; i++) {
       const x = 60 + Math.random() * (this.W - 120);
       const y = 80 + Math.random() * 320;
-      const bush = new Entity(x, y);
-      bush.sprite = SpritePainter.bush();
-      bush.baseY = y;
+      const bush = new Bush(x, y, i);
       this.entities.push(bush);
+    }
+
+    for (let i = 0; i < 8; i++) {
+      const x = 60 + Math.random() * (this.W - 120);
+      const y = 60 + Math.random() * 300;
+      const moss = new Moss(x, y, i);
+      this.entities.push(moss);
     }
 
     // Castores iniciales de la simulación

@@ -1,15 +1,11 @@
 'use strict';
 /* ============================================================
-   ENTITIES.JS — High-Performance Image-Sprite & Fallback System
+   ENTITIES.JS — 100% Real Image Sprite Engine & Asset System
    Castores en Tierra del Fuego — Newsgame Interactivo
    ============================================================ */
 
-// ──────────────────────────────────────────────────────────────
-// IMAGE CACHE SYSTEM
-// Preloads all real cropped PNG sprites for zero-lag 60fps rendering
-// ──────────────────────────────────────────────────────────────
 const ASSET_MANIFEST = {
-  // Trees & Flora
+  // Trees & Flora (All extracted from user sheets)
   tree_healthy_1: 'assets/vegetation/tree_healthy_1.png',
   tree_healthy_2: 'assets/vegetation/tree_healthy_2.png',
   tree_healthy_3: 'assets/vegetation/tree_healthy_3.png',
@@ -29,12 +25,23 @@ const ASSET_MANIFEST = {
   stump_old:      'assets/vegetation/stump_old.png',
   log_fresh:      'assets/vegetation/log_fresh.png',
   log_decayed:    'assets/vegetation/log_decayed.png',
-  bush_1:         'assets/vegetation/bush_1.png',
-  bush_2:         'assets/vegetation/bush_2.png',
-  bush_calafate:  'assets/vegetation/bush_calafate.png',
-  moss_1:         'assets/vegetation/moss_1.png',
-  moss_2:         'assets/vegetation/moss_2.png',
-  moss_3:         'assets/vegetation/moss_3.png',
+
+  // Rocks, Bushes, Moss & Understory
+  rock_1:          'assets/vegetation/rock_1.png',
+  rock_2:          'assets/vegetation/rock_2.png',
+  rock_3:          'assets/vegetation/rock_3.png',
+  bush_1:          'assets/vegetation/bush_1.png',
+  bush_2:          'assets/vegetation/bush_2.png',
+  bush_calafate:   'assets/vegetation/bush_calafate.png',
+  bush_notro:      'assets/vegetation/bush_notro.png',
+  bush_flowering:  'assets/vegetation/bush_flowering.png',
+  grass_1:         'assets/vegetation/grass_1.png',
+  grass_2:         'assets/vegetation/grass_2.png',
+  flower_1:        'assets/vegetation/flower_1.png',
+  moss_1:          'assets/vegetation/moss_1.png',
+  moss_2:          'assets/vegetation/moss_2.png',
+  moss_3:          'assets/vegetation/moss_3.png',
+  moss_4:          'assets/vegetation/moss_4.png',
 
   // Beavers & Characters
   beaver_idle:      'assets/characters/beaver_idle.png',
@@ -74,13 +81,12 @@ Object.keys(ASSET_MANIFEST).forEach(key => {
   };
 });
 
-// Helper to retrieve loaded HTMLImageElement or null
 function getLoadedImg(key) {
   return IMAGE_LOADED[key] ? IMAGE_CACHE[key] : null;
 }
 
 // ──────────────────────────────────────────────────────────────
-// SPRITE PAINTER — Renders Real PNG Sprites with Fallback
+// SPRITE PAINTER — Pure Real PNG Renderer (No solid shapes)
 // ──────────────────────────────────────────────────────────────
 class SpritePainter {
   static _oc(w, h) {
@@ -88,9 +94,14 @@ class SpritePainter {
     c.width = w; c.height = h; return c;
   }
 
+  // Soft natural shadow (gradient radial, transparent)
   static _shadow(x, cx, cy, rx, ry) {
-    x.save(); x.globalAlpha = 0.28;
-    x.fillStyle = '#000';
+    x.save();
+    const g = x.createRadialGradient(cx, cy, 0, cx, cy, Math.max(rx, ry));
+    g.addColorStop(0, 'rgba(0, 0, 0, 0.22)');
+    g.addColorStop(0.6, 'rgba(0, 0, 0, 0.12)');
+    g.addColorStop(1, 'transparent');
+    x.fillStyle = g;
     x.beginPath(); x.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); x.fill();
     x.restore();
   }
@@ -106,7 +117,7 @@ class SpritePainter {
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    return this._proceduralBeaver(size, action);
+    return this._emptyCanvas(size, size);
   }
 
   // ── BEAVER SMALL ──────────────────────────────────────────
@@ -119,7 +130,7 @@ class SpritePainter {
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    return this._proceduralBeaverSmall(size);
+    return this._emptyCanvas(size, size);
   }
 
   // ── RANGER ────────────────────────────────────────────────
@@ -133,7 +144,7 @@ class SpritePainter {
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    return this._proceduralRanger(size, action);
+    return this._emptyCanvas(size, size);
   }
 
   // ── SCIENTIST ──────────────────────────────────────────────
@@ -147,10 +158,10 @@ class SpritePainter {
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    return this._proceduralScientist(size, action);
+    return this._emptyCanvas(size, size);
   }
 
-  // ── HEALTHY TREE (8 real variants) ────────────────────────
+  // ── HEALTHY TREE ──────────────────────────────────────────
   static tree_healthy(variant = 0) {
     const idx = (variant % 8) + 1;
     const key = `tree_healthy_${idx}`;
@@ -162,20 +173,20 @@ class SpritePainter {
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    return this._proceduralTreeHealthy(variant);
+    return this._emptyCanvas(130, 180);
   }
 
   // ── DEAD TREE ─────────────────────────────────────────────
   static tree_dead() {
-    const realImg = getLoadedImg('tree_dead_1') || getLoadedImg('tree_dead_2');
+    const realImg = getLoadedImg('tree_dead_1') || getLoadedImg('tree_dead_2') || getLoadedImg('tree_dead_3');
     if (realImg) {
-      const W = 110, H = Math.round(110 * (realImg.height / realImg.width));
+      const W = 100, H = Math.round(100 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
       this._shadow(ctx, W * 0.5, H * 0.95, W * 0.28, H * 0.06);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    return this._proceduralTreeDead();
+    return this._emptyCanvas(100, 150);
   }
 
   // ── FLOODED TREE ──────────────────────────────────────────
@@ -184,33 +195,31 @@ class SpritePainter {
     if (realImg) {
       const W = 110, H = Math.round(110 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      // Water ripple shadow
-      ctx.fillStyle = 'rgba(40,110,150,0.6)';
-      ctx.beginPath(); ctx.ellipse(W * 0.5, H * 0.92, W * 0.38, H * 0.09, 0, 0, Math.PI * 2); ctx.fill();
+      this._shadow(ctx, W * 0.5, H * 0.92, W * 0.38, H * 0.09);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    return this._proceduralTreeFlooded();
+    return this._emptyCanvas(110, 160);
   }
 
   // ── STUMP ─────────────────────────────────────────────────
   static stump(age = 'fresh') {
     const key = age === 'fresh' ? 'stump_fresh' : 'stump_old';
-    const realImg = getLoadedImg(key);
+    const realImg = getLoadedImg(key) || getLoadedImg('stump_fresh');
     if (realImg) {
-      const W = 75, H = Math.round(75 * (realImg.height / realImg.width));
+      const W = 70, H = Math.round(70 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
       this._shadow(ctx, W * 0.5, H * 0.92, W * 0.38, H * 0.09);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    return this._proceduralStump(age);
+    return this._emptyCanvas(70, 80);
   }
 
   // ── LOG ───────────────────────────────────────────────────
   static log(decayed = false) {
     const key = decayed ? 'log_decayed' : 'log_fresh';
-    const realImg = getLoadedImg(key);
+    const realImg = getLoadedImg(key) || getLoadedImg('log_fresh');
     if (realImg) {
       const W = 100, H = Math.round(100 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
@@ -218,188 +227,98 @@ class SpritePainter {
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    return this._proceduralLog(decayed);
+    return this._emptyCanvas(100, 50);
   }
 
-  // ── BUSH ──────────────────────────────────────────────────
-  static bush() {
-    const realImg = getLoadedImg('bush_calafate') || getLoadedImg('bush_1');
+  // ── ROCKS (Real extracted PNGs) ───────────────────────────
+  static rock(variant = 0) {
+    const idx = (variant % 3) + 1;
+    const realImg = getLoadedImg(`rock_${idx}`) || getLoadedImg('rock_1');
     if (realImg) {
-      const W = 88, H = Math.round(88 * (realImg.height / realImg.width));
+      const W = 70, H = Math.round(70 * (realImg.height / realImg.width));
+      const c = this._oc(W, H), ctx = c.getContext('2d');
+      this._shadow(ctx, W * 0.5, H * 0.9, W * 0.4, H * 0.1);
+      ctx.drawImage(realImg, 0, 0, W, H);
+      return c;
+    }
+    return this._emptyCanvas(70, 45);
+  }
+
+  // ── BUSHES (Real extracted PNGs) ──────────────────────────
+  static bush(variant = 0) {
+    const bushes = ['bush_calafate', 'bush_notro', 'bush_flowering', 'bush_1', 'bush_2'];
+    const key = bushes[variant % bushes.length];
+    const realImg = getLoadedImg(key) || getLoadedImg('bush_calafate');
+    if (realImg) {
+      const W = 85, H = Math.round(85 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
       this._shadow(ctx, W * 0.5, H * 0.9, W * 0.38, H * 0.1);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    return this._proceduralBush();
+    return this._emptyCanvas(85, 70);
   }
 
-  // ── MOSS ──────────────────────────────────────────────────
-  static moss() {
-    const realImg = getLoadedImg('moss_1') || getLoadedImg('moss_2');
+  // ── MOSS & UNDERSTORY (Real extracted PNGs) ───────────────
+  static moss(variant = 0) {
+    const idx = (variant % 4) + 1;
+    const realImg = getLoadedImg(`moss_${idx}`) || getLoadedImg('moss_1');
     if (realImg) {
       const W = 85, H = Math.round(85 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    return this._proceduralMoss();
-  }
-
-  static rock() {
-    return this._proceduralRock();
+    return this._emptyCanvas(85, 50);
   }
 
   static dam(level = 1) {
-    return this._proceduralDam(level);
+    const realImg = getLoadedImg('log_fresh');
+    const W = 80 + level * 30, H = 40 + level * 10;
+    const c = this._oc(W, H), ctx = c.getContext('2d');
+    this._shadow(ctx, W/2, H*0.85, W*0.44, H*0.2);
+    if (realImg) {
+      ctx.drawImage(realImg, 0, 0, W, H);
+    }
+    return c;
   }
 
   static cage_sprite() {
-    return this._proceduralCage();
+    const realImg = getLoadedImg('ranger_trap');
+    if (realImg) {
+      const W = 85, H = Math.round(85 * (realImg.height / realImg.width));
+      const c = this._oc(W, H), ctx = c.getContext('2d');
+      ctx.drawImage(realImg, 0, 0, W, H);
+      return c;
+    }
+    return this._emptyCanvas(85, 60);
   }
 
   static seedling_sprite() {
-    return this._proceduralSeedling();
+    const realImg = getLoadedImg('tree_young_1');
+    if (realImg) {
+      const W = 40, H = Math.round(40 * (realImg.height / realImg.width));
+      const c = this._oc(W, H), ctx = c.getContext('2d');
+      ctx.drawImage(realImg, 0, 0, W, H);
+      return c;
+    }
+    return this._emptyCanvas(40, 50);
   }
 
-  static leaf_particle(col = '#4a8c2a') {
-    return this._proceduralLeaf(col);
+  static leaf_particle() {
+    const c = this._oc(10, 10), x = c.getContext('2d');
+    x.fillStyle = '#4a8c2a'; x.beginPath(); x.arc(5, 5, 4, 0, Math.PI * 2); x.fill();
+    return c;
   }
 
   static wood_chip() {
-    return this._proceduralWoodChip();
-  }
-
-  // ────────────────────────────────────────────────────────────
-  // PROCEDURAL FALLBACKS (Used if image is loading or unavailable)
-  // ────────────────────────────────────────────────────────────
-  static _proceduralBeaver(size, action) {
-    const W = size, H = size, c = this._oc(W, H), ctx = c.getContext('2d'), s = size / 96;
-    this._shadow(ctx, W*0.5, H*0.9, W*0.28, H*0.06);
-    ctx.save();
-    ctx.fillStyle = '#8a5020'; ctx.beginPath(); ctx.ellipse(W*0.5, H*0.6, 24*s, 16*s, 0, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#c88040'; ctx.beginPath(); ctx.arc(W*0.65, H*0.4, 14*s, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#ffcc40'; ctx.fillRect(W*0.75, H*0.42, 4*s, 6*s);
-    ctx.restore(); return c;
-  }
-
-  static _proceduralBeaverSmall(size) {
-    const W = size, H = size, c = this._oc(W, H), ctx = c.getContext('2d'), s = size / 64;
-    this._shadow(ctx, W*0.5, H*0.88, 16*s, 5*s);
-    ctx.fillStyle = '#a07030'; ctx.beginPath(); ctx.ellipse(W*0.5, H*0.6, 16*s, 12*s, 0, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#d09848'; ctx.beginPath(); ctx.arc(W*0.62, H*0.4, 11*s, 0, Math.PI*2); ctx.fill();
+    const c = this._oc(10, 6), x = c.getContext('2d');
+    x.fillStyle = '#d4b06c'; x.fillRect(0, 0, 10, 6);
     return c;
   }
 
-  static _proceduralRanger(size, action) {
-    const W = Math.round(size*0.8), H = Math.round(size*1.35), c = this._oc(W, H), ctx = c.getContext('2d');
-    this._shadow(ctx, W*0.5, H*0.96, 18, 5);
-    ctx.fillStyle = '#4a5030'; ctx.fillRect(W*0.3, H*0.6, 12, 24); ctx.fillRect(W*0.5, H*0.6, 12, 24);
-    ctx.fillStyle = '#6e6e42'; ctx.fillRect(W*0.2, H*0.3, 30, 26);
-    ctx.fillStyle = '#f0c89a'; ctx.beginPath(); ctx.arc(W*0.5, H*0.18, 12, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#5a4a28'; ctx.beginPath(); ctx.ellipse(W*0.5, H*0.08, 16, 4, 0, 0, Math.PI*2); ctx.fill();
-    return c;
-  }
-
-  static _proceduralScientist(size, action) {
-    const W = Math.round(size*0.8), H = Math.round(size*1.35), c = this._oc(W, H), ctx = c.getContext('2d');
-    this._shadow(ctx, W*0.5, H*0.96, 18, 5);
-    ctx.fillStyle = '#3a4050'; ctx.fillRect(W*0.3, H*0.6, 12, 24); ctx.fillRect(W*0.5, H*0.6, 12, 24);
-    ctx.fillStyle = '#e8e8e8'; ctx.fillRect(W*0.2, H*0.28, 30, 28);
-    ctx.fillStyle = '#f5c8a0'; ctx.beginPath(); ctx.arc(W*0.5, H*0.17, 12, 0, Math.PI*2); ctx.fill();
-    return c;
-  }
-
-  static _proceduralTreeHealthy(variant) {
-    const W = 130, H = 180, c = this._oc(W, H), ctx = c.getContext('2d');
-    this._shadow(ctx, 65, 170, 38, 10);
-    ctx.fillStyle = '#6a4020'; ctx.fillRect(56, 90, 18, 78);
-    ctx.fillStyle = '#2e6a1e'; ctx.beginPath(); ctx.ellipse(65, 80, 48, 34, 0, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#4a8a2a'; ctx.beginPath(); ctx.ellipse(65, 50, 38, 28, 0, 0, Math.PI*2); ctx.fill();
-    return c;
-  }
-
-  static _proceduralTreeDead() {
-    const W = 110, H = 180, c = this._oc(W, H), ctx = c.getContext('2d');
-    this._shadow(ctx, 55, 170, 28, 8);
-    ctx.fillStyle = '#8a9898'; ctx.fillRect(48, 55, 14, 113);
-    return c;
-  }
-
-  static _proceduralTreeFlooded() {
-    const W = 110, H = 180, c = this._oc(W, H), ctx = c.getContext('2d');
-    ctx.fillStyle = 'rgba(50,120,160,0.8)'; ctx.beginPath(); ctx.ellipse(55, 162, 40, 12, 0, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#7a8888'; ctx.fillRect(48, 55, 14, 100);
-    return c;
-  }
-
-  static _proceduralStump(age) {
-    const W = 75, H = 85, c = this._oc(W, H), ctx = c.getContext('2d');
-    this._shadow(ctx, 37, 78, 28, 8);
-    ctx.fillStyle = age==='fresh'?'#7a5030':'#6a7878'; ctx.fillRect(20, 40, 35, 38);
-    ctx.fillStyle = age==='fresh'?'#e0b870':'#b0bcbc'; ctx.beginPath(); ctx.ellipse(37, 40, 17, 7, 0, 0, Math.PI*2); ctx.fill();
-    return c;
-  }
-
-  static _proceduralLog(decayed) {
-    const W = 100, H = 50, c = this._oc(W, H), ctx = c.getContext('2d');
-    this._shadow(ctx, 50, 44, 42, 7);
-    ctx.fillStyle = decayed?'#6a6060':'#c49a6c'; ctx.beginPath(); ctx.roundRect(10, 12, 80, 26, 6); ctx.fill();
-    return c;
-  }
-
-  static _proceduralBush() {
-    const W = 88, H = 70, c = this._oc(W, H), ctx = c.getContext('2d');
-    this._shadow(ctx, 44, 62, 34, 9);
-    ctx.fillStyle = '#1b5e20'; ctx.beginPath(); ctx.ellipse(44, 40, 34, 22, 0, 0, Math.PI*2); ctx.fill();
-    return c;
-  }
-
-  static _proceduralMoss() {
-    const W = 85, H = 50, c = this._oc(W, H), ctx = c.getContext('2d');
-    ctx.fillStyle = '#3a6a28'; ctx.beginPath(); ctx.ellipse(42, 25, 36, 18, 0, 0, Math.PI*2); ctx.fill();
-    return c;
-  }
-
-  static _proceduralRock() {
-    const W = 95, H = 65, c = this._oc(W, H), ctx = c.getContext('2d');
-    this._shadow(ctx, 38, 57, 28, 8);
-    ctx.fillStyle = '#909898'; ctx.beginPath(); ctx.ellipse(38, 35, 28, 20, 0, 0, Math.PI*2); ctx.fill();
-    return c;
-  }
-
-  static _proceduralDam(level) {
-    const W = 80 + level*40, H = 50 + level*15, c = this._oc(W, H), ctx = c.getContext('2d');
-    ctx.fillStyle = '#4a3528'; ctx.beginPath(); ctx.ellipse(W/2, H*0.82, W*0.44, H*0.22, 0, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#9a7060'; ctx.fillRect(W*0.2, H*0.3, W*0.6, H*0.3);
-    return c;
-  }
-
-  static _proceduralCage() {
-    const W = 90, H = 65, c = this._oc(W, H), ctx = c.getContext('2d');
-    this._shadow(ctx, W/2, H*.9, 38, 8);
-    ctx.fillStyle = '#8a9a9a'; ctx.strokeStyle = '#4a5a5a'; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.roundRect(8, 12, 74, 44, 4); ctx.fill(); ctx.stroke();
-    return c;
-  }
-
-  static _proceduralSeedling() {
-    const W = 28, H = 38, c = this._oc(W, H), ctx = c.getContext('2d');
-    this._shadow(ctx, 14, 35, 8, 3);
-    ctx.fillStyle = '#3a8a28'; ctx.beginPath(); ctx.ellipse(14, 14, 9, 8, 0, 0, Math.PI*2); ctx.fill();
-    return c;
-  }
-
-  static _proceduralLeaf(col) {
-    const c = this._oc(14, 14), x = c.getContext('2d');
-    x.fillStyle = col; x.beginPath(); x.arc(7, 7, 5, 0, Math.PI*2); x.fill();
-    return c;
-  }
-
-  static _proceduralWoodChip() {
-    const c = this._oc(12, 8), x = c.getContext('2d');
-    x.fillStyle = '#d4b06c'; x.fillRect(0, 0, 12, 8);
-    return c;
+  static _emptyCanvas(w, h) {
+    return this._oc(w, h);
   }
 }
 
@@ -442,7 +361,7 @@ class Tree extends Entity {
   constructor(x, y, variant = 0) {
     super(x, y);
     this.variant = variant;
-    this.state = 'healthy'; // healthy | stump_fresh | stump_old | flooded | dead
+    this.state = 'healthy';
     this.being_cut = false;
     this._refreshSprite();
     this.baseY = y + (this.sprite ? this.sprite.height * 0.05 : 0);
@@ -478,14 +397,53 @@ class Tree extends Entity {
     if (Math.random() < 0.05) this._refreshSprite();
     this.baseY = this.y + (this.sprite ? this.sprite.height * 0.05 : 0);
   }
+}
 
-  draw(ctx) {
-    if (!this.visible || !this.sprite) return;
-    ctx.save();
-    ctx.globalAlpha = this.alpha;
-    ctx.translate(this.x, this.y);
-    ctx.drawImage(this.sprite, -this.sprite.width / 2, -this.sprite.height);
-    ctx.restore();
+// ──────────────────────────────────────────────────────────────
+// ROCK & BUSH ENTITIES (100% Real PNG Sprites)
+// ──────────────────────────────────────────────────────────────
+class Rock extends Entity {
+  constructor(x, y, variant = 0) {
+    super(x, y);
+    this.variant = variant;
+    this._refreshSprite();
+    this.baseY = y;
+  }
+  _refreshSprite() {
+    this.sprite = SpritePainter.rock(this.variant);
+  }
+  update(dt, game) {
+    if (Math.random() < 0.03) this._refreshSprite();
+  }
+}
+
+class Bush extends Entity {
+  constructor(x, y, variant = 0) {
+    super(x, y);
+    this.variant = variant;
+    this._refreshSprite();
+    this.baseY = y;
+  }
+  _refreshSprite() {
+    this.sprite = SpritePainter.bush(this.variant);
+  }
+  update(dt, game) {
+    if (Math.random() < 0.03) this._refreshSprite();
+  }
+}
+
+class Moss extends Entity {
+  constructor(x, y, variant = 0) {
+    super(x, y);
+    this.variant = variant;
+    this._refreshSprite();
+    this.baseY = y;
+  }
+  _refreshSprite() {
+    this.sprite = SpritePainter.moss(this.variant);
+  }
+  update(dt, game) {
+    if (Math.random() < 0.03) this._refreshSprite();
   }
 }
 
@@ -528,7 +486,7 @@ class Dam extends Entity {
 }
 
 // ──────────────────────────────────────────────────────────────
-// CAGE ENTITY — placed by player, captures beavers
+// CAGE ENTITY
 // ──────────────────────────────────────────────────────────────
 class Cage extends Entity {
   constructor(x, y) {
@@ -573,7 +531,7 @@ class Cage extends Entity {
 }
 
 // ──────────────────────────────────────────────────────────────
-// SEEDLING — planted by player, grows into tree
+// SEEDLING
 // ──────────────────────────────────────────────────────────────
 class Seedling extends Entity {
   constructor(x, y) {
@@ -612,7 +570,7 @@ class Seedling extends Entity {
 }
 
 // ──────────────────────────────────────────────────────────────
-// LOG ENTITY — spawned when beaver cuts a tree
+// LOG ENTITY
 // ──────────────────────────────────────────────────────────────
 class LogEntity extends Entity {
   constructor(x, y) {
@@ -964,7 +922,6 @@ class ParticlePool {
       SpritePainter.leaf_particle('#3a7020'),
       SpritePainter.leaf_particle('#d4a020'),
       SpritePainter.leaf_particle('#c04010'),
-      SpritePainter.leaf_particle('#7a9830'),
     ];
     this.woodChip = SpritePainter.wood_chip();
     this._seedAmbient(60);
@@ -977,7 +934,7 @@ class ParticlePool {
         vx: (Math.random() - 0.5) * 0.8, vy: Math.random() * 0.5 + 0.1,
         rot: Math.random() * Math.PI * 2, rotV: (Math.random() - 0.5) * 0.05,
         alpha: Math.random() * 0.7 + 0.2, decay: 0, life: 1,
-        kind: 'leaf', leafIdx: Math.floor(Math.random() * 4),
+        kind: 'leaf', leafIdx: Math.floor(Math.random() * 3),
         scale: 0.5 + Math.random() * 0.8
       });
     }
@@ -994,7 +951,7 @@ class ParticlePool {
         vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 1.5,
         rot: Math.random() * Math.PI * 2, rotV: (Math.random() - 0.5) * 0.12,
         alpha: 0.9, decay: 0.008 + Math.random() * 0.006,
-        life: 1, kind, leafIdx: Math.floor(Math.random() * 4),
+        life: 1, kind, leafIdx: Math.floor(Math.random() * 3),
         scale: 0.6 + Math.random() * 0.8
       });
     }
