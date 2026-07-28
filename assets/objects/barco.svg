@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 90" width="120" height="90">
+  <defs>
+    <linearGradient id="boatHull" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#c0c8d0"/><stop offset="100%" stop-color="#6a7888"/>
+    </linearGradient>
+    <linearGradient id="boatInside" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#3a4a5a"/><stop offset="100%" stop-color="#1e2a38"/>
+    </linearGradient>
+    <linearGradient id="waterBoat" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#3a9ac0"/><stop offset="100%" stop-color="#1a5a80"/>
+    </linearGradient>
+  </defs>
+  <!-- Water reflection under boat -->
+  <path d="M10,68 Q60,72 110,68 L115,80 L5,80 Z" fill="url(#waterBoat)" opacity="0.75"/>
+  <ellipse cx="60" cy="70" rx="55" ry="6" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.2"/>
+  <!-- Hull (aluminum research vessel) -->
+  <path d="M8,60 Q10,46 60,42 Q110,46 112,60 Q90,68 30,68 Z" fill="url(#boatHull)" stroke="#4a5a6a" stroke-width="1.5"/>
+  <!-- Inner deck -->
+  <path d="M20,60 Q60,56 100,60 Q90,66 30,66 Z" fill="url(#boatInside)"/>
+  <!-- Cabin / wheelhouse -->
+  <rect x="38" y="28" width="36" height="22" fill="#b0c0c8" rx="3" stroke="#7a8898" stroke-width="1.5"/>
+  <!-- Cabin windows -->
+  <rect x="42" y="32" width="10" height="8" fill="#90d8f0" rx="2" stroke="#5a6878" stroke-width="1"/>
+  <rect x="60" y="32" width="10" height="8" fill="#90d8f0" rx="2" stroke="#5a6878" stroke-width="1"/>
+  <!-- Roof of cabin -->
+  <rect x="36" y="24" width="40" height="6" fill="#8a9aaa" rx="2"/>
+  <!-- Antenna / mast -->
+  <line x1="56" y1="10" x2="56" y2="28" stroke="#6a7888" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="56" cy="9" r="2" fill="#ff4444"/>
+  <!-- Flag - Argentina -->
+  <rect x="56" y="10" width="16" height="10" fill="#75aadb"/>
+  <rect x="56" y="13" width="16" height="4" fill="white"/>
+  <rect x="56" y="17" width="16" height="3" fill="#75aadb"/>
+  <!-- Equipment on deck -->
+  <rect x="22" y="56" width="10" height="6" fill="#556a44" rx="1"/>
+  <circle cx="88" cy="59" r="5" fill="#8a7060"/>
+  <!-- Wake lines -->
+  <path d="M8,64 Q4,70 0,66" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none"/>
+  <path d="M112,64 Q116,70 120,66" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none"/>
+</svg>

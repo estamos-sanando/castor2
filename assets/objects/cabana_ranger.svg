@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" width="140" height="140">
+  <defs>
+    <linearGradient id="cabinWood" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6d4c41"/>
+      <stop offset="100%" stop-color="#3e2723"/>
+    </linearGradient>
+    <linearGradient id="roofTile" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4e342e"/>
+      <stop offset="100%" stop-color="#1b0000"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(10, 5)">
+    <!-- Sombra de la cabaña -->
+    <polygon points="10,110 70,130 130,110 70,90" fill="rgba(0,0,0,0.35)"/>
+
+    <!-- Pared Frontal Isométrica -->
+    <polygon points="30,70 80,90 80,120 30,100" fill="url(#cabinWood)" stroke="#271c19" stroke-width="1.5"/>
+    <!-- Pared Lateral Isométrica -->
+    <polygon points="80,90 120,70 120,100 80,120" fill="#4e342e" stroke="#271c19" stroke-width="1.5"/>
+
+    <!-- Troncos horizontales apilados (Lenga Log Cabin) -->
+    <line x1="30" y1="80" x2="80" y2="100" stroke="#3e2723" stroke-width="2"/>
+    <line x1="30" y1="90" x2="80" y2="110" stroke="#3e2723" stroke-width="2"/>
+    <line x1="80" y1="100" x2="120" y2="80" stroke="#271c19" stroke-width="2"/>
+    <line x1="80" y1="110" x2="120" y2="90" stroke="#271c19" stroke-width="2"/>
+
+    <!-- Puerta de la cabaña -->
+    <polygon points="50,88 65,94 65,114 50,108" fill="#271c19"/>
+
+    <!-- Ventana con luz cálida -->
+    <polygon points="90,83 105,75 105,87 90,95" fill="#f39c12" stroke="#d35400" stroke-width="1"/>
+
+    <!-- Techo a dos aguas Isométrico -->
+    <polygon points="20,65 75,35 125,60 75,90" fill="url(#roofTile)" stroke="#1b0000" stroke-width="2"/>
+
+    <!-- Chimenea con humo -->
+    <rect x="90" y="35" width="8" height="18" fill="#3e2723"/>
+    <ellipse cx="94" cy="28" rx="6" ry="3" fill="rgba(200,200,200,0.5)"/>
+    <ellipse cx="98" cy="20" rx="9" ry="4" fill="rgba(200,200,200,0.3)"/>
+  </g>
+</svg>

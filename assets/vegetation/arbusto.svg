@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 55" width="70" height="55">
+  <!-- Arbusto patagónico — Berberis / Calafate -->
+  <ellipse cx="35" cy="44" rx="30" ry="10" fill="rgba(0,0,0,0.25)"/>
+  <!-- Base branches -->
+  <line x1="35" y1="44" x2="15" y2="28" stroke="#5a3820" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="35" y1="44" x2="35" y2="22" stroke="#5a3820" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="35" y1="44" x2="55" y2="28" stroke="#5a3820" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Dense foliage clusters -->
+  <ellipse cx="16" cy="24" rx="12" ry="9" fill="#1b6e22"/>
+  <ellipse cx="35" cy="18" rx="14" ry="10" fill="#2e7d32"/>
+  <ellipse cx="54" cy="24" rx="12" ry="9" fill="#1b6e22"/>
+  <ellipse cx="24" cy="18" rx="9" ry="7" fill="#2e8b2a"/>
+  <ellipse cx="46" cy="18" rx="9" ry="7" fill="#2e8b2a"/>
+  <!-- Tiny Calafate berries (blue-purple) -->
+  <circle cx="18" cy="26" r="2" fill="#5c35be"/>
+  <circle cx="22" cy="22" r="1.5" fill="#7c55de"/>
+  <circle cx="50" cy="26" r="2" fill="#5c35be"/>
+  <circle cx="46" cy="21" r="1.5" fill="#7c55de"/>
+  <circle cx="35" cy="14" r="2" fill="#5c35be"/>
+  <!-- Leaf highlights -->
+  <ellipse cx="33" cy="14" rx="4" ry="3" fill="#4aaa3a" opacity="0.6"/>
+</svg>

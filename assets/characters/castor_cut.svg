@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="beaverFur" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8a532b"/>
+      <stop offset="100%" stop-color="#3d200c"/>
+    </linearGradient>
+    <linearGradient id="woodLog" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#b5844e"/>
+      <stop offset="100%" stop-color="#5e3f1c"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(10, 10)">
+    <ellipse cx="50" cy="95" rx="30" ry="10" fill="rgba(0,0,0,0.3)"/>
+    
+    <!-- Tronco que está royendo -->
+    <rect x="75" y="30" width="22" height="65" fill="url(#woodLog)" rx="3" stroke="#3d200c" stroke-width="2"/>
+    <!-- Muesca de roedura en forma de reloj de arena / lápiz -->
+    <polygon points="75,60 85,65 75,70" fill="#f0d5a8"/>
+    <polygon points="97,60 87,65 97,70" fill="#d9b67c"/>
+    <circle cx="86" cy="65" r="2" fill="#ff9900"/>
+
+    <!-- Cola -->
+    <path d="M 15,80 C 5,82 2,70 12,65 C 20,63 30,70 32,77 Z" fill="#382d26" stroke="#191310" stroke-width="1.5"/>
+
+    <!-- Cuerpo apoyado en el tronco -->
+    <ellipse cx="50" cy="72" rx="22" ry="18" fill="url(#beaverFur)" transform="rotate(-25 50 72)"/>
+
+    <!-- Cabeza pegada al tronco -->
+    <circle cx="68" cy="58" r="14" fill="url(#beaverFur)"/>
+    <circle cx="64" cy="46" r="3.5" fill="#3d200c"/>
+    <circle cx="71" cy="54" r="2" fill="#191310"/>
+
+    <!-- Virutas de madera volando -->
+    <circle cx="68" cy="68" r="2" fill="#f0d5a8"/>
+    <circle cx="62" cy="74" r="1.5" fill="#d9b67c"/>
+    <circle cx="74" cy="72" r="2.5" fill="#f0d5a8"/>
+  </g>
+</svg>

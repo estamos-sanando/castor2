@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 36" width="60" height="36">
+  <!-- Tronco cortado -->
+  <ellipse cx="30" cy="30" rx="22" ry="6" fill="rgba(0,0,0,0.3)"/>
+  <defs>
+    <linearGradient id="logGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#a0723a"/>
+      <stop offset="100%" stop-color="#5a3a18"/>
+    </linearGradient>
+  </defs>
+  <!-- Log body isometric -->
+  <path d="M8,18 Q8,30 30,30 Q52,30 52,18 L52,14 Q52,6 30,6 Q8,6 8,14 Z" fill="url(#logGrad)" stroke="#3a2010" stroke-width="1.2"/>
+  <!-- End cap circle (rings) -->
+  <ellipse cx="30" cy="14" rx="22" ry="8" fill="#c49a6c" stroke="#6a3a14" stroke-width="1.2"/>
+  <ellipse cx="30" cy="14" rx="16" ry="5.5" fill="none" stroke="#a07840" stroke-width="0.8"/>
+  <ellipse cx="30" cy="14" rx="9" ry="3" fill="none" stroke="#a07840" stroke-width="0.7"/>
+  <ellipse cx="30" cy="14" rx="3" ry="1.2" fill="none" stroke="#8a6030" stroke-width="0.6"/>
+  <!-- Bark texture lines -->
+  <line x1="8" y1="18" x2="8" y2="22" stroke="#3a2010" stroke-width="0.8"/>
+  <line x1="52" y1="18" x2="52" y2="22" stroke="#3a2010" stroke-width="0.8"/>
+</svg>

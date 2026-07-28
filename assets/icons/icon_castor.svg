@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="iconBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#3a2e1d"/>
+      <stop offset="100%" stop-color="#120c06"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Marco Dorado de Age of Empires -->
+  <rect x="2" y="2" width="60" height="60" rx="8" fill="url(#iconBg)" stroke="#d4af37" stroke-width="2.5"/>
+  <rect x="5" y="5" width="54" height="54" rx="6" fill="none" stroke="#8c6a1e" stroke-width="1"/>
+
+  <!-- Silueta de Castor con Dientes Naranjas -->
+  <ellipse cx="32" cy="38" rx="16" ry="12" fill="#8a532b"/>
+  <circle cx="42" cy="28" r="9" fill="#8a532b"/>
+  <circle cx="40" cy="22" r="2.5" fill="#3d200c"/>
+  <circle cx="44" cy="26" r="1.5" fill="#000"/>
+  <circle cx="45" cy="25.5" r="0.5" fill="#fff"/>
+  <!-- Diente -->
+  <rect x="49" y="31" width="3" height="4" fill="#ff9900" rx="0.5"/>
+  <!-- Cola -->
+  <ellipse cx="14" cy="40" rx="8" ry="4" fill="#382d26" transform="rotate(-15 14 40)"/>
+</svg>

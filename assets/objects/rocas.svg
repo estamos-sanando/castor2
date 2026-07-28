@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 60" width="90" height="60">
+  <defs>
+    <radialGradient id="rockG" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#b0b8b0"/>
+      <stop offset="50%" stop-color="#808a80"/>
+      <stop offset="100%" stop-color="#404848"/>
+    </radialGradient>
+    <radialGradient id="rock2G" cx="40%" cy="25%" r="70%">
+      <stop offset="0%" stop-color="#9aa0a0"/>
+      <stop offset="100%" stop-color="#384040"/>
+    </radialGradient>
+  </defs>
+  <!-- Shadows -->
+  <ellipse cx="32" cy="52" rx="22" ry="7" fill="rgba(0,0,0,0.3)"/>
+  <ellipse cx="65" cy="50" rx="16" ry="5" fill="rgba(0,0,0,0.25)"/>
+  <!-- Large rock -->
+  <path d="M12,46 Q10,28 28,22 Q46,16 54,26 Q62,36 52,46 Q40,54 24,52 Z" fill="url(#rockG)"/>
+  <!-- Rock detail lines -->
+  <path d="M18,34 Q28,28 40,30" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
+  <path d="M22,40 Q34,36 46,38" stroke="rgba(0,0,0,0.2)" stroke-width="1" fill="none"/>
+  <!-- Small rock beside -->
+  <path d="M54,44 Q52,34 62,30 Q72,26 78,34 Q82,42 72,46 Q62,50 54,44 Z" fill="url(#rock2G)"/>
+  <!-- Lichen patches -->
+  <ellipse cx="28" cy="30" rx="5" ry="3" fill="#7a9040" opacity="0.55"/>
+  <ellipse cx="40" cy="38" rx="4" ry="2.5" fill="#6a8030" opacity="0.5"/>
+  <ellipse cx="64" cy="34" rx="3" ry="2" fill="#7a9040" opacity="0.5"/>
+</svg>

@@ -1,0 +1,8 @@
+# Temporary & Cache files
+*.pyc
+__pycache__/
+.ds_store
+Thumbs.db
+
+# Log files
+*.log

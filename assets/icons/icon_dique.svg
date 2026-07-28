@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="ibg2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1e150a"/><stop offset="100%" stop-color="#080600"/>
+    </radialGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="8" fill="url(#ibg2)" stroke="#d4af37" stroke-width="2.5"/>
+  <rect x="5" y="5" width="54" height="54" rx="6" fill="none" stroke="#8c6a1e" stroke-width="1"/>
+  <!-- Dam icon: layered logs -->
+  <rect x="10" y="30" width="44" height="7" rx="3" fill="#8d6e63" stroke="#4a3020" stroke-width="1"/>
+  <rect x="14" y="38" width="36" height="7" rx="3" fill="#6d4c41" stroke="#4a3020" stroke-width="1"/>
+  <rect x="8" y="46" width="48" height="7" rx="3" fill="#8d6e63" stroke="#4a3020" stroke-width="1"/>
+  <!-- Water behind dam -->
+  <path d="M10,30 L10,20 Q32,16 54,20 L54,30" fill="#2196f3" opacity="0.4"/>
+  <!-- Water drips through -->
+  <line x1="24" y1="45" x2="22" y2="54" stroke="#42a5f5" stroke-width="1.5" opacity="0.7"/>
+  <line x1="40" y1="45" x2="38" y2="54" stroke="#42a5f5" stroke-width="1.5" opacity="0.7"/>
+</svg>
