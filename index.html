@@ -2,24 +2,34 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>CASTOR: Devastación y Restauración en Tierra del Fuego</title>
-  <meta name="description" content="Newsgame isométrico interactivo sobre el impacto ecológico de los castores invasores en los bosques subpolares de Tierra del Fuego. Arte estilo Age of Empires.">
-  <meta property="og:title" content="CASTOR – Newsgame Tierra del Fuego">
-  <meta property="og:description" content="Simula la invasión del castor en los bosques patagónicos y decide el destino del ecosistema.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PROYECTO CASTOR — Tierra del Fuego</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="game-container">
-    <!-- Canvas principal del juego isométrico -->
-    <canvas id="game-canvas" aria-label="Mapa isométrico del bosque de Tierra del Fuego"></canvas>
-    <!-- HUD, overlays, news, tutorial se insertan via JS -->
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Controles de Depuración Visual Isométrica -->
+    <div id="debug-panel">
+      <button class="debug-btn" id="toggle-grid">📐 Grilla (ON)</button>
+      <button class="debug-btn" id="toggle-coords">🔢 Coordenadas</button>
+      <button class="debug-btn" id="toggle-mode">🗺️ Modo Terreno</button>
+    </div>
   </div>
 
-  <!-- Módulos del juego (orden crítico: entities → ui → game) -->
+  <!-- Scripts del Motor Isométrico Modular -->
+  <script src="isoEngine.js"></script>
+  <script src="map.js"></script>
+  <script src="renderer.js"></script>
   <script src="entities.js"></script>
   <script src="ui.js"></script>
   <script src="game.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>
