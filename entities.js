@@ -689,8 +689,8 @@ class Beaver extends Entity {
     if (best) {
       best.being_cut = true;
       this.targetTree = best;
-      this.targetX = best.x + (Math.random() - 0.5) * 20;
-      this.targetY = best.y + 10 + Math.random() * 15;
+      this.targetX = best.x + (Math.random() - 0.5) * 15;
+      this.targetY = best.y + 5;
       this.state = 'walk_tree';
       this.action = 'walk';
     } else {

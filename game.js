@@ -1,6 +1,7 @@
 'use strict';
 /* ============================================================
-   GAME.JS — Engine Limpio & Newsgame Directo "Proyecto Castor"
+   GAME.JS — Simulación Ecológica Dinámica en Tiempo Real
+   Tala de Lenga, Transporte de Madera, Diques e Inundación
    Basado en la noticia oficial de Argentina.gob.ar
    ============================================================ */
 
@@ -10,60 +11,60 @@ const STAGES = [
     beavers: 2, dams: 0, health: 100, flood: 0,
     news: {
       title: '1946: INTRODUCCIÓN DEL CASTOR',
-      text: 'El gobierno argentino liberó 20 ejemplares de Castor canadensis en Tierra del Fuego para crear una industria peletera. Sin predadores naturales (como los osos o lobos de Canadá), la especie encontró el hábitat ideal para multiplicarse.',
+      text: 'El gobierno argentino liberó 20 ejemplares de Castor canadensis en Tierra del Fuego. Sin predadores naturales (osos/lobos), la especie invasora encuentra el hábitat ideal.',
       type: 'info'
     }
   },
   {
     id: 1, year: 1965, src: 'assets/maps/map_02_primer_deterioro.jpg',
-    beavers: 15, dams: 4, health: 80, flood: 15,
+    beavers: 12, dams: 4, health: 80, flood: 15,
     news: {
-      title: '1965: PRIMEROS DIQUES Y TALA DE LENGA',
-      text: 'La población explota. Los castores construyen diques en ríos y talan árboles de Lenga (Nothofagus pumilio). A diferencia de los árboles del hemisferio norte, LA LENGA TARDA 200 AÑOS EN CRECER Y NO REBROTA DEL TOCÓN.',
+      title: '1965: PRIMEROS DIQUES Y TALA EN TIEMPO REAL',
+      text: 'Los castores roen la Lenga (Nothofagus pumilio). A diferencia de los árboles del hemisferio norte, LA LENGA TARDA 200 AÑOS EN CRECER Y NO REBROTA DEL TOCÓN.',
       type: 'warning'
     }
   },
   {
     id: 2, year: 1985, src: 'assets/maps/map_03_bosque_parcial.jpg',
-    beavers: 35, dams: 12, health: 60, flood: 35,
+    beavers: 28, dams: 10, health: 60, flood: 35,
     news: {
       title: '1985: INVASIÓN A ISLA NAVARINO',
-      text: 'El castor cruza el Canal Beagle conquistando territorio chileno. Las represas alteran el 95% de las cuencas hidrográficas de Tierra del Fuego, anegando hectáreas de bosque nativo.',
+      text: 'El castor cruza el Canal Beagle conquistando Chile. Las represas alteran el 95% de las cuencas de Tierra del Fuego, anegando el bosque nativo.',
       type: 'warning'
     }
   },
   {
     id: 3, year: 2005, src: 'assets/maps/map_04_bosque_inundado.jpg',
-    beavers: 65, dams: 25, health: 35, flood: 65,
+    beavers: 50, dams: 20, health: 35, flood: 65,
     news: {
       title: '2005: 100.000 CASTORES Y BOSQUES FANTASMA',
-      text: 'Más de 30.000 hectáreas (dos veces la Ciudad de Buenos Aires) convertidas en cementerios de árboles grises sumergidos. El daño económico anual supera los 66.5 MILLONES DE DÓLARES.',
+      text: 'Más de 30.000 hectáreas (dos veces CABA) convertidas en cementerios de árboles sumergidos. El daño económico supera los 66.5 MILLONES DE DÓLARES ANUALES.',
       type: 'danger'
     }
   },
   {
     id: 4, year: 2016, src: 'assets/maps/map_05_bosque_devastado.jpg',
-    beavers: 95, dams: 40, health: 15, flood: 85,
+    beavers: 80, dams: 35, health: 15, flood: 85,
     news: {
-      title: '2016: ACUERDO BINACIONAL Y PROYECTO ENEEI',
-      text: 'Argentina y Chile firman un acuerdo binacional para crear el Proyecto ENEEI. Se implementan 8 áreas piloto con captura humanitaria para evitar la invasión hacia la Cordillera y Neuquén.',
+      title: '2016: PROYECTO BINACIONAL ENEEI',
+      text: 'Argentina y Chile firman el acuerdo binacional. Se implementan 8 áreas piloto con captura humanitaria para frenar la invasión hacia Neuquén y la Cordillera.',
       type: 'danger'
     }
   },
   {
     id: 5, year: 2026, src: 'assets/maps/map_06_restauracion_parcial.jpg',
-    beavers: 20, dams: 5, health: 70, flood: 20,
+    beavers: 10, dams: 3, health: 75, flood: 20,
     news: {
-      title: '2026: RESTAURACIÓN Y RECUPERACIÓN NATIVA',
-      text: 'Con la remoción de diques y el control en áreas piloto, el río vuelve a su cauce natural. Reaparecen los primeros brotes de Lenga y se protege la biodiversidad patagónica.',
+      title: '2026: RESTAURACIÓN Y RENUEVOS DE LENGA',
+      text: 'Con la remoción de diques y el control en áreas piloto, el río vuelve a su cauce. Reaparecen los primeros renuevos de Lenga y se recupera la turbera.',
       type: 'success'
     }
   }
 ];
 
 const RIVER_POINTS = [
-  { x: 420, y: 480 }, { x: 500, y: 510 }, { x: 580, y: 535 },
-  { x: 650, y: 515 }, { x: 720, y: 490 }, { x: 800, y: 505 }
+  { x: 440, y: 490 }, { x: 520, y: 515 }, { x: 600, y: 535 },
+  { x: 670, y: 515 }, { x: 740, y: 495 }, { x: 810, y: 505 }
 ];
 
 class BeaverGame {
@@ -82,6 +83,7 @@ class BeaverGame {
       dams: 0,
       health: 100,
       economicLoss: 0,
+      stumps: 0,
     };
 
     this.year = 1946;
@@ -96,15 +98,16 @@ class BeaverGame {
     this.mapAlpha   = 1;
     this.crossfading = false;
 
-    this.particles = new ParticlePool(150);
+    this.particles = new ParticlePool(200);
     this.ui = new GameUI(this);
 
     this._lastTime = 0;
     this._fixedDt  = 1 / 60;
     this._accumulator = 0;
+    this.newsThrottles = {};
 
     this._preloadMaps();
-    this._populateCleanEntities();
+    this._populateInteractiveForest();
     this._startLoop();
   }
 
@@ -118,19 +121,43 @@ class BeaverGame {
     });
   }
 
-  // ── Limpieza Visual: Personajes escalados en senderos del mapa ──
-  _populateCleanEntities() {
+  // ── Bosque Nativo de Lenga 100% Interactivo sobre Terreno Despejado ──
+  _populateInteractiveForest() {
     this.entities = [];
 
-    // Castores iniciales posicionados en el río
-    this.spawnBeaver(450, 480);
-    this.spawnBeaver(620, 500);
+    // Distribución armónica de árboles de Lenga nativos sobre el mapa
+    const forestSpots = [
+      // Bosque Izquierdo
+      { x:120, y:180 }, { x:180, y:150 }, { x:240, y:210 }, { x:160, y:270 },
+      { x:290, y:160 }, { x:340, y:220 }, { x:220, y:320 }, { x:110, y:360 },
+      // Bosque Derecho
+      { x:860, y:160 }, { x:940, y:140 }, { x:1020, y:200 }, { x:890, y:260 },
+      { x:980, y:280 }, { x:1060, y:320 }, { x:920, y:350 }, { x:1120, y:220 },
+      // Bosque Norte / Fondo
+      { x:420, y:120 }, { x:520, y:110 }, { x:620, y:130 }, { x:720, y:120 }
+    ];
 
-    // Científica de campo en el sendero
+    forestSpots.forEach((spot, i) => {
+      const tree = new Tree(spot.x, spot.y, i % 8);
+      this.entities.push(tree);
+    });
+
+    // Rocas y arbustos nativos
+    [[140,420],[280,380],[820,380],[960,420]].forEach(([rx,ry], i) => {
+      this.entities.push(new Rock(rx, ry, i));
+    });
+    [[200,440],[340,360],[780,360],[900,440]].forEach(([bx,by], i) => {
+      this.entities.push(new Bush(bx, by, i));
+    });
+
+    // Castores iniciales
+    this.spawnBeaver(460, 460);
+    this.spawnBeaver(600, 480);
+
+    // Personal ENEEI
     const scientist = new Scientist(760, 310);
     this.entities.push(scientist);
 
-    // Guardaparque patrullando el sendero superior
     const ranger = new Ranger(320, 240);
     ranger.setPatrol([
       { x: 260, y: 220 },
@@ -142,9 +169,13 @@ class BeaverGame {
   }
 
   spawnBeaver(x, y, small = false) {
-    const b = new Beaver(x || (300 + Math.random()*600), y || (400 + Math.random()*140), small);
+    const b = new Beaver(
+      x || (350 + Math.random()*500),
+      y || (420 + Math.random()*120),
+      small
+    );
     this.entities.push(b);
-    this._syncStateFromEntities();
+    this._syncEcologyState();
   }
 
   removeBeaver() {
@@ -154,50 +185,80 @@ class BeaverGame {
       b.dead = true;
       this.ui.showNews({
         title: '🪤 CAPTURA HUMANITARIA ENEEI',
-        text: 'Un castor fue capturado en el área piloto. La presión sobre el bosque de Lenga disminuye.',
+        text: 'Castor capturado en área piloto. La presión sobre el bosque de Lenga disminuye.',
         type: 'success'
       });
-      this._syncStateFromEntities();
+      this._syncEcologyState();
     }
   }
 
-  addDam() {
-    const dams = this.entities.filter(e => e instanceof Dam && e.active && !e.dead);
-    if (dams.length < 5) {
-      const rp = RIVER_POINTS[dams.length % RIVER_POINTS.length];
-      const dam = new Dam(rp.x, rp.y);
-      this.entities.push(dam);
+  // ── Evento de Tala en Tiempo Real ejecutado por la IA del Castor ──
+  onTreeFelled(tree, beaver) {
+    this.stats.stumps = (this.stats.stumps || 0) + 1;
+    this.particles.burst(tree.x, tree.y - 20, 'wood', 12);
+
+    if (!this.newsThrottles['lenga_warn']) {
+      this.newsThrottles['lenga_warn'] = true;
+      this.ui.showNews({
+        title: '⚠️ ¡LA LENGA NO REBROTA DEL TOCÓN!',
+        text: 'Nothofagus pumilio tarda 200 años en alcanzar la madurez. Cada árbol talado por el castor se pierde permanentemente a escala humana.',
+        type: 'warning'
+      });
     }
+    this._syncEcologyState();
+  }
+
+  onBeaverBuiltDam(beaver) {
+    this.stats.dams++;
+    this._floodNearbyTrees();
+    this._syncEcologyState();
   }
 
   removeDam() {
     const dams = this.entities.filter(e => e instanceof Dam && e.active && !e.dead);
     if (dams.length > 0) {
       dams[dams.length - 1].remove();
+      this.stats.dams = Math.max(0, this.stats.dams - 1);
       this.ui.showNews({
         title: '⛏️ DIQUE DESMANTELADO POR CUADRILLA',
-        text: 'Se removió un dique artificial. El río recupera su caudal y el área inundada comienza a secarse.',
+        text: 'Se desmanteló una represa artificial. El agua drena y el bosque inundado comienza a recuperarse.',
         type: 'success'
       });
-      this._syncStateFromEntities();
+      this._syncEcologyState();
     }
   }
 
-  _syncStateFromEntities() {
+  _floodNearbyTrees() {
+    const healthyTrees = this.entities.filter(e => e instanceof Tree && e.isHealthy);
+    let count = 0;
+    for (const t of healthyTrees) {
+      if (count >= 2) break;
+      if (Math.hypot(t.x - 600, t.y - 480) < 320 + this.stats.dams * 40) {
+        t.setState('flooded');
+        count++;
+      }
+    }
+  }
+
+  _syncEcologyState() {
     const beavers = this.entities.filter(e => e instanceof Beaver && !e.dead).length;
     const dams = this.entities.filter(e => e instanceof Dam && e.active && !e.dead).length;
+    const healthyTrees = this.entities.filter(e => e instanceof Tree && e.isHealthy).length;
+    const totalTrees = 20;
+
     this.stats.beavers = beavers;
     this.stats.dams = dams;
+    this.stats.health = Math.round((healthyTrees / totalTrees) * 100);
+    this.stats.economicLoss = Math.min(66.5, (beavers * 1.2) + (dams * 2.8) + (this.stats.stumps * 1.5));
 
-    // Calcular etapa según la población de castores
+    // Determinar etapa del mapa de fondo
     let targetStage = 0;
-    if (beavers >= 25) targetStage = 4;
-    else if (beavers >= 16) targetStage = 3;
-    else if (beavers >= 10) targetStage = 2;
-    else if (beavers >= 5)  targetStage = 1;
+    if (beavers >= 18 || dams >= 6) targetStage = 4;
+    else if (beavers >= 12 || dams >= 4) targetStage = 3;
+    else if (beavers >= 7  || dams >= 2) targetStage = 2;
+    else if (beavers >= 4)  targetStage = 1;
 
-    // Si se capturan castores y quedan menos de 5, pasa a restauración
-    if (beavers <= 3 && this.stageIdx > 0) {
+    if (beavers <= 2 && dams <= 1 && this.stageIdx > 0) {
       targetStage = 5;
     }
 
@@ -206,10 +267,15 @@ class BeaverGame {
       this._crossfadeToMap(targetStage);
       this.ui.showNews(STAGES[targetStage].news);
     }
+  }
 
-    // Actualizar pérdida económica proporcional (máx USD 66.5M)
-    this.stats.economicLoss = Math.min(66.5, (beavers * 0.6) + (dams * 1.5));
-    this.stats.health = Math.max(10, 100 - (beavers * 3.5) - (dams * 5));
+  getNearestRiverPoint(x, y) {
+    let best = RIVER_POINTS[0], bestDist = Infinity;
+    for (const rp of RIVER_POINTS) {
+      const d = Math.hypot(rp.x - x, rp.y - y);
+      if (d < bestDist) { bestDist = d; best = rp; }
+    }
+    return best;
   }
 
   start() {
@@ -279,9 +345,7 @@ class BeaverGame {
       if (this.entities[i].dead) this.entities.splice(i, 1);
     }
 
-    // Y-sorting limpio
     this.entities.sort((a, b) => a.baseY - b.baseY);
-
     this.ui.update(this.stats, this.year, this.timelinePct);
   }
 
@@ -289,15 +353,12 @@ class BeaverGame {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.W, this.H);
 
-    // 1. Dibujar el mapa de fondo ilustrado (sin árboles encimados)
     this._drawBackground();
 
-    // 2. Dibujar personajes y diques ordenados en profundidad
     for (const e of this.entities) {
       e.draw(ctx);
     }
 
-    // 3. Partículas sutiles
     this.particles.draw(ctx);
   }
 
