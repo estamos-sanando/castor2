@@ -43,6 +43,12 @@ const ASSET_MANIFEST = {
   moss_3:          'assets/vegetation/moss_3.png',
   moss_4:          'assets/vegetation/moss_4.png',
 
+  // Real Beaver Dam Sprites
+  dique_real:    'assets/objects/dique_real.png',
+  dique_nivel_1: 'assets/objects/dique_nivel_1.png',
+  dique_nivel_2: 'assets/objects/dique_nivel_2.png',
+  dique_nivel_3: 'assets/objects/dique_nivel_3.png',
+
   // Beavers & Characters
   beaver_idle:      'assets/characters/beaver_idle.png',
   beaver_walk:      'assets/characters/beaver_walk.png',
@@ -272,14 +278,21 @@ class SpritePainter {
     return this._emptyCanvas(85, 50);
   }
 
+  // ── BEAVER DAM (Real Cropped PNG Sprite) ──────────────────
   static dam(level = 1) {
-    const realImg = getLoadedImg('log_fresh');
-    const W = 80 + level * 30, H = 40 + level * 10;
-    const c = this._oc(W, H), ctx = c.getContext('2d');
-    this._shadow(ctx, W/2, H*0.85, W*0.44, H*0.2);
+    const lvl = Math.max(1, Math.min(3, level));
+    const key = `dique_nivel_${lvl}`;
+    const realImg = getLoadedImg(key) || getLoadedImg('dique_real') || getLoadedImg('log_fresh');
     if (realImg) {
+      const W = 160 + lvl * 40;
+      const H = Math.round(W * (realImg.height / realImg.width));
+      const c = this._oc(W, H), ctx = c.getContext('2d');
+      this._shadow(ctx, W * 0.5, H * 0.88, W * 0.45, H * 0.12);
       ctx.drawImage(realImg, 0, 0, W, H);
+      return c;
     }
+    const W = 160 + level * 40, H = 60 + level * 15;
+    const c = this._oc(W, H);
     return c;
   }
 
