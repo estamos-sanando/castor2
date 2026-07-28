@@ -33,12 +33,14 @@ class IsometricMap {
 
     this.grid = [];
     this.engine = new IsoEngine(tileW, tileH);
+    this.tileEngine = new TileMapEngine(this);
 
     this.mode = 'static'; // 'static' | 'tile'
     this.showGridLines = true;
     this.showCoords = false;
 
     this._initGrid();
+    ScenarioLoader.loadPristineForestScenario(this.tileEngine);
   }
 
   _initGrid() {
@@ -47,10 +49,10 @@ class IsometricMap {
       this.grid[c] = [];
       for (let r = 0; r < this.rows; r++) {
         const tile = new Tile(c, r);
-        // Define central river zone as water
+        tile.type = TerrainType.GRASS_PRISTINE;
         if (c >= 10 && c <= 13) {
+          tile.type = TerrainType.WATER_RIVER;
           tile.water = true;
-          tile.buildable = true;
         }
         this.grid[c][r] = tile;
       }
@@ -77,28 +79,7 @@ class IsometricMap {
   }
 
   renderTiles(ctx) {
-    for (let c = 0; c < this.cols; c++) {
-      for (let r = 0; r < this.rows; r++) {
-        const tile = this.grid[c][r];
-        const pos = this.engine.gridToScreen(c, r, this.originX, this.originY);
-
-        let color = 'rgba(46, 125, 50, 0.4)'; // Grass
-        if (tile.water) color = 'rgba(41, 128, 185, 0.6)'; // Water
-        if (tile.environmentalState === EnvironmentalState.CRISIS) color = 'rgba(121, 85, 72, 0.6)'; // Mud
-
-        this.engine.fillIsoDiamond(ctx, pos.x, pos.y, color);
-
-        if (this.showGridLines) {
-          this.engine.drawIsoDiamond(ctx, pos.x, pos.y, 'rgba(255,255,255,0.15)');
-        }
-
-        if (this.showCoords) {
-          ctx.fillStyle = 'rgba(255,255,255,0.7)';
-          ctx.font = '9px monospace';
-          ctx.fillText(`${c},${r}`, pos.x - 8, pos.y + 3);
-        }
-      }
-    }
+    this.tileEngine.renderTilemap(ctx);
   }
 
   renderGridOverlay(ctx) {

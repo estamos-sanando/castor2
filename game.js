@@ -324,6 +324,15 @@ class BeaverGame {
     this.targetMap = idx;
     this.mapAlpha = 1;
     this.crossfading = true;
+
+    // Synchronize AoE2 Tilemap Scenario
+    if (window.ISO_ENGINE && window.ISO_ENGINE.map && window.ISO_ENGINE.map.tileEngine) {
+      const te = window.ISO_ENGINE.map.tileEngine;
+      if (idx === 0) ScenarioLoader.loadPristineForestScenario(te);
+      else if (idx === 1 || idx === 2) ScenarioLoader.loadDegradedForestScenario(te);
+      else if (idx === 3 || idx === 4) ScenarioLoader.loadFloodedCrisisScenario(te);
+      else if (idx === 5) ScenarioLoader.loadRestoredEcosystemScenario(te);
+    }
   }
 
   _updateMapTransition(dt) {
