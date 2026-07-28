@@ -346,6 +346,8 @@ class Entity {
     this.visible = true;
     this.dead = false;
     this.sprite = null;
+    this.scale = 1.0;
+    this.facingLeft = false;
     this.id = Entity._nextId++;
   }
 
@@ -355,8 +357,27 @@ class Entity {
     if (!this.visible || !this.sprite) return;
     ctx.save();
     ctx.globalAlpha = this.alpha;
-    ctx.translate(this.x, this.y);
-    ctx.drawImage(this.sprite, -this.sprite.width / 2, -this.sprite.height);
+
+    const w = Math.round(this.sprite.width * (this.scale || 1.0));
+    const h = Math.round(this.sprite.height * (this.scale || 1.0));
+
+    // ── 1. Soft Elliptical Base Shadow (Anchored to terrain) ──
+    const shadowW = Math.max(14, Math.round(w * 0.45));
+    const shadowH = Math.max(6, Math.round(shadowW * 0.35));
+    
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
+    ctx.beginPath();
+    ctx.ellipse(Math.round(this.x), Math.round(this.y), shadowW * 0.5, shadowH * 0.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // ── 2. Sprite Rendering with Bottom-Center (0.5, 1.0) Anchor Point ──
+    if (this.facingLeft) {
+      ctx.translate(Math.round(this.x), Math.round(this.y));
+      ctx.scale(-1, 1);
+      ctx.drawImage(this.sprite, -Math.round(w * 0.5), -h, w, h);
+    } else {
+      ctx.drawImage(this.sprite, Math.round(this.x - w * 0.5), Math.round(this.y - h), w, h);
+    }
     ctx.restore();
   }
 

@@ -22,6 +22,7 @@ class IsoRenderer {
 
   render(gameState) {
     const ctx = this.ctx;
+    ctx.imageSmoothingEnabled = false;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     ctx.save();
