@@ -1,7 +1,7 @@
 'use strict';
 /* ============================================================
-   GAME.JS — Simulación Ecológica Dinámica en Tiempo Real
-   Tala de Lenga, Transporte de Madera, Diques e Inundación
+   GAME.JS — Simulación Ecológica Dinámica de Bosque de Lenga
+   Masa Forestal Densidad Nativa Patagónica & Tala en Tiempo Real
    Basado en la noticia oficial de Argentina.gob.ar
    ============================================================ */
 
@@ -107,7 +107,7 @@ class BeaverGame {
     this.newsThrottles = {};
 
     this._preloadMaps();
-    this._populateInteractiveForest();
+    this._populateDenseForest();
     this._startLoop();
   }
 
@@ -121,57 +121,67 @@ class BeaverGame {
     });
   }
 
-  // ── Bosque Nativo de Lenga 100% Interactivo sobre Terreno Despejado ──
-  _populateInteractiveForest() {
+  // ── Distribución Armónica de Masas Boscosas Nativas de Lenga ──
+  _populateDenseForest() {
     this.entities = [];
 
-    // Distribución armónica de árboles de Lenga nativos sobre el mapa
-    const forestSpots = [
-      // Bosque Izquierdo
-      { x:120, y:180 }, { x:180, y:150 }, { x:240, y:210 }, { x:160, y:270 },
-      { x:290, y:160 }, { x:340, y:220 }, { x:220, y:320 }, { x:110, y:360 },
-      // Bosque Derecho
-      { x:860, y:160 }, { x:940, y:140 }, { x:1020, y:200 }, { x:890, y:260 },
-      { x:980, y:280 }, { x:1060, y:320 }, { x:920, y:350 }, { x:1120, y:220 },
-      // Bosque Norte / Fondo
-      { x:420, y:120 }, { x:520, y:110 }, { x:620, y:130 }, { x:720, y:120 }
+    // 1. Masa Boscosa Izquierda (Ladera densa)
+    const leftCluster = [
+      { x:60, y:280 }, { x:110, y:250 }, { x:150, y:310 }, { x:80, y:360 },
+      { x:190, y:270 }, { x:230, y:330 }, { x:140, y:410 }, { x:70, y:450 },
+      { x:260, y:280 }, { x:170, y:480 }, { x:100, y:520 }, { x:220, y:420 }
     ];
 
-    forestSpots.forEach((spot, i) => {
-      const tree = new Tree(spot.x, spot.y, i % 8);
+    // 2. Masa Boscosa Norte / Fondo (Cresta de la montaña)
+    const northCluster = [
+      { x:340, y:200 }, { x:410, y:180 }, { x:480, y:210 }, { x:550, y:190 },
+      { x:620, y:210 }, { x:690, y:190 }, { x:760, y:220 }, { x:830, y:190 }
+    ];
+
+    // 3. Masa Boscosa Derecha (Ribera alta)
+    const rightCluster = [
+      { x:920, y:240 }, { x:980, y:220 }, { x:1040, y:270 }, { x:950, y:320 },
+      { x:1080, y:310 }, { x:1140, y:260 }, { x:1010, y:380 }, { x:1100, y:390 },
+      { x:940, y:440 }, { x:1040, y:460 }, { x:1160, y:360 }, { x:880, y:300 }
+    ];
+
+    let v = 0;
+    [...leftCluster, ...northCluster, ...rightCluster].forEach(spot => {
+      const tree = new Tree(spot.x, spot.y, v % 8);
+      v++;
       this.entities.push(tree);
     });
 
-    // Rocas y arbustos nativos
-    [[140,420],[280,380],[820,380],[960,420]].forEach(([rx,ry], i) => {
+    // Rocas y arbustos nativos bordeando los senderos
+    [[280,480],[340,460],[820,440],[900,480]].forEach(([rx,ry], i) => {
       this.entities.push(new Rock(rx, ry, i));
     });
-    [[200,440],[340,360],[780,360],[900,440]].forEach(([bx,by], i) => {
+    [[220,500],[380,440],[760,460],[860,520]].forEach(([bx,by], i) => {
       this.entities.push(new Bush(bx, by, i));
     });
 
-    // Castores iniciales
-    this.spawnBeaver(460, 460);
-    this.spawnBeaver(600, 480);
+    // Castores iniciales posicionados cerca del cauce del río
+    this.spawnBeaver(480, 490);
+    this.spawnBeaver(620, 510);
 
-    // Personal ENEEI
-    const scientist = new Scientist(760, 310);
+    // Personal ENEEI en escala humana real (proporcionada al mapa)
+    const scientist = new Scientist(780, 340);
     this.entities.push(scientist);
 
-    const ranger = new Ranger(320, 240);
+    const ranger = new Ranger(340, 310);
     ranger.setPatrol([
-      { x: 260, y: 220 },
-      { x: 420, y: 220 },
-      { x: 420, y: 280 },
-      { x: 260, y: 280 }
+      { x: 300, y: 290 },
+      { x: 440, y: 290 },
+      { x: 440, y: 350 },
+      { x: 300, y: 350 }
     ]);
     this.entities.push(ranger);
   }
 
   spawnBeaver(x, y, small = false) {
     const b = new Beaver(
-      x || (350 + Math.random()*500),
-      y || (420 + Math.random()*120),
+      x || (380 + Math.random()*450),
+      y || (440 + Math.random()*100),
       small
     );
     this.entities.push(b);
@@ -185,14 +195,13 @@ class BeaverGame {
       b.dead = true;
       this.ui.showNews({
         title: '🪤 CAPTURA HUMANITARIA ENEEI',
-        text: 'Castor capturado en área piloto. La presión sobre el bosque de Lenga disminuye.',
+        text: 'Castor capturado en área piloto. La presión sobre la masa forestal de Lenga disminuye.',
         type: 'success'
       });
       this._syncEcologyState();
     }
   }
 
-  // ── Evento de Tala en Tiempo Real ejecutado por la IA del Castor ──
   onTreeFelled(tree, beaver) {
     this.stats.stumps = (this.stats.stumps || 0) + 1;
     this.particles.burst(tree.x, tree.y - 20, 'wood', 12);
@@ -201,7 +210,7 @@ class BeaverGame {
       this.newsThrottles['lenga_warn'] = true;
       this.ui.showNews({
         title: '⚠️ ¡LA LENGA NO REBROTA DEL TOCÓN!',
-        text: 'Nothofagus pumilio tarda 200 años en alcanzar la madurez. Cada árbol talado por el castor se pierde permanentemente a escala humana.',
+        text: 'Nothofagus pumilio tarda 200 años en alcanzar la madurez. Cada árbol talado se pierde permanentemente a escala humana.',
         type: 'warning'
       });
     }
@@ -244,14 +253,13 @@ class BeaverGame {
     const beavers = this.entities.filter(e => e instanceof Beaver && !e.dead).length;
     const dams = this.entities.filter(e => e instanceof Dam && e.active && !e.dead).length;
     const healthyTrees = this.entities.filter(e => e instanceof Tree && e.isHealthy).length;
-    const totalTrees = 20;
+    const totalTrees = 32;
 
     this.stats.beavers = beavers;
     this.stats.dams = dams;
     this.stats.health = Math.round((healthyTrees / totalTrees) * 100);
     this.stats.economicLoss = Math.min(66.5, (beavers * 1.2) + (dams * 2.8) + (this.stats.stumps * 1.5));
 
-    // Determinar etapa del mapa de fondo
     let targetStage = 0;
     if (beavers >= 18 || dams >= 6) targetStage = 4;
     else if (beavers >= 12 || dams >= 4) targetStage = 3;

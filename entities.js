@@ -134,11 +134,11 @@ class SpritePainter {
   }
 
   // ── RANGER ────────────────────────────────────────────────
-  static ranger(size = 96, action = 'idle') {
+  static ranger(size = 64, action = 'idle') {
     const key = `ranger_${action}`;
     const realImg = getLoadedImg(key) || getLoadedImg('ranger_idle');
     if (realImg) {
-      const W = Math.round(size * 0.8), H = Math.round(size * 1.35);
+      const W = Math.round(size * 0.75), H = Math.round(size * 1.3);
       const c = this._oc(W, H), ctx = c.getContext('2d');
       this._shadow(ctx, W * 0.5, H * 0.96, W * 0.3, H * 0.06);
       ctx.drawImage(realImg, 0, 0, W, H);
@@ -148,11 +148,11 @@ class SpritePainter {
   }
 
   // ── SCIENTIST ──────────────────────────────────────────────
-  static scientist(size = 96, action = 'idle') {
+  static scientist(size = 64, action = 'idle') {
     const key = `scientist_${action}`;
     const realImg = getLoadedImg(key) || getLoadedImg('scientist_idle');
     if (realImg) {
-      const W = Math.round(size * 0.8), H = Math.round(size * 1.35);
+      const W = Math.round(size * 0.75), H = Math.round(size * 1.3);
       const c = this._oc(W, H), ctx = c.getContext('2d');
       this._shadow(ctx, W * 0.5, H * 0.96, W * 0.3, H * 0.06);
       ctx.drawImage(realImg, 0, 0, W, H);
@@ -807,7 +807,7 @@ class Ranger extends Entity {
   }
 
   _refreshSprite() {
-    this.sprite = SpritePainter.ranger(88, this.action);
+    this.sprite = SpritePainter.ranger(64, this.action);
   }
 
   update(dt, game) {
@@ -866,7 +866,7 @@ class Scientist extends Entity {
   }
 
   _refreshSprite() {
-    this.sprite = SpritePainter.scientist(88, this.action);
+    this.sprite = SpritePainter.scientist(64, this.action);
   }
 
   update(dt, game) {
