@@ -100,18 +100,6 @@ class SpritePainter {
     c.width = Math.max(1, w); c.height = Math.max(1, h); return c;
   }
 
-  // Soft natural ground shadow (gradient radial, transparent)
-  static _shadow(x, cx, cy, rx, ry) {
-    x.save();
-    const g = x.createRadialGradient(cx, cy, 0, cx, cy, Math.max(rx, ry));
-    g.addColorStop(0, 'rgba(0, 0, 0, 0.35)');
-    g.addColorStop(0.6, 'rgba(0, 0, 0, 0.18)');
-    g.addColorStop(1, 'transparent');
-    x.fillStyle = g;
-    x.beginPath(); x.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); x.fill();
-    x.restore();
-  }
-
   // ── BEAVER ADULT (Realistic RTS Scale ~0.35x of Human: ~36x28px) ──────
   static beaver(size = 36, action = 'idle') {
     const key = `beaver_${action}`;
@@ -119,7 +107,6 @@ class SpritePainter {
     if (realImg) {
       const W = size, H = Math.round(size * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.92, W * 0.4, H * 0.12);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
@@ -132,7 +119,6 @@ class SpritePainter {
     if (realImg) {
       const W = size, H = Math.round(size * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.92, W * 0.4, H * 0.12);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
@@ -146,7 +132,6 @@ class SpritePainter {
     if (realImg) {
       const W = Math.round(size * 0.75), H = Math.round(size * 1.25);
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.96, W * 0.32, H * 0.08);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
@@ -160,7 +145,6 @@ class SpritePainter {
     if (realImg) {
       const W = Math.round(size * 0.75), H = Math.round(size * 1.25);
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.96, W * 0.32, H * 0.08);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
@@ -175,7 +159,6 @@ class SpritePainter {
     if (realImg) {
       const W = 185, H = Math.round(185 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.96, W * 0.3, H * 0.06);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
@@ -190,7 +173,6 @@ class SpritePainter {
     if (realImg) {
       const W = 185, H = Math.round(185 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.96, W * 0.3, H * 0.06);
       ctx.drawImage(realImg, 0, 0, W, H);
       // Chewed bark mark at trunk base
       ctx.fillStyle = '#d4b06c';
@@ -208,7 +190,6 @@ class SpritePainter {
     if (realImg) {
       const W = 130, H = Math.round(130 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.95, W * 0.28, H * 0.06);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
@@ -221,7 +202,6 @@ class SpritePainter {
     if (realImg) {
       const W = 140, H = Math.round(140 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.92, W * 0.38, H * 0.09);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
@@ -235,7 +215,6 @@ class SpritePainter {
     if (realImg) {
       const W = 45, H = Math.round(45 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.92, W * 0.38, H * 0.09);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
@@ -249,7 +228,6 @@ class SpritePainter {
     if (realImg) {
       const W = 65, H = Math.round(65 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.9, W * 0.42, H * 0.12);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
@@ -263,7 +241,6 @@ class SpritePainter {
     if (realImg) {
       const W = 50, H = Math.round(50 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.9, W * 0.4, H * 0.1);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
@@ -278,7 +255,6 @@ class SpritePainter {
     if (realImg) {
       const W = 60, H = Math.round(60 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.9, W * 0.38, H * 0.1);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
@@ -305,7 +281,6 @@ class SpritePainter {
       if (realImg) {
         const W = 140, H = Math.round(140 * (realImg.height / realImg.width));
         const c = this._oc(W, H), ctx = c.getContext('2d');
-        this._shadow(ctx, W * 0.5, H * 0.88, W * 0.45, H * 0.12);
         ctx.globalAlpha = 0.65;
         ctx.drawImage(realImg, 0, 0, W, H);
         return c;
@@ -319,7 +294,6 @@ class SpritePainter {
       const W = 160 + lvl * 30;
       const H = Math.round(W * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.88, W * 0.45, H * 0.12);
       if (state === 'constructing') ctx.globalAlpha = 0.8;
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
@@ -333,7 +307,6 @@ class SpritePainter {
     if (realImg) {
       const W = 55, H = Math.round(55 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.9, W * 0.35, H * 0.1);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
@@ -345,7 +318,6 @@ class SpritePainter {
     if (realImg) {
       const W = 32, H = Math.round(32 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.9, W * 0.35, H * 0.1);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
