@@ -27,9 +27,8 @@ class GameUI {
       <!-- HUD Superior: Marca e Indicadores Ecologicos -->
       <div id="hud-top">
         <div class="hud-brand">
-          <span class="flag-icon">🇦🇷🇨🇱</span>
           <div class="brand-titles">
-            <h1 class="game-title">PROYECTO ENEEI — TIERRA DEL FUEGO</h1>
+            <h1 class="game-title">PROYECTO CASTOR — TIERRA DEL FUEGO</h1>
             <span id="hud-year-label" class="year-badge">1946</span>
           </div>
         </div>
@@ -71,7 +70,7 @@ class GameUI {
           </div>
         </div>
 
-        <!-- Panel de Control Newsgame (Invasión, Captura y Reforestación) -->
+        <!-- Panel de Control (Invasión, Captura y Reforestación) -->
         <div id="hud-controls">
           <button class="news-btn btn-danger" id="btn-add-beaver">
             <span class="btn-icon">🔴</span>
@@ -102,8 +101,7 @@ class GameUI {
     this.tutorialEl.innerHTML = `
       <div class="tutorial-box">
         <div class="tutorial-header">
-          <span class="tutorial-logo">🇦🇷🇨🇱</span>
-          <h2>NEWSGAME: PROYECTO CASTOR</h2>
+          <h2>PROYECTO CASTOR — TIERRA DEL FUEGO</h2>
           <p class="tutorial-subtitle">Ministerio de Ambiente de la Nación Argentina / Chile</p>
         </div>
         <div class="tutorial-body">
@@ -115,7 +113,7 @@ class GameUI {
             <div class="ins-item">🌱 <strong>PLANTAR LENGA</strong>: Reforesta activamente el terreno secado con renuevos de Lenga nativa.</div>
           </div>
         </div>
-        <button class="tutorial-start-btn" id="btn-start-game">¡COMENZAR EXPERIENCIA INTERACTIVA!</button>
+        <button class="tutorial-start-btn" id="btn-start-game">¡COMENZAR!</button>
       </div>
     `;
     document.getElementById('game-container').appendChild(this.tutorialEl);
