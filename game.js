@@ -246,6 +246,29 @@ class BeaverGame {
 
   onBeaverBuiltDam(beaver) {
     this.stats.dams++;
+
+    // Find nearest river point for dam placement
+    const riverPt = this.getNearestRiverPoint(beaver.x, beaver.y);
+
+    // Check if an active Dam already exists nearby
+    let existingDam = null;
+    for (const e of this.entities) {
+      if (e instanceof Dam && e.active && !e.dead) {
+        const dist = Math.hypot(e.x - riverPt.x, e.y - riverPt.y);
+        if (dist < 120) {
+          existingDam = e;
+          break;
+        }
+      }
+    }
+
+    if (existingDam) {
+      existingDam.grow();
+    } else {
+      const newDam = new Dam(riverPt.x, riverPt.y);
+      this.entities.push(newDam);
+    }
+
     this._floodNearbyTrees();
     this._syncEcologyState();
   }
@@ -263,11 +286,11 @@ class BeaverGame {
     const healthyTrees = this.entities.filter(e => e instanceof Tree && e.isHealthy);
     let count = 0;
     for (const t of healthyTrees) {
-      if (count >= 2) break;
-      if (Math.abs(t.x - 640) < 280) {
-        t.setState('flooded');
-        count++;
-      }
+      if (count >= 3) break;
+      const ghostState = Math.random() < 0.5 ? 'flooded' : 'dead';
+      t.setState(ghostState);
+      if (this.particles) this.particles.burst(t.x, t.y - 40, 'leaf', 8);
+      count++;
     }
   }
 

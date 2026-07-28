@@ -520,6 +520,11 @@ class Dam extends Entity {
     setTimeout(() => { this.dead = true; }, 8000);
   }
 
+  update(dt, game) {
+    if (Math.random() < 0.05) this._refreshSprite();
+    this.baseY = this.y;
+  }
+
   draw(ctx) {
     super.draw(ctx);
   }
