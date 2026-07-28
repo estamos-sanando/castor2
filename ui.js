@@ -1,7 +1,7 @@
 'use strict';
 /* ============================================================
-   UI.JS — Interfaz Newsgame Ultralimpia y Responsiva
-   Proyecto Castor — Ministerio de Ambiente de la Nación
+   UI.JS — Interfaz Newsgame Táctica
+   Diseño de HUD con Barra de Mando Inferior (Sin superposiciones)
    ============================================================ */
 
 class GameUI {
@@ -24,6 +24,7 @@ class GameUI {
       document.getElementById('game-container').appendChild(this.hud);
     }
     this.hud.innerHTML = `
+      <!-- HUD Superior: Marca e Indicadores Ecologicos -->
       <div id="hud-top">
         <div class="hud-brand">
           <span class="flag-icon">🇦🇷🇨🇱</span>
@@ -57,28 +58,31 @@ class GameUI {
         </div>
       </div>
 
-      <!-- Barra de Línea de Tiempo Histórica -->
-      <div id="hud-timeline">
-        <div id="timeline-bar">
-          <div id="timeline-fill"></div>
-          <div id="timeline-thumb"></div>
+      <!-- Barra Táctica Inferior (Fija en la parte inferior de la pantalla) -->
+      <div id="hud-bottom-bar">
+        <!-- Línea de Tiempo Histórica -->
+        <div id="hud-timeline">
+          <div id="timeline-bar">
+            <div id="timeline-fill"></div>
+            <div id="timeline-thumb"></div>
+          </div>
+          <div id="timeline-labels">
+            <span>1946 (Liberación)</span><span>1985 (Canal Beagle)</span><span>2005 (Crisis 100k)</span><span>2016 (ENEEI)</span><span>2046</span>
+          </div>
         </div>
-        <div id="timeline-labels">
-          <span>1946 (Liberación)</span><span>1985 (Canal Beagle)</span><span>2005 (Crisis 100k)</span><span>2016 (ENEEI)</span><span>2046</span>
+
+        <!-- Panel de Control Newsgame (2 Botones Principales Alineados) -->
+        <div id="hud-controls">
+          <button class="news-btn btn-danger" id="btn-add-beaver">
+            <span class="btn-icon">🔴</span>
+            <span class="btn-text">+ AGREGAR CASTOR (Invasión)</span>
+          </button>
+
+          <button class="news-btn btn-success" id="btn-capture-beaver">
+            <span class="btn-icon">🟢</span>
+            <span class="btn-text">🪤 CAPTURAR / DESMANTELAR (Restauración)</span>
+          </button>
         </div>
-      </div>
-
-      <!-- Panel de Control Newsgame: Invasión vs Restauración -->
-      <div id="hud-controls">
-        <button class="news-btn btn-danger" id="btn-add-beaver">
-          <span class="btn-icon">🔴</span>
-          <span class="btn-text">+ AGREGAR CASTOR (Invasión)</span>
-        </button>
-
-        <button class="news-btn btn-success" id="btn-capture-beaver">
-          <span class="btn-icon">🟢</span>
-          <span class="btn-text">🪤 CAPTURAR / DESMANTELAR (Restauración)</span>
-        </button>
       </div>
     `;
 
@@ -131,7 +135,6 @@ class GameUI {
       if (Math.random() < 0.5) this.game.removeDam();
     });
 
-    // Timeline drag
     const tlBar = document.getElementById('timeline-bar');
     if (tlBar) {
       let dragging = false;
@@ -200,6 +203,6 @@ class GameUI {
     });
     this.newsContainer.appendChild(card);
     this.activeNews = card;
-    this.newsTimer = 7.0; // 7 segundos de lectura por noticia
+    this.newsTimer = 7.0;
   }
 }
