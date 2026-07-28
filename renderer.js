@@ -1,6 +1,7 @@
 'use strict';
 /* ============================================================
    RENDERER.JS — Dynamic Layering & Depth Sorting (Y-Sorting Pipeline)
+   Performance & Visual Alignment Optimization
    ============================================================ */
 
 class IsoRenderer {
@@ -10,6 +11,10 @@ class IsoRenderer {
     this.map = gameMap;
     this.camera = camera;
     this.hoverTile = null;
+
+    // Set high-quality canvas rendering defaults
+    this.ctx.imageSmoothingEnabled = true;
+    this.ctx.imageSmoothingQuality = 'high';
   }
 
   setHoverTile(col, row) {
@@ -22,13 +27,14 @@ class IsoRenderer {
 
   render(gameState) {
     const ctx = this.ctx;
-    ctx.imageSmoothingEnabled = false;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     ctx.save();
     this.camera.applyTransform(ctx);
 
-    // ── 1. BASE LAYER: Background Map Illustration or Tile System ──
+    // ── 1. BASE LAYER: Background Map Illustration or Cached Tile System ──
     if (this.map.mode === 'static') {
       gameState.drawBackground(ctx);
       this.map.renderGridOverlay(ctx);
@@ -51,7 +57,7 @@ class IsoRenderer {
     // ── 3. ENTITY & PROP LAYER (Strict Y-Sorting Pipeline) ──
     const renderableEntities = [...gameState.entities];
 
-    // Sort dynamically based on baseline Y position (screenY + height_offset)
+    // Sort dynamically based on baseline Y position (screenY at feet / trunk base)
     renderableEntities.sort((a, b) => a.baseY - b.baseY);
 
     for (const entity of renderableEntities) {

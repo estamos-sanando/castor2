@@ -1,7 +1,7 @@
 'use strict';
 /* ============================================================
    ENTITIES.JS — 100% Real Image Sprite Engine & Asset System
-   Castores en Tierra del Fuego — Newsgame Interactivo
+   Age of Empires RTS Scale Proportions & Bottom-Center (0.5, 1.0) Anchor
    ============================================================ */
 
 const ASSET_MANIFEST = {
@@ -43,7 +43,7 @@ const ASSET_MANIFEST = {
   moss_3:          'assets/vegetation/moss_3.png',
   moss_4:          'assets/vegetation/moss_4.png',
 
-  // Real Beaver Dam Sprites
+  // Real Beaver Dam Sprites (Stages: Constructing, Active, Dismantled)
   dique_real:    'assets/objects/dique_real.png',
   dique_nivel_1: 'assets/objects/dique_nivel_1.png',
   dique_nivel_2: 'assets/objects/dique_nivel_2.png',
@@ -74,7 +74,7 @@ const ASSET_MANIFEST = {
 const IMAGE_CACHE = {};
 const IMAGE_LOADED = {};
 
-// Asynchronously load all PNG assets into memory
+// Asynchronously load all PNG assets into memory with caching
 Object.keys(ASSET_MANIFEST).forEach(key => {
   const img = new Image();
   img.src = ASSET_MANIFEST[key];
@@ -92,120 +92,140 @@ function getLoadedImg(key) {
 }
 
 // ──────────────────────────────────────────────────────────────
-// SPRITE PAINTER — Pure Real PNG Renderer (No solid shapes)
+// SPRITE PAINTER — Pure Real PNG Renderer & AoE2 Realistic Proportions
 // ──────────────────────────────────────────────────────────────
 class SpritePainter {
   static _oc(w, h) {
     const c = document.createElement('canvas');
-    c.width = w; c.height = h; return c;
+    c.width = Math.max(1, w); c.height = Math.max(1, h); return c;
   }
 
-  // Soft natural shadow (gradient radial, transparent)
+  // Soft natural ground shadow (gradient radial, transparent)
   static _shadow(x, cx, cy, rx, ry) {
     x.save();
     const g = x.createRadialGradient(cx, cy, 0, cx, cy, Math.max(rx, ry));
-    g.addColorStop(0, 'rgba(0, 0, 0, 0.22)');
-    g.addColorStop(0.6, 'rgba(0, 0, 0, 0.12)');
+    g.addColorStop(0, 'rgba(0, 0, 0, 0.35)');
+    g.addColorStop(0.6, 'rgba(0, 0, 0, 0.18)');
     g.addColorStop(1, 'transparent');
     x.fillStyle = g;
     x.beginPath(); x.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); x.fill();
     x.restore();
   }
 
-  // ── BEAVER ADULT ──────────────────────────────────────────
-  static beaver(size = 96, action = 'idle') {
+  // ── BEAVER ADULT (Realistic RTS Scale ~0.35x of Human: ~36x28px) ──────
+  static beaver(size = 36, action = 'idle') {
     const key = `beaver_${action}`;
     const realImg = getLoadedImg(key) || getLoadedImg('beaver_idle');
     if (realImg) {
       const W = size, H = Math.round(size * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.92, W * 0.35, H * 0.08);
+      this._shadow(ctx, W * 0.5, H * 0.92, W * 0.4, H * 0.12);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
     return this._emptyCanvas(size, size);
   }
 
-  // ── BEAVER SMALL ──────────────────────────────────────────
-  static beaver_small(size = 64) {
+  // ── BEAVER SMALL (Realistic RTS Scale: ~24x18px) ──────────────────────
+  static beaver_small(size = 24) {
     const realImg = getLoadedImg('beaver_small_idle');
     if (realImg) {
       const W = size, H = Math.round(size * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.92, W * 0.35, H * 0.08);
+      this._shadow(ctx, W * 0.5, H * 0.92, W * 0.4, H * 0.12);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
     return this._emptyCanvas(size, size);
   }
 
-  // ── RANGER ────────────────────────────────────────────────
+  // ── RANGER (Human Base Scale 1.0: Height ~68-75px) ───────────────────
   static ranger(size = 64, action = 'idle') {
     const key = `ranger_${action}`;
     const realImg = getLoadedImg(key) || getLoadedImg('ranger_idle');
     if (realImg) {
-      const W = Math.round(size * 0.75), H = Math.round(size * 1.3);
+      const W = Math.round(size * 0.75), H = Math.round(size * 1.25);
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.96, W * 0.3, H * 0.06);
+      this._shadow(ctx, W * 0.5, H * 0.96, W * 0.32, H * 0.08);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
     return this._emptyCanvas(size, size);
   }
 
-  // ── SCIENTIST ──────────────────────────────────────────────
+  // ── SCIENTIST (Human Base Scale 1.0: Height ~68-75px) ────────────────
   static scientist(size = 64, action = 'idle') {
     const key = `scientist_${action}`;
     const realImg = getLoadedImg(key) || getLoadedImg('scientist_idle');
     if (realImg) {
-      const W = Math.round(size * 0.75), H = Math.round(size * 1.3);
+      const W = Math.round(size * 0.75), H = Math.round(size * 1.25);
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.96, W * 0.3, H * 0.06);
+      this._shadow(ctx, W * 0.5, H * 0.96, W * 0.32, H * 0.08);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
     return this._emptyCanvas(size, size);
   }
 
-  // ── HEALTHY TREE ──────────────────────────────────────────
+  // ── HEALTHY LENGA TREE (Adult Lenga Scale 2.5-3.0x: ~185x240px) ─────
   static tree_healthy(variant = 0) {
     const idx = (variant % 8) + 1;
     const key = `tree_healthy_${idx}`;
     const realImg = getLoadedImg(key) || getLoadedImg('tree_healthy_1');
     if (realImg) {
+      const W = 185, H = Math.round(185 * (realImg.height / realImg.width));
+      const c = this._oc(W, H), ctx = c.getContext('2d');
+      this._shadow(ctx, W * 0.5, H * 0.96, W * 0.3, H * 0.06);
+      ctx.drawImage(realImg, 0, 0, W, H);
+      return c;
+    }
+    return this._emptyCanvas(185, 240);
+  }
+
+  // ── CHEWED / DAMAGED TREE STATE ────────────────────────────────────
+  static tree_chewed(variant = 0) {
+    const idx = (variant % 8) + 1;
+    const key = `tree_healthy_${idx}`;
+    const realImg = getLoadedImg(key) || getLoadedImg('tree_healthy_1');
+    if (realImg) {
+      const W = 185, H = Math.round(185 * (realImg.height / realImg.width));
+      const c = this._oc(W, H), ctx = c.getContext('2d');
+      this._shadow(ctx, W * 0.5, H * 0.96, W * 0.3, H * 0.06);
+      ctx.drawImage(realImg, 0, 0, W, H);
+      // Chewed bark mark at trunk base
+      ctx.fillStyle = '#d4b06c';
+      ctx.beginPath();
+      ctx.ellipse(W * 0.5, H * 0.88, 12, 18, 0, 0, Math.PI * 2);
+      ctx.fill();
+      return c;
+    }
+    return this.tree_healthy(variant);
+  }
+
+  // ── DEAD / GHOST TREE ─────────────────────────────────────────────
+  static tree_dead() {
+    const realImg = getLoadedImg('tree_dead_1') || getLoadedImg('tree_dead_2') || getLoadedImg('tree_dead_3');
+    if (realImg) {
       const W = 130, H = Math.round(130 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.95, W * 0.32, H * 0.07);
+      this._shadow(ctx, W * 0.5, H * 0.95, W * 0.28, H * 0.06);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
     return this._emptyCanvas(130, 180);
   }
 
-  // ── DEAD TREE ─────────────────────────────────────────────
-  static tree_dead() {
-    const realImg = getLoadedImg('tree_dead_1') || getLoadedImg('tree_dead_2') || getLoadedImg('tree_dead_3');
-    if (realImg) {
-      const W = 100, H = Math.round(100 * (realImg.height / realImg.width));
-      const c = this._oc(W, H), ctx = c.getContext('2d');
-      this._shadow(ctx, W * 0.5, H * 0.95, W * 0.28, H * 0.06);
-      ctx.drawImage(realImg, 0, 0, W, H);
-      return c;
-    }
-    return this._emptyCanvas(100, 150);
-  }
-
   // ── FLOODED TREE ──────────────────────────────────────────
   static tree_flooded() {
     const realImg = getLoadedImg('tree_flooded_1') || getLoadedImg('tree_flooded_2');
     if (realImg) {
-      const W = 110, H = Math.round(110 * (realImg.height / realImg.width));
+      const W = 140, H = Math.round(140 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
       this._shadow(ctx, W * 0.5, H * 0.92, W * 0.38, H * 0.09);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    return this._emptyCanvas(110, 160);
+    return this._emptyCanvas(140, 190);
   }
 
   // ── STUMP ─────────────────────────────────────────────────
@@ -213,13 +233,13 @@ class SpritePainter {
     const key = age === 'fresh' ? 'stump_fresh' : 'stump_old';
     const realImg = getLoadedImg(key) || getLoadedImg('stump_fresh');
     if (realImg) {
-      const W = 70, H = Math.round(70 * (realImg.height / realImg.width));
+      const W = 45, H = Math.round(45 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
       this._shadow(ctx, W * 0.5, H * 0.92, W * 0.38, H * 0.09);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    return this._emptyCanvas(70, 80);
+    return this._emptyCanvas(45, 35);
   }
 
   // ── LOG ───────────────────────────────────────────────────
@@ -227,13 +247,13 @@ class SpritePainter {
     const key = decayed ? 'log_decayed' : 'log_fresh';
     const realImg = getLoadedImg(key) || getLoadedImg('log_fresh');
     if (realImg) {
-      const W = 100, H = Math.round(100 * (realImg.height / realImg.width));
+      const W = 65, H = Math.round(65 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
       this._shadow(ctx, W * 0.5, H * 0.9, W * 0.42, H * 0.12);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    return this._emptyCanvas(100, 50);
+    return this._emptyCanvas(65, 35);
   }
 
   // ── ROCKS (Real extracted PNGs) ───────────────────────────
@@ -241,81 +261,95 @@ class SpritePainter {
     const idx = (variant % 3) + 1;
     const realImg = getLoadedImg(`rock_${idx}`) || getLoadedImg('rock_1');
     if (realImg) {
-      const W = 70, H = Math.round(70 * (realImg.height / realImg.width));
+      const W = 50, H = Math.round(50 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
       this._shadow(ctx, W * 0.5, H * 0.9, W * 0.4, H * 0.1);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    return this._emptyCanvas(70, 45);
+    return this._emptyCanvas(50, 30);
   }
 
-  // ── BUSHES (Real extracted PNGs) ──────────────────────────
+  // ── BUSHES (Scale 0.5-0.7x) ───────────────────────────────
   static bush(variant = 0) {
     const bushes = ['bush_calafate', 'bush_notro', 'bush_flowering', 'bush_1', 'bush_2'];
     const key = bushes[variant % bushes.length];
     const realImg = getLoadedImg(key) || getLoadedImg('bush_calafate');
     if (realImg) {
-      const W = 85, H = Math.round(85 * (realImg.height / realImg.width));
+      const W = 60, H = Math.round(60 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
       this._shadow(ctx, W * 0.5, H * 0.9, W * 0.38, H * 0.1);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    return this._emptyCanvas(85, 70);
+    return this._emptyCanvas(60, 45);
   }
 
-  // ── MOSS & UNDERSTORY (Real extracted PNGs) ───────────────
+  // ── MOSS & UNDERSTORY ──────────────────────────────────────
   static moss(variant = 0) {
     const idx = (variant % 4) + 1;
     const realImg = getLoadedImg(`moss_${idx}`) || getLoadedImg('moss_1');
     if (realImg) {
-      const W = 85, H = Math.round(85 * (realImg.height / realImg.width));
+      const W = 55, H = Math.round(55 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    return this._emptyCanvas(85, 50);
+    return this._emptyCanvas(55, 35);
   }
 
-  // ── BEAVER DAM (Real Cropped PNG Sprite) ──────────────────
-  static dam(level = 1) {
+  // ── BEAVER DAM (Stages: Constructing, Active, Dismantled/Broken) ────
+  static dam(level = 1, state = 'active') {
+    if (state === 'dismantled' || state === 'broken') {
+      const realImg = getLoadedImg('log_decayed') || getLoadedImg('log_fresh');
+      if (realImg) {
+        const W = 140, H = Math.round(140 * (realImg.height / realImg.width));
+        const c = this._oc(W, H), ctx = c.getContext('2d');
+        this._shadow(ctx, W * 0.5, H * 0.88, W * 0.45, H * 0.12);
+        ctx.globalAlpha = 0.65;
+        ctx.drawImage(realImg, 0, 0, W, H);
+        return c;
+      }
+    }
+
     const lvl = Math.max(1, Math.min(3, level));
     const key = `dique_nivel_${lvl}`;
     const realImg = getLoadedImg(key) || getLoadedImg('dique_real') || getLoadedImg('log_fresh');
     if (realImg) {
-      const W = 160 + lvl * 40;
+      const W = 160 + lvl * 30;
       const H = Math.round(W * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
       this._shadow(ctx, W * 0.5, H * 0.88, W * 0.45, H * 0.12);
+      if (state === 'constructing') ctx.globalAlpha = 0.8;
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    const W = 160 + level * 40, H = 60 + level * 15;
-    const c = this._oc(W, H);
-    return c;
+    const W = 160 + level * 30, H = 60 + level * 15;
+    return this._oc(W, H);
   }
 
   static cage_sprite() {
     const realImg = getLoadedImg('ranger_trap');
     if (realImg) {
-      const W = 85, H = Math.round(85 * (realImg.height / realImg.width));
+      const W = 55, H = Math.round(55 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
+      this._shadow(ctx, W * 0.5, H * 0.9, W * 0.35, H * 0.1);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    return this._emptyCanvas(85, 60);
+    return this._emptyCanvas(55, 45);
   }
 
   static seedling_sprite() {
     const realImg = getLoadedImg('tree_young_1');
     if (realImg) {
-      const W = 40, H = Math.round(40 * (realImg.height / realImg.width));
+      const W = 32, H = Math.round(32 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
+      this._shadow(ctx, W * 0.5, H * 0.9, W * 0.35, H * 0.1);
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    return this._emptyCanvas(40, 50);
+    return this._emptyCanvas(32, 40);
   }
 
   static leaf_particle() {
@@ -336,7 +370,7 @@ class SpritePainter {
 }
 
 // ──────────────────────────────────────────────────────────────
-// ENTITY BASE CLASS
+// ENTITY BASE CLASS (Bottom-Center 0.5, 1.0 Anchor Alignment)
 // ──────────────────────────────────────────────────────────────
 class Entity {
   constructor(x, y) {
@@ -361,11 +395,11 @@ class Entity {
     const w = Math.round(this.sprite.width * (this.scale || 1.0));
     const h = Math.round(this.sprite.height * (this.scale || 1.0));
 
-    // ── 1. Soft Elliptical Base Shadow (Anchored to terrain) ──
-    const shadowW = Math.max(14, Math.round(w * 0.45));
-    const shadowH = Math.max(6, Math.round(shadowW * 0.35));
+    // ── 1. Soft Elliptical Base Shadow (Anchored to terrain at baseline) ──
+    const shadowW = Math.max(12, Math.round(w * 0.45));
+    const shadowH = Math.max(5, Math.round(shadowW * 0.35));
     
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
     ctx.beginPath();
     ctx.ellipse(Math.round(this.x), Math.round(this.y), shadowW * 0.5, shadowH * 0.5, 0, 0, Math.PI * 2);
     ctx.fill();
@@ -389,21 +423,24 @@ class Entity {
 Entity._nextId = 0;
 
 // ──────────────────────────────────────────────────────────────
-// TREE ENTITY
+// TREE ENTITY (Healthy, Chewed, Falling, Stump, Dead/Flooded)
 // ──────────────────────────────────────────────────────────────
 class Tree extends Entity {
   constructor(x, y, variant = 0) {
     super(x, y);
     this.variant = variant;
-    this.state = 'healthy';
+    this.state = 'healthy'; // 'healthy', 'chewed', 'dead', 'flooded', 'stump_fresh', 'stump_old'
     this.being_cut = false;
     this._refreshSprite();
-    this.baseY = y + (this.sprite ? this.sprite.height * 0.05 : 0);
+    this.baseY = y;
   }
 
   _refreshSprite() {
     switch (this.state) {
-      case 'healthy':     this.sprite = SpritePainter.tree_healthy(this.variant); break;
+      case 'healthy':
+        this.sprite = this.being_cut ? SpritePainter.tree_chewed(this.variant) : SpritePainter.tree_healthy(this.variant);
+        break;
+      case 'chewed':      this.sprite = SpritePainter.tree_chewed(this.variant); break;
       case 'dead':        this.sprite = SpritePainter.tree_dead(); break;
       case 'flooded':     this.sprite = SpritePainter.tree_flooded(); break;
       case 'stump_fresh': this.sprite = SpritePainter.stump('fresh'); break;
@@ -417,7 +454,7 @@ class Tree extends Entity {
     this._refreshSprite();
   }
 
-  get isHealthy() { return this.state === 'healthy' && !this.being_cut; }
+  get isHealthy() { return (this.state === 'healthy' || this.state === 'chewed') && !this.being_cut; }
 
   update(dt, game) {
     if (this.state === 'stump_fresh') {
@@ -427,14 +464,13 @@ class Tree extends Entity {
         this._ageTimer = 0;
       }
     }
-    // Re-check sprite if image finished loading asynchronously
     if (Math.random() < 0.05) this._refreshSprite();
-    this.baseY = this.y + (this.sprite ? this.sprite.height * 0.05 : 0);
+    this.baseY = this.y;
   }
 }
 
 // ──────────────────────────────────────────────────────────────
-// ROCK & BUSH ENTITIES (100% Real PNG Sprites)
+// ROCK & BUSH & MOSS ENTITIES
 // ──────────────────────────────────────────────────────────────
 class Rock extends Entity {
   constructor(x, y, variant = 0) {
@@ -482,18 +518,19 @@ class Moss extends Entity {
 }
 
 // ──────────────────────────────────────────────────────────────
-// DAM ENTITY
+// DAM ENTITY (Constructing, Active, Dismantled/Broken)
 // ──────────────────────────────────────────────────────────────
 class Dam extends Entity {
   constructor(x, y) {
     super(x, y);
     this.level = 1;
+    this.state = 'active'; // 'constructing', 'active', 'dismantled'
     this.active = true;
     this._refreshSprite();
   }
 
   _refreshSprite() {
-    this.sprite = SpritePainter.dam(this.level);
+    this.sprite = SpritePainter.dam(this.level, this.state);
     this.baseY = this.y;
   }
 
@@ -505,22 +542,19 @@ class Dam extends Entity {
   }
 
   remove() {
-    this.dead = true;
+    this.state = 'dismantled';
     this.active = false;
+    this._refreshSprite();
+    setTimeout(() => { this.dead = true; }, 8000);
   }
 
   draw(ctx) {
-    if (!this.visible || !this.sprite) return;
-    ctx.save();
-    ctx.globalAlpha = this.alpha;
-    ctx.translate(this.x, this.y);
-    ctx.drawImage(this.sprite, -this.sprite.width / 2, -this.sprite.height / 2);
-    ctx.restore();
+    super.draw(ctx);
   }
 }
 
 // ──────────────────────────────────────────────────────────────
-// CAGE ENTITY
+// CAGE TRAP ENTITY
 // ──────────────────────────────────────────────────────────────
 class Cage extends Entity {
   constructor(x, y) {
@@ -550,28 +584,18 @@ class Cage extends Entity {
   }
 
   draw(ctx) {
-    if (!this.sprite) return;
-    ctx.save();
-    ctx.globalAlpha = this.captured ? 0.5 + this.captureFlash * 0.5 : 0.92;
-    ctx.translate(this.x, this.y);
-    ctx.drawImage(this.sprite, -this.sprite.width / 2, -this.sprite.height / 2);
-    if (this.captureFlash > 0) {
-      ctx.globalAlpha = this.captureFlash * 0.4;
-      ctx.fillStyle = '#ffff44';
-      ctx.beginPath(); ctx.ellipse(0, 0, 50, 20, 0, 0, Math.PI * 2); ctx.fill();
-    }
-    ctx.restore();
+    super.draw(ctx);
   }
 }
 
 // ──────────────────────────────────────────────────────────────
-// SEEDLING
+// SEEDLING (LENGA REFORESTATION PLACEABLE)
 // ──────────────────────────────────────────────────────────────
 class Seedling extends Entity {
   constructor(x, y) {
     super(x, y);
     this.sprite = SpritePainter.seedling_sprite();
-    this.growTimer = 45;
+    this.growTimer = 30;
     this.grown = false;
     this.baseY = y;
     this.growProgress = 0;
@@ -580,8 +604,8 @@ class Seedling extends Entity {
   update(dt, game) {
     if (this.grown) return;
     this.growTimer -= dt;
-    this.growProgress = 1 - Math.max(0, this.growTimer / 45);
-    this.alpha = 0.6 + this.growProgress * 0.4;
+    this.growProgress = 1 - Math.max(0, this.growTimer / 30);
+    this.scale = 0.6 + this.growProgress * 0.4;
     if (this.growTimer <= 0) {
       this.grown = true;
       const tree = new Tree(this.x, this.y, Math.floor(Math.random() * 8));
@@ -592,14 +616,7 @@ class Seedling extends Entity {
   }
 
   draw(ctx) {
-    if (!this.sprite) return;
-    const scale = 0.5 + this.growProgress * 0.7;
-    ctx.save();
-    ctx.globalAlpha = this.alpha;
-    ctx.translate(this.x, this.y);
-    ctx.scale(scale, scale);
-    ctx.drawImage(this.sprite, -this.sprite.width / 2, -this.sprite.height);
-    ctx.restore();
+    super.draw(ctx);
   }
 }
 
@@ -622,12 +639,7 @@ class LogEntity extends Entity {
   }
 
   draw(ctx) {
-    if (!this.sprite) return;
-    ctx.save();
-    ctx.globalAlpha = this.alpha;
-    ctx.translate(this.x, this.y);
-    ctx.drawImage(this.sprite, -this.sprite.width / 2, -this.sprite.height / 3);
-    ctx.restore();
+    super.draw(ctx);
   }
 }
 
@@ -641,7 +653,7 @@ class Beaver extends Entity {
     this.captured = false;
     this.state = 'idle';
     this.action = 'idle';
-    this.speed = isSmall ? 32 : 52;
+    this.speed = isSmall ? 28 : 45;
     this.targetX = x; this.targetY = y;
     this.targetTree = null;
     this.targetLog = null;
@@ -661,9 +673,9 @@ class Beaver extends Entity {
 
   _refreshSprite() {
     if (this.isSmall) {
-      this.sprite = SpritePainter.beaver_small(56);
+      this.sprite = SpritePainter.beaver_small(24);
     } else {
-      this.sprite = SpritePainter.beaver(88, this.action);
+      this.sprite = SpritePainter.beaver(36, this.action);
     }
   }
 
@@ -745,8 +757,8 @@ class Beaver extends Entity {
   _doCut(dt, game) {
     this.action = 'cut';
     this.cutTimer -= dt;
-    if (Math.random() < 0.15 && game.particles) {
-      game.particles.burst(this.x, this.y - 30, 'wood', 3);
+    if (Math.random() < 0.2 && game.particles) {
+      game.particles.burst(this.x, this.y - 15, 'wood', 4);
     }
     if (this.cutTimer <= 0) {
       if (this.targetTree) {
@@ -805,14 +817,7 @@ class Beaver extends Entity {
   }
 
   draw(ctx) {
-    if (!this.sprite || !this.visible) return;
-    const bob = Math.sin(this.bobPhase) * 1.5;
-    ctx.save();
-    ctx.globalAlpha = this.alpha;
-    ctx.translate(this.x, this.y + bob);
-    if (this.facingLeft) ctx.scale(-1, 1);
-    ctx.drawImage(this.sprite, -this.sprite.width / 2, -this.sprite.height);
-    ctx.restore();
+    super.draw(ctx);
   }
 }
 
@@ -872,14 +877,7 @@ class Ranger extends Entity {
   }
 
   draw(ctx) {
-    if (!this.sprite) return;
-    const bob = Math.sin(this.bobPhase) * 1.2;
-    ctx.save();
-    ctx.globalAlpha = this.alpha;
-    ctx.translate(this.x, this.y + bob);
-    if (this.facingLeft) ctx.scale(-1, 1);
-    ctx.drawImage(this.sprite, -this.sprite.width / 2, -this.sprite.height);
-    ctx.restore();
+    super.draw(ctx);
   }
 }
 
@@ -934,14 +932,7 @@ class Scientist extends Entity {
   }
 
   draw(ctx) {
-    if (!this.sprite) return;
-    const bob = Math.sin(this.bobPhase) * 1.1;
-    ctx.save();
-    ctx.globalAlpha = this.alpha;
-    ctx.translate(this.x, this.y + bob);
-    if (this.facingLeft) ctx.scale(-1, 1);
-    ctx.drawImage(this.sprite, -this.sprite.width / 2, -this.sprite.height);
-    ctx.restore();
+    super.draw(ctx);
   }
 }
 

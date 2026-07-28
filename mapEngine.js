@@ -1,6 +1,7 @@
 'use strict';
 /* ============================================================
    MAPENGINE.JS — AOE2-Style 2D Isometric Background Tilemap Engine
+   Performance Optimized with Offscreen Double-Buffering
    ============================================================ */
 
 class TileMapEngine {
@@ -8,6 +9,9 @@ class TileMapEngine {
     this.map = gameMap;
     this.textureCache = {};
     this.showAoE2Grid = true;
+    this.offscreenCanvas = document.createElement('canvas');
+    this.offscreenCtx = this.offscreenCanvas.getContext('2d');
+    this.isDirty = true;
     this._preloadTextures();
   }
 
@@ -21,8 +25,25 @@ class TileMapEngine {
     });
   }
 
-  renderTilemap(ctx) {
+  markDirty() {
+    this.isDirty = true;
+  }
+
+  _updateOffscreenBuffer() {
     const map = this.map;
+    // Map dimensions in screen space
+    const totalW = (map.cols + map.rows) * (map.tileW / 2) + 200;
+    const totalH = (map.cols + map.rows) * (map.tileH / 2) + 200;
+
+    if (this.offscreenCanvas.width !== totalW || this.offscreenCanvas.height !== totalH) {
+      this.offscreenCanvas.width = totalW;
+      this.offscreenCanvas.height = totalH;
+    }
+
+    const ctx = this.offscreenCtx;
+    ctx.imageSmoothingEnabled = false;
+    ctx.clearRect(0, 0, totalW, totalH);
+
     const originX = map.originX;
     const originY = map.originY;
 
@@ -50,5 +71,14 @@ class TileMapEngine {
         }
       }
     }
+
+    this.isDirty = false;
+  }
+
+  renderTilemap(ctx) {
+    if (this.isDirty) {
+      this._updateOffscreenBuffer();
+    }
+    ctx.drawImage(this.offscreenCanvas, 0, 0);
   }
 }
