@@ -526,7 +526,22 @@ class Dam extends Entity {
   }
 
   draw(ctx) {
-    super.draw(ctx);
+    if (!this.visible || !this.sprite) return;
+    ctx.save();
+    ctx.globalAlpha = this.alpha;
+
+    const w = Math.round(this.sprite.width * (this.scale || 1.0));
+    const h = Math.round(this.sprite.height * (this.scale || 1.0));
+
+    // Ground/water shadow underneath dam logs
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    ctx.beginPath();
+    ctx.ellipse(Math.round(this.x), Math.round(this.y), w * 0.45, Math.max(6, h * 0.25), 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Draw dam centered over river channel point
+    ctx.drawImage(this.sprite, Math.round(this.x - w * 0.5), Math.round(this.y - h * 0.5), w, h);
+    ctx.restore();
   }
 }
 
