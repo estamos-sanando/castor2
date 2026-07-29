@@ -72,9 +72,8 @@ class GameUI {
 
         <!-- Panel de Control (Invasión, Captura y Reforestación) -->
         <div id="hud-controls">
-          <button class="news-btn btn-danger" id="btn-add-beaver">
-            <span class="btn-icon">🔴</span>
-            <span class="btn-text">+ AGREGAR CASTOR (Invasión)</span>
+          <button class="pure-image-btn" id="btn-add-beaver" title="Agregar Castor">
+            <img src="assets/BOTON.png" alt="Agregar Castor" />
           </button>
 
           <button class="news-btn btn-success" id="btn-capture-beaver">
