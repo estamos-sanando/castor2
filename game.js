@@ -83,19 +83,26 @@ class BeaverGame {
     });
   }
 
-  // ── INICIO: Solo árboles sanos formando un bosque denso alrededor del río ──
+  getNearestRiverPoint(x, y) {
+    return {
+      x: 640 + (Math.random() - 0.5) * 30,
+      y: Math.max(160, Math.min(620, y + (Math.random() - 0.5) * 40))
+    };
+  }
+
+  // ── INICIO: Bosque nativo denso y frondoso (160+ árboles) a ambos lados del río central ──
   _populateInitialForest() {
     this.entities = [];
     const treePositions = [];
-    const minDistance = 42;
+    const minDistance = 22; // Espaciado estrecho para formar un bosque tupido realista
 
-    // Margen Izquierdo (x: 80 - 500)
-    for (let i = 0; i < 35; i++) {
+    // Margen Izquierdo (x: 50 - 520, y: 120 - 640) -> 80 árboles
+    for (let i = 0; i < 80; i++) {
       let attempts = 0;
-      while (attempts < 60) {
+      while (attempts < 80) {
         attempts++;
-        const x = 80 + Math.random() * 420;
-        const y = 140 + Math.random() * 480;
+        const x = 50 + Math.random() * 470;
+        const y = 120 + Math.random() * 520;
         if (!treePositions.some(p => Math.hypot(p.x - x, p.y - y) < minDistance)) {
           treePositions.push({ x, y });
           break;
@@ -103,13 +110,13 @@ class BeaverGame {
       }
     }
 
-    // Margen Derecho (x: 780 - 1200)
-    for (let i = 0; i < 35; i++) {
+    // Margen Derecho (x: 760 - 1230, y: 120 - 640) -> 80 árboles
+    for (let i = 0; i < 80; i++) {
       let attempts = 0;
-      while (attempts < 60) {
+      while (attempts < 80) {
         attempts++;
-        const x = 780 + Math.random() * 420;
-        const y = 140 + Math.random() * 480;
+        const x = 760 + Math.random() * 470;
+        const y = 120 + Math.random() * 520;
         if (!treePositions.some(p => Math.hypot(p.x - x, p.y - y) < minDistance)) {
           treePositions.push({ x, y });
           break;
@@ -117,10 +124,10 @@ class BeaverGame {
       }
     }
 
-    // Instanciar únicamente los árboles nativos (sin guardaparques ni castores aún)
+    // Instanciar árboles con variantes y escalas aleatorias para solapamiento de copas
     treePositions.forEach((spot, idx) => {
       const tree = new Tree(spot.x, spot.y, idx % 9);
-      tree.scale = 0.85 + Math.random() * 0.45;
+      tree.scale = 0.8 + Math.random() * 0.5;
       this.entities.push(tree);
     });
   }
@@ -172,19 +179,19 @@ class BeaverGame {
       this.stats.dams = 1;
     }
 
-    // Cada 5 ramas = Dique Chico (1), 10 = Dique Mediano (2), 15 = Dique Grande (3)
-    if (this.stats.woodDelivered >= 15) {
+    // 3 entregas = Dique Chico (1) + Deterioro, 6 = Dique Mediano (2), 9 = Dique Grande (3) + Inundación
+    if (this.stats.woodDelivered >= 9) {
       dam.level = 3;
       dam._refreshSprite();
       this.triggerFloodedCrisis();
-    } else if (this.stats.woodDelivered >= 10) {
+    } else if (this.stats.woodDelivered >= 6) {
       dam.level = 2;
       dam._refreshSprite();
-      this._transitionToMap(2); // Inundación
-    } else if (this.stats.woodDelivered >= 5) {
+      this._transitionToMap(2); // Mapa 04 Inundado
+    } else if (this.stats.woodDelivered >= 3) {
       dam.level = 1;
       dam._refreshSprite();
-      this._transitionToMap(1); // Primer deterioro
+      this._transitionToMap(1); // Mapa 02 Primer deterioro
     }
   }
 

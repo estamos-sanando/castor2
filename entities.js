@@ -168,10 +168,6 @@ class SpritePainter {
       const W = 75, H = Math.round(75 * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
       ctx.drawImage(realImg, 0, 0, W, H);
-      ctx.fillStyle = '#d4b06c';
-      ctx.beginPath();
-      ctx.ellipse(W * 0.5, H * 0.88, 6, 8, 0, 0, Math.PI * 2);
-      ctx.fill();
       return c;
     }
     return this.tree_healthy(variant);
