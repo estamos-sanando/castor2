@@ -610,6 +610,97 @@ html, body {
   color: var(--gold-light);
 }
 
+/* ── BARRA DE PRECISIÓN EN LA ZONA VERDE ── */
+.precision-bar-box {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.precision-bar-track {
+  position: relative;
+  width: 100%;
+  height: 24px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1.5px solid var(--gold);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0,0,0,0.8) inset;
+}
+
+.precision-green-zone {
+  position: absolute;
+  left: 42%;
+  width: 24%;
+  height: 100%;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
+}
+
+.precision-needle {
+  position: absolute;
+  top: 0;
+  width: 6px;
+  height: 100%;
+  background: #ef4444;
+  box-shadow: 0 0 10px #ef4444, 0 0 15px #fff;
+  border-radius: 3px;
+  transition: left 0.016s linear;
+}
+
+.precision-feedback-lbl {
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--gold-light);
+  min-height: 16px;
+}
+
+.precision-feedback-lbl.perfect { color: #22c55e; }
+.precision-feedback-lbl.good { color: #eab308; }
+.precision-feedback-lbl.miss { color: #ef4444; }
+
+/* ── TABLA DE CLASIFICACIÓN RETRO ARCADE (HIGH SCORES) ── */
+.arcade-leaderboard-modal {
+  width: 440px !important;
+}
+
+.leaderboard-table-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 16px 0;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1.5px solid var(--gold);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #d1d5db;
+}
+
+.leaderboard-row.player-row {
+  background: linear-gradient(90deg, rgba(34, 197, 94, 0.25), rgba(212, 175, 55, 0.25));
+  border: 1px solid var(--gold);
+  color: #fff;
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+}
+
+.rank-num { color: var(--gold-light); width: 30px; }
+.player-name { flex-grow: 1; text-align: left; margin-left: 10px; }
+.player-score { color: #22c55e; }
+
 /* ── VENTANA LATERAL IZQUIERDA DE INVENTARIO ENEEI (DEL LADO IZQUIERDO) ── */
 #eneei-sidebar-panel {
   position: absolute;

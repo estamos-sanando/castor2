@@ -1,8 +1,9 @@
 'use strict';
 /* ============================================================
-   UI.JS — Interfaz de Usuario con Minijuego de Captura de 30 Segundos
-   - Minijuego emergente del lado izquierdo durante la simulación de captura de castores
-   - Contador regresivo de 30 segundos y score de castores capturados
+   UI.JS — Interfaz de Usuario con Minijuego Arcade de Precisión (Zona Verde)
+   - Minijuego de barra de precisión con aguja y ZONA VERDE
+   - Desafío de 30 segundos acumulando puntos por capturas perfectas
+   - Tabla de Clasificación Retro Arcade (High Scores) para competir con otros jugadores
    ============================================================ */
 
 class GameUI {
@@ -11,8 +12,10 @@ class GameUI {
     this.newsQueue = [];
     this.activeNews = null;
     this.tutorialVisible = true;
-    this.capturedCount = 0;
+    this.arcadeScore = 0;
     this.timeLeft = 30;
+    this.indicatorPos = 0;
+    this.indicatorDir = 2.5;
     this._initHUD();
     this._initTutorial();
     this._bindEvents();
@@ -114,9 +117,17 @@ class GameUI {
         btn.classList.remove('active-2x');
       }
     });
+
+    // Tecla Espacio para el minijuego de zona verde
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && this.game.minigameActive) {
+        e.preventDefault();
+        this._triggerTimingCatch();
+      }
+    });
   }
 
-  // ── Tarjeta Emergente Periodística (con opción de Modal Central) ──
+  // ── Tarjeta Emergente Periodística ──
   showEditorialNewsCard(opts) {
     if (document.querySelector('.left-center-news-popup') || document.querySelector('.centered-news-overlay')) {
       this.newsQueue.push(opts);
@@ -374,36 +385,46 @@ class GameUI {
     }
   }
 
-  // ── Minijuego de Captura de Castores de 30 Segundos (Lado Izquierdo) ──
+  // ── Minijuego Arcade de Precisión en la ZONA VERDE (30s) ──
   openBeaverCatcherMinigame() {
     if (document.getElementById('beaver-catcher-panel')) return;
 
-    this.capturedCount = 0;
+    this.arcadeScore = 0;
     this.timeLeft = 30;
+    this.indicatorPos = 0;
+    this.indicatorDir = 2.5;
 
     const panel = document.createElement('div');
     panel.id = 'beaver-catcher-panel';
     panel.innerHTML = `
-      <div class="sidebar-card catcher-card">
+      <div class="sidebar-card catcher-card arcade-theme-card">
         <div class="sidebar-header">
-          <h4>OPERACIONES DE CONTROL Y CAPTURA</h4>
+          <h4>CONTROL PRECISO EN ZONA VERDE</h4>
         </div>
-        <p class="sidebar-desc">Presiona el botón o haz clic directamente sobre los castores en el mapa para acelerar la erradicación antes de 0:30s.</p>
+        <p class="sidebar-desc">Presiona el botón cuando la aguja esté en la <strong>ZONA VERDE</strong> para sumar puntos y erradicar castores.</p>
         
         <div class="catcher-stats-grid">
           <div class="catcher-stat-box">
-            <span class="stat-lbl">TIEMPO RESTANTE</span>
+            <span class="stat-lbl">TIEMPO</span>
             <span class="stat-val timer-val" id="minigame-timer">0:30</span>
           </div>
 
           <div class="catcher-stat-box">
-            <span class="stat-lbl">CAPTURADOS</span>
-            <span class="stat-val score-val" id="minigame-score">0 / 20</span>
+            <span class="stat-lbl">PUNTAJE</span>
+            <span class="stat-val score-val" id="minigame-score">0 PTS</span>
           </div>
         </div>
 
-        <button class="popup-action-btn" id="btn-manual-catch-action" style="margin-top: 14px; width: 100%;">
-          CAPTURAR CASTOR
+        <div class="precision-bar-box">
+          <div class="precision-bar-track">
+            <div class="precision-green-zone"></div>
+            <div class="precision-needle" id="precision-needle"></div>
+          </div>
+          <div class="precision-feedback-lbl" id="precision-feedback">¡PRESIONA EN LA ZONA VERDE!</div>
+        </div>
+
+        <button class="popup-action-btn arcade-action-btn" id="btn-timing-catch">
+          CAPTURAR ( ESPACIO )
         </button>
       </div>
     `;
@@ -411,8 +432,19 @@ class GameUI {
 
     this.game.minigameActive = true;
 
-    if (this._minigameTimerInt) clearInterval(this._minigameTimerInt);
+    // Loop de movimiento continuo de aguja
+    if (this._needleLoopInt) clearInterval(this._needleLoopInt);
+    this._needleLoopInt = setInterval(() => {
+      this.indicatorPos += this.indicatorDir;
+      if (this.indicatorPos >= 96 || this.indicatorPos <= 0) {
+        this.indicatorDir = -this.indicatorDir;
+      }
+      const needleEl = document.getElementById('precision-needle');
+      if (needleEl) needleEl.style.left = `${this.indicatorPos}%`;
+    }, 16);
 
+    // Contador regresivo de 30s
+    if (this._minigameTimerInt) clearInterval(this._minigameTimerInt);
     this._minigameTimerInt = setInterval(() => {
       this.timeLeft--;
       const timerEl = document.getElementById('minigame-timer');
@@ -426,13 +458,53 @@ class GameUI {
       }
     }, 1000);
 
-    document.getElementById('btn-manual-catch-action')?.addEventListener('click', () => {
+    document.getElementById('btn-timing-catch')?.addEventListener('click', () => {
+      this._triggerTimingCatch();
+    });
+  }
+
+  _triggerTimingCatch() {
+    if (!this.game.minigameActive) return;
+
+    // Zona verde entre 40% y 68%
+    const pos = this.indicatorPos;
+    const feedbackEl = document.getElementById('precision-feedback');
+    const scoreEl = document.getElementById('minigame-score');
+
+    let ptsAdded = 0;
+    if (pos >= 42 && pos <= 66) {
+      // Impacto Perfecto en Zona Verde
+      ptsAdded = 100;
+      if (feedbackEl) {
+        feedbackEl.textContent = '¡PERFECTO! +100 PTS';
+        feedbackEl.className = 'precision-feedback-lbl perfect';
+      }
+    } else if (pos >= 32 && pos <= 76) {
+      // Impacto Cerca
+      ptsAdded = 50;
+      if (feedbackEl) {
+        feedbackEl.textContent = '¡BUENO! +50 PTS';
+        feedbackEl.className = 'precision-feedback-lbl good';
+      }
+    } else {
+      // Fallo fuera de zona
+      ptsAdded = 0;
+      if (feedbackEl) {
+        feedbackEl.textContent = '¡FALLO! 0 PTS';
+        feedbackEl.className = 'precision-feedback-lbl miss';
+      }
+    }
+
+    if (ptsAdded > 0) {
+      this.arcadeScore += ptsAdded;
+      if (scoreEl) scoreEl.textContent = `${this.arcadeScore} PTS`;
+
+      // Capturar castor en mapa
       const beaver = this.game.entities.find(b => b instanceof Beaver && !b.dead);
       if (beaver) {
         beaver.dead = true;
-        this.game.particles.burst(beaver.x, beaver.y - 15, 'leaf', 16);
+        this.game.particles.burst(beaver.x, beaver.y - 15, 'leaf', 18);
         this.game.stats.beavers = Math.max(0, this.game.stats.beavers - 1);
-        this.onBeaverCapturedByPlayer();
 
         const dam = this.game.entities.find(d => d instanceof Dam && d.active && !d.dead);
         if (dam) {
@@ -444,22 +516,12 @@ class GameUI {
           }
         }
       }
-    });
-  }
-
-  onBeaverCapturedByPlayer() {
-    this.capturedCount++;
-    const scoreEl = document.getElementById('minigame-score');
-    if (scoreEl) {
-      scoreEl.textContent = `${this.capturedCount} / 20`;
     }
   }
 
   finishBeaverCatcherMinigame() {
-    if (this._minigameTimerInt) {
-      clearInterval(this._minigameTimerInt);
-      this._minigameTimerInt = null;
-    }
+    if (this._minigameTimerInt) clearInterval(this._minigameTimerInt);
+    if (this._needleLoopInt) clearInterval(this._needleLoopInt);
 
     this.game.minigameActive = false;
 
@@ -469,12 +531,82 @@ class GameUI {
       setTimeout(() => panel.remove(), 400);
     }
 
-    // Eliminar castores restantes y pasar a la restauración del ecosistema
+    // Limpiar castores restantes
     this.game.entities.forEach(e => {
       if (e instanceof Beaver) e.dead = true;
     });
 
-    this.game.restoreEcosystem();
+    // Mostrar Tabla de Clasificación Retro Arcade con High Scores
+    setTimeout(() => {
+      this.showArcadeLeaderboard(this.arcadeScore);
+    }, 500);
+  }
+
+  // ── Tabla de Clasificación Retro Arcade (High Scores) ──
+  showArcadeLeaderboard(finalScore) {
+    // Cargar High Scores o valores por defecto
+    let defaultScores = [
+      { name: 'ENE-TDF', score: 1400 },
+      { name: 'FAO-CHILE', score: 1100 },
+      { name: 'FMAM-ARG', score: 850 },
+      { name: 'GUARDAPARQUE', score: 600 }
+    ];
+
+    let saved = localStorage.getItem('castor_arcade_highscores');
+    let scoresList = saved ? JSON.parse(saved) : defaultScores;
+
+    // Agregar puntaje actual del jugador
+    scoresList.push({ name: 'TU SCORE', score: finalScore });
+    scoresList.sort((a, b) => b.score - a.score);
+    scoresList = scoresList.slice(0, 5);
+
+    try {
+      localStorage.setItem('castor_arcade_highscores', JSON.stringify(scoresList));
+    } catch(e) {}
+
+    let rowsHtml = scoresList.map((entry, idx) => {
+      const isPlayer = entry.name === 'TU SCORE';
+      return `
+        <div class="leaderboard-row ${isPlayer ? 'player-row' : ''}">
+          <span class="rank-num">#${idx + 1}</span>
+          <span class="player-name">${entry.name}</span>
+          <span class="player-score">${entry.score} PTS</span>
+        </div>
+      `;
+    }).join('');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'centered-news-overlay';
+    overlay.id = 'arcade-leaderboard-overlay';
+    overlay.innerHTML = `
+      <div class="game-popup-modal centered-welcome-window arcade-leaderboard-modal">
+        <div class="popup-modal-header">
+          <span class="popup-year-badge">CLASIFICACIÓN RETRO ARCADE</span>
+        </div>
+        
+        <div class="popup-modal-body">
+          <h2 class="popup-headline">HIGH SCORES — CONTROL DE CUENCAS</h2>
+          <div class="popup-subhead">¡Consigue el mayor puntaje capturando castores en la Zona Verde!</div>
+          
+          <div class="leaderboard-table-container">
+            ${rowsHtml}
+          </div>
+
+          <div class="popup-footer">
+            <button class="popup-action-btn" id="btn-close-leaderboard">CONTINUAR ➔</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('game-container').appendChild(overlay);
+
+    document.getElementById('btn-close-leaderboard')?.addEventListener('click', () => {
+      overlay.classList.add('fade-out');
+      setTimeout(() => {
+        overlay.remove();
+        this.game.restoreEcosystem();
+      }, 400);
+    });
   }
 
   update(stats, year, timelinePct) {}
