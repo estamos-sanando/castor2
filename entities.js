@@ -307,7 +307,10 @@ class Entity {
         targetW = 24;
       } else if (this instanceof Dam) {
         const lvl = Math.max(1, Math.min(3, this.level));
-        targetW = lvl === 1 ? 140 : (lvl === 2 ? 165 : 195);
+        const isLowerDam = (this.y > 350);
+        targetW = isLowerDam 
+          ? (lvl === 1 ? 160 : (lvl === 2 ? 190 : 230)) // Dique inferior extendido al meandro ancho del río
+          : (lvl === 1 ? 140 : (lvl === 2 ? 165 : 190)); // Dique superior
       } else if (this instanceof LogEntity) {
         targetW = 28;
       } else if (this instanceof Rock) {
@@ -543,9 +546,12 @@ class Dam extends Entity {
     const imgW = this.sprite.naturalWidth || this.sprite.width || 300;
     const imgH = this.sprite.naturalHeight || this.sprite.height || 150;
     const lvl = Math.max(1, Math.min(3, this.level));
+    const isLowerDam = (this.y > 350);
 
-    // Dimensiones de orilla a orilla del río (140px, 165px, 195px)
-    const targetW = lvl === 1 ? 140 : (lvl === 2 ? 165 : 195);
+    // Dimensiones de orilla a orilla según la anchura de la cuenca (inferior más ancha)
+    const targetW = isLowerDam 
+      ? (lvl === 1 ? 160 : (lvl === 2 ? 190 : 230))
+      : (lvl === 1 ? 140 : (lvl === 2 ? 165 : 190));
     const w = Math.round(targetW * (this.scale || 1.0));
     const h = Math.round(targetW * (imgH / imgW) * (this.scale || 1.0));
 

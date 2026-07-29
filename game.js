@@ -86,9 +86,10 @@ class BeaverGame {
 
   getNearestRiverPoint(x, y, beaver) {
     const isUpper = beaver ? (beaver.id % 2 === 0) : (y < 380);
+    const targetX = isUpper ? 640 : 645;
     const targetY = isUpper ? 260 : 440;
     return {
-      x: 640 + (Math.random() - 0.5) * 20,
+      x: targetX + (Math.random() - 0.5) * 20,
       y: targetY + (Math.random() - 0.5) * 20
     };
   }
@@ -202,7 +203,7 @@ class BeaverGame {
     this.stats.woodDelivered++;
 
     const isUpper = (beaver.id % 2 === 0);
-    const damX = 640;
+    const damX = isUpper ? 640 : 645;
     const damY = isUpper ? 260 : 440;
 
     let dam = this.entities.find(e => e instanceof Dam && e.active && !e.dead && Math.hypot(e.x - damX, e.y - damY) < 60);
