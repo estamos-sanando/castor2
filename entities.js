@@ -680,10 +680,8 @@ class Beaver extends Entity {
       return;
     }
 
-    // Alternar selección entre los 5 árboles más cercanos
-    trees.sort((a, b) => this.distanceTo(a) - this.distanceTo(b));
-    const poolSize = Math.min(5, trees.length);
-    const chosen = trees[Math.floor(Math.random() * poolSize)];
+    // Seleccionar aleatoriamente en toda la extensión del bosque (cercanos, medios y lejanos)
+    const chosen = trees[Math.floor(Math.random() * trees.length)];
 
     chosen.being_cut = true;
     this.targetTree = chosen;
