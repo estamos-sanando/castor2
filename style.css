@@ -198,6 +198,35 @@ html, body {
   max-width: 850px;
 }
 
+.pure-image-btn {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  cursor: pointer;
+  outline: none;
+  display: inline-block;
+  box-shadow: none !important;
+}
+
+.pure-image-btn img {
+  height: 80px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,0.8));
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.pure-image-btn:hover img {
+  transform: scale(1.08) translateY(-3px);
+  filter: drop-shadow(0 10px 24px rgba(212,175,55,0.7));
+}
+
+.pure-image-btn:active img {
+  transform: scale(0.95);
+}
+
 .news-btn {
   flex: 1;
   display: flex;
