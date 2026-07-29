@@ -259,14 +259,15 @@ class SpritePainter {
     const key = `dique_nivel_${lvl}`;
     const realImg = getLoadedImg(key) || getLoadedImg('dique_real') || getLoadedImg('log_fresh');
     if (realImg) {
-      const W = 64 + lvl * 10;
+      // Dimensiones ampliadas proporcionales al cauce del río (140px, 180px, 230px)
+      const W = lvl === 1 ? 140 : (lvl === 2 ? 180 : 230);
       const H = Math.round(W * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
       if (state === 'constructing') ctx.globalAlpha = 0.8;
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
     }
-    const W = 64 + level * 10, H = 28 + level * 6;
+    const W = 140 + level * 35, H = 50 + level * 15;
     return this._oc(W, H);
   }
 
