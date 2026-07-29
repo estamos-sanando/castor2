@@ -631,13 +631,25 @@ html, body {
   animation: slideOutLeftCenter 0.35s ease forwards;
 }
 
-/* ── MODAL EMERGENTE AAA DE JUEGO (COMPACTO Y MODERNO) ── */
+/* ── MODAL EMERGENTE AAA DE JUEGO (CENTRADITO Y COMPACTO, NO EXTENDIDO) ── */
+#tutorial-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  animation: fade-in 0.4s ease;
+}
+
 .left-center-news-popup {
   position: absolute;
   left: 45px;
   top: 48%;
   transform: translateY(-50%);
-  width: 460px;
+  width: 480px;
   max-width: 90vw;
   z-index: 220;
   pointer-events: auto;
@@ -649,6 +661,9 @@ html, body {
 }
 
 .game-popup-modal {
+  width: 480px;
+  max-width: 90vw;
+  margin: auto;
   background: linear-gradient(135deg, rgba(14, 26, 18, 0.96), rgba(5, 12, 8, 0.98));
   border: 2px solid var(--gold);
   border-radius: 16px;
@@ -657,6 +672,7 @@ html, body {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.92), 0 0 25px rgba(212, 175, 55, 0.25) inset;
   backdrop-filter: blur(12px);
   position: relative;
+  box-sizing: border-box;
 }
 
 .popup-modal-header {
