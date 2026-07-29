@@ -296,7 +296,7 @@ class Entity {
       targetW = 24; // Guardaparque (~1.75m)
     } else if (this instanceof Dam) {
       const lvl = Math.max(1, Math.min(3, this.level));
-      targetW = lvl === 1 ? 68 : (lvl === 2 ? 88 : 110); // Dique ajustado al ancho del río
+      targetW = lvl === 1 ? 140 : (lvl === 2 ? 165 : 195); // Dique extendido de orilla a orilla del río
     } else if (this instanceof LogEntity) {
       targetW = 28; // Rama en el suelo
     } else if (this instanceof Rock) {
@@ -529,8 +529,8 @@ class Dam extends Entity {
     const imgH = this.sprite.naturalHeight || this.sprite.height || 150;
     const lvl = Math.max(1, Math.min(3, this.level));
 
-    // Dimensiones proporcionales al cauce del río (68px, 88px, 110px)
-    const targetW = lvl === 1 ? 68 : (lvl === 2 ? 88 : 110);
+    // Dimensiones de orilla a orilla del río (140px, 165px, 195px)
+    const targetW = lvl === 1 ? 140 : (lvl === 2 ? 165 : 195);
     const w = Math.round(targetW * (this.scale || 1.0));
     const h = Math.round(targetW * (imgH / imgW) * (this.scale || 1.0));
 

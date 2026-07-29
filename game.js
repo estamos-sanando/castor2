@@ -233,9 +233,16 @@ class BeaverGame {
       }
     }
 
-    // SOLO CUANDO LOS DOS DIQUES ESTÁN TERMINADOS EN DIQUEGRANDE SE ABRE LA VENTANA EMERGENTE
-    const damsLevel3 = this.entities.filter(e => e instanceof Dam && e.active && !e.dead && e.level === 3);
-    if (damsLevel3.length >= 2 && !this.floodedTriggered) {
+    // SOLO CUANDO LOS DOS DIQUES ESTÁN TERMINADOS EN DIQUEGRANDE (NIVEL 3) SE ABRE LA VENTANA EMERGENTE
+    const activeDams = this.entities.filter(e => e instanceof Dam && e.active && !e.dead);
+    const damsLevel3 = activeDams.filter(e => e.level === 3);
+
+    // Cambio progresivo de mapa al avanzar la construcción de diques
+    if (activeDams.some(d => d.level >= 2) && this.currentMap === 0) {
+      this._transitionToMap(1); // Transición suave a map_02_primer_deterioro.jpg
+    }
+
+    if (activeDams.length >= 2 && damsLevel3.length >= 2 && !this.floodedTriggered) {
       this.floodedTriggered = true;
       this.triggerFloodedCrisis();
     }
@@ -243,19 +250,20 @@ class BeaverGame {
 
   // ── Inundación y Transformación a Árboles Fantasma ──
   triggerFloodedCrisis() {
-    // Ventana central con overlay oscuro que obliga a leer antes del cambio de escena
+    // Ventana central con overlay azulado que resalta el impacto ecológico
     this.ui.showEditorialNewsCard({
-      title: '30.000 HECTÁREAS DE BOSQUES FANTASMA Y USD $66.5 MILLONES EN DAÑOS ANUALES',
-      subtitle: 'Las represas anegan el suelo, ahogan las raíces de los árboles en pie y destruyen las turberas.',
-      text: 'El agua estancada priva de oxígeno a las raíces de los árboles que quedan en pie, secándolos y convirtiéndolos en "bosques fantasma" grises e inertes. Además, destruye las turberas patagónicas, principales captadoras de carbono del planeta.',
+      title: '60.000 HECTÁREAS DE BOSQUES FANTASMA Y USD $66.5 MILLONES EN DAÑOS ANUALES',
+      subtitle: 'Las represas anegan el suelo, ahogan las raíces de las lengas y destruyen las turberas.',
+      text: 'El agua estancada priva de oxígeno a las raíces de los árboles en pie, secándolos y convirtiéndolos en "bosques fantasma" grises e inertes. Además, destruye las turberas patagónicas, principales captadoras de carbono del planeta.',
       quote: 'Las pérdidas económicas anuales superan los 66.5 millones de dólares en infraestructura, ganadería y conservación.',
       fact: 'Las inundaciones anegan puentes, carreteras y sistemas de agua potable en toda la Isla Grande.',
       year: '2005',
       centered: true,
+      bluish: true,
       onAccept: () => {
-        // AL DAR ACEPTAR SE CAMBIA EL MAPA Y DESAPARECEN LOS TOCONES!
+        // AL DAR ACEPTAR SE CAMBIA EL MAPA PROGRESIVAMENTE Y DESAPARECEN LOS TOCONES!
         this._transitionToMap(2); // map_04_bosque_inundado.jpg
-        this.stats.hectaresFlooded = 350;
+        this.stats.hectaresFlooded = 60000;
 
         // Eliminar tocones jóvenes y viejos y convertir árboles en Árboles Fantasma
         this.entities.forEach(e => {
@@ -271,7 +279,7 @@ class BeaverGame {
         // Mostrar la ventana de la Estrategia Binacional ANTES de abrir el inventario
         setTimeout(() => {
           this.showBinationalStrategyNews();
-        }, 1000);
+        }, 1200);
       }
     });
   }
@@ -412,7 +420,7 @@ class BeaverGame {
 
   _updateMapTransition(dt) {
     if (!this.crossfading) return;
-    this.mapAlpha -= dt * 1.2;
+    this.mapAlpha -= dt * 0.28; // Transición progresiva y suave de ~3.5s
     if (this.mapAlpha <= 0) {
       this.currentMap = this.targetMap;
       this.mapAlpha = 0;

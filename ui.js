@@ -138,7 +138,7 @@ class GameUI {
 
     if (opts.centered) {
       const overlayEl = document.createElement('div');
-      overlayEl.className = 'centered-news-overlay';
+      overlayEl.className = 'centered-news-overlay' + (opts.bluish ? ' bluish-theme' : '');
       overlayEl.innerHTML = `
         <div class="game-popup-modal centered-welcome-window">
           <div class="popup-modal-header">
