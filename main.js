@@ -1,24 +1,30 @@
 'use strict';
 /* ============================================================
-   MAIN.JS — Main Game Initialization, Controls & Loop Trigger
+   MAIN.JS — Inicialización del Motor Isométrico 2:1 y Eventos
    ============================================================ */
 
 window.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('game-canvas');
   if (!canvas) return;
 
-  const gameMap = new IsometricMap(24, 24, 64, 32);
+  // Matriz 16x16 con proyección isométrica 2:1 (64x32px)
+  const gameMap = new IsometricMap(16, 16, 64, 32);
   const camera = new Camera(canvas);
   const renderer = new IsoRenderer(canvas, gameMap, camera);
 
-  // Expose engine instance globally for UI and entities
+  // Instancia global para UI, entidades y simulación
   window.ISO_ENGINE = {
     map: gameMap,
     camera: camera,
     renderer: renderer
   };
 
-  // ── Event Listeners: Mouse Move, Pan & Tile Hover ──────────
+  // Instanciar el juego BeaverGame
+  if (typeof BeaverGame !== 'undefined') {
+    window.game = new BeaverGame();
+  }
+
+  // ── Eventos de Mouse: Pan, Zoom e Interactividad de Hover ──
   canvas.addEventListener('mousemove', (e) => {
     if (camera.isDragging) {
       const dx = e.clientX - camera.dragStart.x;
@@ -29,7 +35,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     const worldPos = camera.screenToWorld(e.clientX, e.clientY);
-    const gridPos = gameMap.engine.screenToGrid(
+    const gridPos = gameMap.engine.isoToGrid(
       worldPos.x,
       worldPos.y,
       gameMap.originX,
@@ -39,7 +45,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   canvas.addEventListener('mousedown', (e) => {
-    if (e.button === 1 || e.button === 2 || e.shiftKey) { // Middle click, right click or Shift+drag
+    if (e.button === 1 || e.button === 2 || e.shiftKey) { // Botón central, derecho o Shift
       camera.isDragging = true;
       camera.dragStart = { x: e.clientX, y: e.clientY };
     }
@@ -55,20 +61,4 @@ window.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     camera.zoomAt(e.clientX, e.clientY, e.deltaY);
   }, { passive: false });
-
-  // ── Debug Panel Buttons ──────────────────────────────────
-  document.getElementById('toggle-grid')?.addEventListener('click', (e) => {
-    gameMap.showGridLines = !gameMap.showGridLines;
-    e.target.textContent = `📐 Grilla (${gameMap.showGridLines ? 'ON' : 'OFF'})`;
-  });
-
-  document.getElementById('toggle-coords')?.addEventListener('click', (e) => {
-    gameMap.showCoords = !gameMap.showCoords;
-    e.target.textContent = `🔢 Coordenadas (${gameMap.showCoords ? 'ON' : 'OFF'})`;
-  });
-
-  document.getElementById('toggle-mode')?.addEventListener('click', (e) => {
-    gameMap.mode = gameMap.mode === 'static' ? 'tile' : 'static';
-    e.target.textContent = `🗺️ Modo: ${gameMap.mode === 'static' ? 'Ilustrado' : 'Mosaicos'}`;
-  });
 });

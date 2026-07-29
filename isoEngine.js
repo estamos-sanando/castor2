@@ -1,6 +1,7 @@
 'use strict';
 /* ============================================================
    ISOENGINE.JS — 2:1 Isometric Projection Math & Camera System
+   Convenciones de Proyección Isométrica 2:1 (TILE_W = 64, TILE_H = 32)
    ============================================================ */
 
 class IsoEngine {
@@ -12,18 +13,28 @@ class IsoEngine {
   }
 
   /**
-   * Convert logical grid coordinates (col, row) to world screen coordinates (x, y)
+   * Convierte coordenadas de grilla (col, row) a coordenadas de pantalla (x, y)
+   * @param {number} col - Columna lógica
+   * @param {number} row - Fila lógica
+   * @param {number} originX - Desplazamiento X del origen
+   * @param {number} originY - Desplazamiento Y del origen
+   * @returns {{x: number, y: number}} Coordenada de pantalla (centro del rombo)
    */
-  gridToScreen(col, row, originX = 0, originY = 0) {
+  gridToIso(col, row, originX = 640, originY = 120) {
     const x = (col - row) * this.halfW + originX;
     const y = (col + row) * this.halfH + originY;
     return { x, y };
   }
 
   /**
-   * Convert world screen coordinates (x, y) to logical grid coordinates (col, row)
+   * Convierte coordenadas de pantalla (screenX, screenY) a coordenadas de grilla (col, row)
+   * @param {number} screenX - Posición X en mundo
+   * @param {number} screenY - Posición Y en mundo
+   * @param {number} originX - Desplazamiento X del origen
+   * @param {number} originY - Desplazamiento Y del origen
+   * @returns {{col: number, row: number}} Casilla lógica seleccionada
    */
-  screenToGrid(screenX, screenY, originX = 0, originY = 0) {
+  isoToGrid(screenX, screenY, originX = 640, originY = 120) {
     const dx = screenX - originX;
     const dy = screenY - originY;
 
@@ -33,7 +44,7 @@ class IsoEngine {
   }
 
   /**
-   * Draw isometric diamond tile outline
+   * Dibuja el contorno de un rombo isométrico 2:1
    */
   drawIsoDiamond(ctx, x, y, color = 'rgba(255, 255, 255, 0.4)', lineWidth = 1) {
     ctx.save();
@@ -50,7 +61,7 @@ class IsoEngine {
   }
 
   /**
-   * Fill isometric diamond tile
+   * Rellena un rombo isométrico 2:1
    */
   fillIsoDiamond(ctx, x, y, color = 'rgba(46, 204, 113, 0.3)') {
     ctx.save();

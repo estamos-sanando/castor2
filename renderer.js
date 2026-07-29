@@ -1,7 +1,8 @@
 'use strict';
 /* ============================================================
    RENDERER.JS — Dynamic Layering & Depth Sorting (Y-Sorting Pipeline)
-   Performance & Visual Alignment Optimization
+   - Punto de Anclaje (Anchor Point): Bottom-Center (0.5, 1.0)
+   - Y-Sorting: Ordenamiento dinámico según la coordenada Y base
    ============================================================ */
 
 class IsoRenderer {
@@ -12,7 +13,6 @@ class IsoRenderer {
     this.camera = camera;
     this.hoverTile = null;
 
-    // Set high-quality canvas rendering defaults
     this.ctx.imageSmoothingEnabled = true;
     this.ctx.imageSmoothingQuality = 'high';
   }
@@ -29,22 +29,24 @@ class IsoRenderer {
     const ctx = this.ctx;
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
-    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    ctx.fillStyle = '#040c04';
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     ctx.save();
     this.camera.applyTransform(ctx);
 
-    // ── 1. BASE LAYER: Background Map Illustration or Cached Tile System ──
-    if (this.map.mode === 'static') {
-      gameState.drawBackground(ctx);
-      this.map.renderGridOverlay(ctx);
-    } else {
+    // ── 1. RENDERIZADO DEL TERRENO ISOMÉTRICO (BASE LAYER) ──
+    if (this.map.mode === 'tile' || !gameState.maps || !gameState.mapLoaded || !gameState.mapLoaded[gameState.currentMap]) {
       this.map.renderTiles(ctx);
+    } else {
+      gameState.drawBackground(ctx);
     }
+    this.map.renderGridOverlay(ctx);
 
-    // ── 2. HOVER TILE HIGHLIGHT LAYER ──
+    // ── 2. HOVER Y SELECCIÓN DE CASILLA (INTERACTIVO) ──
     if (this.hoverTile) {
-      const pos = this.map.engine.gridToScreen(
+      const pos = this.map.engine.gridToIso(
         this.hoverTile.col,
         this.hoverTile.row,
         this.map.originX,
@@ -54,17 +56,17 @@ class IsoRenderer {
       this.map.engine.drawIsoDiamond(ctx, pos.x, pos.y, 'rgba(255, 255, 255, 0.9)', 2);
     }
 
-    // ── 3. ENTITY & PROP LAYER (Strict Y-Sorting Pipeline) ──
+    // ── 3. RENDERIZADO DE ENTIDADES CON Y-SORTING (PROFUNDIDAD) ──
     const renderableEntities = [...gameState.entities];
 
-    // Sort dynamically based on baseline Y position (screenY at feet / trunk base)
+    // Y-Sorting: Ordenamiento en profundidad por la base Y del objeto
     renderableEntities.sort((a, b) => a.baseY - b.baseY);
 
     for (const entity of renderableEntities) {
       entity.draw(ctx);
     }
 
-    // Render particle effects
+    // Sistema de partículas
     if (gameState.particles) {
       gameState.particles.draw(ctx);
     }

@@ -1,18 +1,22 @@
 'use strict';
 /* ============================================================
-   TILEDATA.JS — Terrain Types & AoE2-Style Diamond Tile Textures
+   TILEDATA.JS — Estados Visuales Dinámicos de Casillas (Tiles 2:1)
+   - TERRENO_SANO: Pasto/suelo patagónico limpio.
+   - AGUA_RIO: Casilla del río central en flujo normal.
+   - DIQUE: Casilla del río bloqueada por madera acumulada.
+   - INUNDADO_BARRO: Casilla terrestre adyacente que cambia a tono lodoso/pantano.
    ============================================================ */
 
-const TerrainType = Object.freeze({
-  GRASS_PRISTINE: 'GRASS_PRISTINE',
-  DIRT_MUD:       'DIRT_MUD',
-  WATER_RIVER:    'WATER_RIVER',
-  WATER_SWAMP:    'WATER_SWAMP',
-  SHORELINE:      'SHORELINE'
+const TileState = Object.freeze({
+  TERRENO_SANO:    'TERRENO_SANO',
+  AGUA_RIO:        'AGUA_RIO',
+  DIQUE:           'DIQUE',
+  INUNDADO_BARRO:  'INUNDADO_BARRO'
 });
 
-const TERRAIN_CONFIG = Object.freeze({
-  [TerrainType.GRASS_PRISTINE]: {
+const TILE_CONFIG = Object.freeze({
+  [TileState.TERRENO_SANO]: {
+    name: 'Terreno Sano (Pasto Patagónico)',
     baseColor: '#2e7d32',
     accentColor: '#388e3c',
     borderColor: '#1b5e20',
@@ -20,15 +24,8 @@ const TERRAIN_CONFIG = Object.freeze({
     water: false,
     buildable: true
   },
-  [TerrainType.DIRT_MUD]: {
-    baseColor: '#6d4c41',
-    accentColor: '#5d4037',
-    borderColor: '#3e2723',
-    walkable: true,
-    water: false,
-    buildable: true
-  },
-  [TerrainType.WATER_RIVER]: {
+  [TileState.AGUA_RIO]: {
+    name: 'Cauce del Río (Agua)',
     baseColor: '#1976d2',
     accentColor: '#0288d1',
     borderColor: '#0d47a1',
@@ -36,27 +33,29 @@ const TERRAIN_CONFIG = Object.freeze({
     water: true,
     buildable: true
   },
-  [TerrainType.WATER_SWAMP]: {
-    baseColor: '#00695c',
-    accentColor: '#004d40',
-    borderColor: '#00251a',
-    walkable: false,
-    water: true,
-    buildable: false
-  },
-  [TerrainType.SHORELINE]: {
-    baseColor: '#8d6e63',
-    accentColor: '#4e342e',
+  [TileState.DIQUE]: {
+    name: 'Dique de Castor (Represa)',
+    baseColor: '#795548',
+    accentColor: '#5d4037',
     borderColor: '#3e2723',
     walkable: true,
     water: false,
-    buildable: true
+    buildable: false
+  },
+  [TileState.INUNDADO_BARRO]: {
+    name: 'Suelo Inundado (Barro / Pantano)',
+    baseColor: '#4e342e',
+    accentColor: '#3e2723',
+    borderColor: '#261712',
+    walkable: true,
+    water: true,
+    buildable: false
   }
 });
 
 class TileTextureGenerator {
-  static createDiamondCanvas(type, tileW = 64, tileH = 32) {
-    const config = TERRAIN_CONFIG[type] || TERRAIN_CONFIG[TerrainType.GRASS_PRISTINE];
+  static createDiamondCanvas(state, tileW = 64, tileH = 32) {
+    const config = TILE_CONFIG[state] || TILE_CONFIG[TileState.TERRENO_SANO];
     const canvas = document.createElement('canvas');
     canvas.width = tileW;
     canvas.height = tileH;
@@ -65,7 +64,7 @@ class TileTextureGenerator {
     const halfW = tileW / 2;
     const halfH = tileH / 2;
 
-    // Draw base isometric diamond
+    // Dibujar rombo isométrico 2:1
     ctx.beginPath();
     ctx.moveTo(halfW, 0);
     ctx.lineTo(tileW, halfH);
@@ -73,14 +72,13 @@ class TileTextureGenerator {
     ctx.lineTo(0, halfH);
     ctx.closePath();
 
-    // Radial gradient fill styled like AoE2 terrain tiles
+    // Relleno de gradiente suave estilo AoE2
     const grad = ctx.createRadialGradient(halfW, halfH, 2, halfW, halfH, halfW);
     grad.addColorStop(0, config.accentColor);
     grad.addColorStop(1, config.baseColor);
     ctx.fillStyle = grad;
     ctx.fill();
 
-    // Subtle edge highlight
     ctx.strokeStyle = config.borderColor;
     ctx.lineWidth = 0.5;
     ctx.stroke();
