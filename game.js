@@ -291,10 +291,11 @@ class BeaverGame {
     });
   }
 
-  // ── Colocación de Cabaña y Cartel -> Proyecto Binacional ENEEI (2016) ──
+  // ── Colocación de Cabaña y Cartel -> Proyecto Binacional ENEEI ──
   placeCabin(x, y) {
     if (this.cabinPlaced) return;
     this.cabinPlaced = true;
+    this.cabinPos = { x, y };
     const cabin = new Rock(x, y, 1); // cabana.png
     cabin.scale = 1.4;
     this.entities.push(cabin);
@@ -317,13 +318,19 @@ class BeaverGame {
       this.showPlacementArrow = false;
       this.ui.closeSidebarPanel();
 
-      const cx = 480, cy = 320;
-      const ranger1 = new Ranger(cx + 40, cy + 20);
-      ranger1.setPatrol([{ x: cx + 40, y: cy + 20 }, { x: 620, y: 320 }, { x: cx + 40, y: cy + 20 }]);
+      // Los guardaparques emergen directamente desde la posición de la Cabaña
+      const cx = this.cabinPos ? this.cabinPos.x : 900;
+      const cy = this.cabinPos ? this.cabinPos.y : 500;
+
+      // Ráfaga visual en la puerta de la cabaña
+      this.particles.burst(cx, cy - 10, 'leaf', 18);
+
+      const ranger1 = new Ranger(cx, cy);
+      ranger1.setPatrol([{ x: cx, y: cy }, { x: 620, y: 320 }, { x: 480, y: 300 }, { x: cx, y: cy }]);
       this.entities.push(ranger1);
 
-      const ranger2 = new Ranger(cx - 40, cy + 30);
-      ranger2.setPatrol([{ x: cx - 40, y: cy + 30 }, { x: 640, y: 440 }, { x: cx - 40, y: cy + 30 }]);
+      const ranger2 = new Ranger(cx, cy);
+      ranger2.setPatrol([{ x: cx, y: cy }, { x: 640, y: 440 }, { x: 520, y: 420 }, { x: cx, y: cy }]);
       this.entities.push(ranger2);
 
       const cage1 = new Cage(610, 300);
@@ -331,7 +338,7 @@ class BeaverGame {
       this.entities.push(cage1);
       this.entities.push(cage2);
 
-      // Iniciar simulación de guardaparques y abrir minijuego de 30 segundos a la izquierda
+      // Iniciar simulación y abrir minijuego de captura a 60 FPS
       this.startRangerSimulation();
       this.ui.openBeaverCatcherMinigame();
     }
