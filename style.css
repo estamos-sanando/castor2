@@ -545,12 +545,12 @@ html, body {
   transition: all 0.2s ease;
 }
 
-/* ── VENTANA LATERAL IZQUIERDA DE INVENTARIO ENEEI ── */
+/* ── VENTANA LATERAL IZQUIERDA DE INVENTARIO ENEEI (DEL LADO IZQUIERDO) ── */
 #eneei-sidebar-panel {
   position: absolute;
-  top: 100px;
-  left: 20px;
-  width: 290px;
+  top: 30px;
+  left: 24px;
+  width: 280px;
   z-index: 180;
   animation: slideInLeft 0.4s cubic-bezier(0.17, 0.67, 0.36, 1.2);
 }
