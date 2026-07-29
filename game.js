@@ -464,29 +464,18 @@ class BeaverGame {
 
     this.particles.draw(ctx);
 
-    // Flecha animada de señalización en el claro inferior derecho (x: 900, y: 500)
+    // Flecha animada de señalización (SOLO FLECHA SIN TEXTO)
     if (this.showPlacementArrow && (!this.cabinPlaced || !this.signPlaced)) {
       const targetX = 900, targetY = 500;
-      const bounceY = targetY - 45 + Math.sin(Date.now() * 0.006) * 10;
+      const bounceY = targetY - 30 + Math.sin(Date.now() * 0.006) * 12;
 
       ctx.save();
-      ctx.strokeStyle = '#22c55e';
-      ctx.lineWidth = 2.5;
-      ctx.setLineDash([6, 6]);
-      ctx.beginPath();
-      ctx.ellipse(targetX, targetY, 85, 42, 0, 0, Math.PI * 2);
-      ctx.stroke();
-
       ctx.fillStyle = '#22c55e';
-      ctx.shadowColor = 'rgba(34, 197, 94, 0.9)';
-      ctx.shadowBlur = 16;
-      ctx.font = 'bold 36px sans-serif';
+      ctx.shadowColor = 'rgba(34, 197, 94, 0.95)';
+      ctx.shadowBlur = 20;
+      ctx.font = 'bold 42px sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText('⬇️', targetX, bounceY);
-
-      ctx.font = 'bold 12px Cinzel, serif';
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText('📍 INSTALAR CABAÑA Y CARTEL AQUÍ', targetX, bounceY - 35);
       ctx.restore();
     }
   }
