@@ -727,7 +727,7 @@ class Beaver extends Entity {
       this.targetLog.claimed = true;
       this.carryingLog = true;
       this.action = 'carry';
-      const river = game.getNearestRiverPoint(this.x, this.y);
+      const river = game.getNearestRiverPoint(this.x, this.y, this);
       this.targetX = river.x; this.targetY = river.y;
       this.state = 'walk_river';
     } else {

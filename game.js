@@ -83,10 +83,12 @@ class BeaverGame {
     });
   }
 
-  getNearestRiverPoint(x, y) {
+  getNearestRiverPoint(x, y, beaver) {
+    const isUpper = beaver ? (beaver.id % 2 === 0) : (y < 380);
+    const targetY = isUpper ? 260 : 440;
     return {
-      x: 640 + (Math.random() - 0.5) * 30,
-      y: Math.max(160, Math.min(620, y + (Math.random() - 0.5) * 40))
+      x: 640 + (Math.random() - 0.5) * 20,
+      y: targetY + (Math.random() - 0.5) * 20
     };
   }
 
@@ -148,7 +150,7 @@ class BeaverGame {
 
     this.ui.showNews({
       title: '🚨 INVASIÓN EN CURSO (1965-2005)',
-      text: 'Los 20 castores avanzan hacia los árboles de Lenga, talan la madera, transportan las ramas al río y construyen represas que inunda el bosque.',
+      text: 'Los 20 castores se dividen en 2 equipos de 10 castores que construyen colaborativamente los 2 diques principales del río central.',
       type: 'warning'
     });
   }
@@ -167,30 +169,44 @@ class BeaverGame {
     this.stats.health = Math.max(0, 100 - this.stats.forestLoss);
   }
 
-  // ── Evento: Entrega de Madera al Río -> Acumulación de Diques ──
+  // ── Evento: Entrega de Madera al Río -> 2 Diques Colectivos (10 Castores por Dique) ──
   onBeaverDeliveredWood(beaver) {
     this.stats.woodDelivered++;
-    
-    // Buscar dique existente en el centro del río
-    let dam = this.entities.find(e => e instanceof Dam && e.active && !e.dead);
+
+    // Asignación de Dique según el equipo del castor (Par: Dique Norte, Impar: Dique Sur)
+    const isUpper = (beaver.id % 2 === 0);
+    const damX = 640;
+    const damY = isUpper ? 260 : 440;
+
+    let dam = this.entities.find(e => e instanceof Dam && e.active && !e.dead && Math.hypot(e.x - damX, e.y - damY) < 60);
     if (!dam) {
-      dam = new Dam(640, 360);
+      dam = new Dam(damX, damY);
+      dam.woodCount = 0;
       this.entities.push(dam);
-      this.stats.dams = 1;
     }
 
-    // 3 entregas = Dique Chico (1) + Deterioro, 6 = Dique Mediano (2), 9 = Dique Grande (3) + Inundación
-    if (this.stats.woodDelivered >= 9) {
+    dam.woodCount = (dam.woodCount || 0) + 1;
+    this.stats.dams = this.entities.filter(e => e instanceof Dam && e.active && !e.dead).length;
+
+    // Acumulación colectiva de madera por dique: 4 entregas = Chico (1), 8 = Mediano (2), 12 = Grande (3)
+    if (dam.woodCount >= 12) {
       dam.level = 3;
       dam._refreshSprite();
-      this.triggerFloodedCrisis();
-    } else if (this.stats.woodDelivered >= 6) {
+    } else if (dam.woodCount >= 7) {
       dam.level = 2;
       dam._refreshSprite();
-      this._transitionToMap(2); // Mapa 04 Inundado
-    } else if (this.stats.woodDelivered >= 3) {
+    } else if (dam.woodCount >= 3) {
       dam.level = 1;
       dam._refreshSprite();
+    }
+
+    // Evaluación global de diques para cambio de mapa e inundación
+    const activeDams = this.entities.filter(e => e instanceof Dam && e.active && !e.dead);
+    const totalLevel = activeDams.reduce((sum, d) => sum + (d.level || 0), 0);
+
+    if (totalLevel >= 5) {
+      this.triggerFloodedCrisis();
+    } else if (totalLevel >= 2) {
       this._transitionToMap(1); // Mapa 02 Primer deterioro
     }
   }
