@@ -459,8 +459,121 @@ html, body {
   transition: all 0.2s ease;
 }
 
+/* ── VENTANA LATERAL IZQUIERDA DE INVENTARIO ENEEI ── */
+#eneei-sidebar-panel {
+  position: absolute;
+  top: 100px;
+  left: 20px;
+  width: 290px;
+  z-index: 180;
+  animation: slideInLeft 0.4s cubic-bezier(0.17, 0.67, 0.36, 1.2);
+}
+
+.sidebar-card {
+  background: linear-gradient(135deg, rgba(12, 22, 16, 0.95), rgba(5, 12, 8, 0.98));
+  border: 2px solid var(--gold);
+  border-radius: 14px;
+  padding: 16px 18px;
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.9), 0 0 15px rgba(212, 175, 55, 0.25) inset;
+  backdrop-filter: blur(10px);
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  padding-bottom: 6px;
+}
+
+.sidebar-header h4 {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  color: var(--gold-light);
+  margin: 0;
+}
+
+.sidebar-desc {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: #d1d5db;
+  margin-bottom: 12px;
+}
+
+.sidebar-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar-item {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1.5px dashed rgba(212, 175, 55, 0.6);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sidebar-item:hover {
+  transform: translateX(4px);
+  background: rgba(212, 175, 55, 0.15);
+  border-color: var(--gold);
+}
+
+.sidebar-item.installed {
+  border-style: solid;
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+  cursor: default;
+}
+
+.item-preview {
+  width: 46px;
+  height: 46px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-img {
+  max-width: 38px;
+  max-height: 38px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7));
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.item-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.item-status {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
 /* ── MODALES DE INVENTARIO Y MINIJUEGOS ENEEI ── */
-#cabin-inventory-modal, #precision-minigame-modal {
+#precision-minigame-modal {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.75);

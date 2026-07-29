@@ -226,38 +226,56 @@ class BeaverGame {
     }, 2500);
   }
 
-  // ── Colocación de Cabaña -> Acuerdo Argentina y Chile + Aparición de Guardaparques ──
+  // ── Colocación de Cabaña y Cartel -> Requisito de Ambos para Iniciar Minijuego ──
   placeCabin(x, y) {
+    if (this.cabinPlaced) return;
     this.cabinPlaced = true;
-    const cabin = new Rock(x, y, 2); // cabana.png
+    const cabin = new Rock(x, y, 1); // cabana.png
     cabin.scale = 1.4;
     this.entities.push(cabin);
+    this.particles.burst(x, y - 20, 'wood', 14);
+    this.checkBothItemsInstalled();
+  }
 
-    // Instanciar guardaparques custodiando el área de la cabaña
-    const ranger1 = new Ranger(x + 40, y + 20);
-    ranger1.setPatrol([{ x: x + 40, y: y + 20 }, { x: 620, y: 320 }, { x: x + 40, y: y + 20 }]);
-    this.entities.push(ranger1);
+  placeSign(x, y) {
+    if (this.signPlaced) return;
+    this.signPlaced = true;
+    const sign = new Rock(x, y, 0); // cartel.png
+    sign.scale = 1.2;
+    this.entities.push(sign);
+    this.particles.burst(x, y - 15, 'wood', 10);
+    this.checkBothItemsInstalled();
+  }
 
-    const ranger2 = new Ranger(x - 40, y + 30);
-    ranger2.setPatrol([{ x: x - 40, y: y + 30 }, { x: 640, y: 440 }, { x: x - 40, y: y + 30 }]);
-    this.entities.push(ranger2);
+  checkBothItemsInstalled() {
+    if (this.cabinPlaced && this.signPlaced) {
+      this.ui.closeSidebarPanel();
 
-    // Instanciar trampas jaula en la ribera del río
-    const cage1 = new Cage(610, 300);
-    const cage2 = new Cage(650, 420);
-    this.entities.push(cage1);
-    this.entities.push(cage2);
+      const cx = 480, cy = 320;
+      const ranger1 = new Ranger(cx + 40, cy + 20);
+      ranger1.setPatrol([{ x: cx + 40, y: cy + 20 }, { x: 620, y: 320 }, { x: cx + 40, y: cy + 20 }]);
+      this.entities.push(ranger1);
 
-    this.ui.showNews({
-      title: '📜 ACUERDO BINACIONAL ARGENTINA-CHILE (ENEEI 2016)',
-      text: 'Se instaló el puesto de control del guardaparques. Se inicia la estrategia de erradicación humanitaria con trampas jaula y restauración de cuencas.',
-      type: 'info'
-    });
+      const ranger2 = new Ranger(cx - 40, cy + 30);
+      ranger2.setPatrol([{ x: cx - 40, y: cy + 30 }, { x: 640, y: 440 }, { x: cx - 40, y: cy + 30 }]);
+      this.entities.push(ranger2);
 
-    // Abrir Minijuego de Precisión tras 1.5 segundos
-    setTimeout(() => {
-      this.ui.openPrecisionMinigame();
-    }, 1500);
+      const cage1 = new Cage(610, 300);
+      const cage2 = new Cage(650, 420);
+      this.entities.push(cage1);
+      this.entities.push(cage2);
+
+      this.ui.showNews({
+        title: '📜 ACUERDO BINACIONAL ARGENTINA-CHILE (ENEEI 2016)',
+        text: 'Se instalaron la Cabaña de Control y el Cartel Informativo. Se inicia la estrategia de erradicación humanitaria con trampas jaula y restauración de cuencas.',
+        type: 'info'
+      });
+
+      // Abrir Minijuego de Precisión tras 1.5 segundos
+      setTimeout(() => {
+        this.ui.openPrecisionMinigame();
+      }, 1500);
+    }
   }
 
   // ── Éxito del Minijuego -> Simulación de Guardaparques Capturando Castores ──

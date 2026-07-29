@@ -1,6 +1,6 @@
 'use strict';
 /* ============================================================
-   UI.JS — Interfaz de Usuario, Modales Periodísticos y Minijuegos
+   UI.JS — Interfaz de Usuario, Panel Lateral ENEEI y Minijuegos
    ============================================================ */
 
 class GameUI {
@@ -93,26 +93,68 @@ class GameUI {
     });
   }
 
-  // ── Modal de Inventario: Arrastrar Cabaña del Guardaparques ──
+  // ── Ventana Lateral Izquierda de Inventario ENEEI: Cabaña + Cartel ──
   showCabinInventory() {
-    const invEl = document.createElement('div');
-    invEl.id = 'cabin-inventory-modal';
-    invEl.innerHTML = `
-      <div class="modal-card">
-        <h3>📜 INVENTARIO ENEEI: ACUERDO ARGENTINA Y CHILE</h3>
-        <p>Selecciona e instala la <strong>Cabaña del Guardaparques</strong> en el mapa para iniciar la estrategia binacional de captura y control.</p>
-        <div class="drag-item-container" id="drag-cabin-btn">
-          <img src="assets/cabana.png" alt="Cabaña Guardaparques" class="cabin-icon-img" />
-          <span>🏕️ INSTALAR CABAÑA DE CONTROL</span>
+    if (document.getElementById('eneei-sidebar-panel')) return;
+
+    const sidebar = document.createElement('div');
+    sidebar.id = 'eneei-sidebar-panel';
+    sidebar.innerHTML = `
+      <div class="sidebar-card">
+        <div class="sidebar-header">
+          <span class="sidebar-icon">📜</span>
+          <h4>INVENTARIO DE CONTROL ENEEI</h4>
+        </div>
+        <p class="sidebar-desc">Tratado Binacional Argentina-Chile. Haz clic o arrastra los <strong>2 elementos</strong> al mapa para instalarlos:</p>
+        
+        <div class="sidebar-items">
+          <div class="sidebar-item" id="btn-place-cabin">
+            <div class="item-preview">
+              <img src="assets/cabana.png" alt="Cabaña" class="sidebar-img" />
+            </div>
+            <div class="item-info">
+              <span class="item-title">1. Cabaña Guardaparques</span>
+              <span class="item-status" id="status-cabin">⚪ Pendiente</span>
+            </div>
+          </div>
+
+          <div class="sidebar-item" id="btn-place-sign">
+            <div class="item-preview">
+              <img src="assets/cartel.png" alt="Cartel" class="sidebar-img" />
+            </div>
+            <div class="item-info">
+              <span class="item-title">2. Cartel Informativo</span>
+              <span class="item-status" id="status-sign">⚪ Pendiente</span>
+            </div>
+          </div>
         </div>
       </div>
     `;
-    document.getElementById('game-container').appendChild(invEl);
+    document.getElementById('game-container').appendChild(sidebar);
 
-    document.getElementById('drag-cabin-btn')?.addEventListener('click', () => {
-      invEl.remove();
+    document.getElementById('btn-place-cabin')?.addEventListener('click', () => {
+      if (this.game.cabinPlaced) return;
       this.game.placeCabin(480, 320);
+      document.getElementById('status-cabin').textContent = '🟢 Instalado';
+      document.getElementById('status-cabin').style.color = '#22c55e';
+      document.getElementById('btn-place-cabin').classList.add('installed');
     });
+
+    document.getElementById('btn-place-sign')?.addEventListener('click', () => {
+      if (this.game.signPlaced) return;
+      this.game.placeSign(410, 360);
+      document.getElementById('status-sign').textContent = '🟢 Instalado';
+      document.getElementById('status-sign').style.color = '#22c55e';
+      document.getElementById('btn-place-sign').classList.add('installed');
+    });
+  }
+
+  closeSidebarPanel() {
+    const sidebar = document.getElementById('eneei-sidebar-panel');
+    if (sidebar) {
+      sidebar.classList.add('fade-out');
+      setTimeout(() => sidebar.remove(), 400);
+    }
   }
 
   // ── Minijuego de Precisión: Captura Humanitaria de Castor ──

@@ -220,9 +220,11 @@ class SpritePainter {
   }
 
   static rock(variant = 0) {
-    const realImg = getLoadedImg('rock_1') || getLoadedImg('rock_2');
+    const key = (variant === 1 || variant === 2) ? 'rock_2' : 'rock_1';
+    const realImg = getLoadedImg(key) || getLoadedImg('rock_1');
     if (realImg) {
-      const W = 36, H = Math.round(36 * (realImg.height / realImg.width));
+      const W = (variant === 1 || variant === 2) ? 68 : 44;
+      const H = Math.round(W * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
       ctx.drawImage(realImg, 0, 0, W, H);
       return c;
