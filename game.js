@@ -112,6 +112,14 @@ class BeaverGame {
     this._startLoop();
   }
 
+  start() {
+    this.started = true;
+    this.running = true;
+    if (STAGES && STAGES[0] && STAGES[0].news) {
+      this.ui.showNews(STAGES[0].news);
+    }
+  }
+
   _preloadMaps() {
     STAGES.forEach((stage, i) => {
       const img = new Image();
@@ -448,6 +456,3 @@ class BeaverGame {
   }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  window.GAME = new BeaverGame();
-});
