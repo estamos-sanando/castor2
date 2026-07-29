@@ -281,7 +281,6 @@ class BeaverGame {
       text: 'Técnicos y guardaparques especializados instalan puestos de monitoreo y trampas jaula para erradicar focos invasores y evitar que el castor cruce a la Patagonia continental.',
       fact: 'Es una de las iniciativas binacionales de control de especies exóticas invasoras más ambiciosas del planeta.',
       year: '2016',
-      centered: true,
       onAccept: () => {
         // AL DAR ACEPTAR SE DESPEJA LA ZONA INFERIOR DERECHA Y SE MUESTRA LA FLECHA Y EL INVENTARIO
         this.prepareClearingForCabin();
