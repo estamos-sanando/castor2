@@ -315,33 +315,35 @@ class Entity {
     const w = Math.round(targetW * scaleFactor);
     const h = Math.round(targetW * (imgH / imgW) * scaleFactor);
 
-    // ── SOMBRAS ADAPTATIVAS CON OCLUSIÓN AMBIENTAL E INCLINACIÓN SOLAR ──
+    // ── SOMBRAS ISOMÉTRICAS REALISTAS CON PROYECCIÓN SOLAR Y OCLUSIÓN DE RAÍZ ──
     const isTree = (this instanceof Tree);
     const isStump = isTree && (this.state === 'stump_fresh' || this.state === 'stump_old');
-    const yOffset = (isTree && !isStump) ? Math.round(h * 0.07) : 0;
+    const yOffset = (isTree && !isStump) ? Math.round(h * 0.04) : 0;
     const shadowBaseY = Math.round(this.y - yOffset);
     const centerX = Math.round(this.x);
 
     if (isTree) {
       const isDead = this.state === 'dead' || this.state === 'flooded';
 
-      // 1. Sombra proyectada de la copa (inclinación solar isométrica)
       if (!isStump) {
-        const canopyScale = isDead ? 0.45 : 0.75;
-        const cW = Math.max(14, Math.round(w * canopyScale));
-        const cH = Math.max(6, Math.round(cW * 0.40));
-        const projX = centerX + Math.round(cW * 0.18);
-        const projY = shadowBaseY + Math.round(cH * 0.15);
+        // 1. SOMBRA DE COPA EXTENDIDA (Proyección isométrica suave hacia abajo-derecha)
+        const cW = Math.max(24, Math.round(w * (isDead ? 0.65 : 1.15)));
+        const cH = Math.max(10, Math.round(h * (isDead ? 0.22 : 0.35)));
+        
+        // Offset solar realista hacia la derecha-abajo (+X, +Y)
+        const projX = centerX + Math.round(w * 0.25);
+        const projY = shadowBaseY + Math.round(cH * 0.22);
 
         ctx.save();
         ctx.translate(projX, projY);
-        ctx.rotate(0.22); // Inclinación isométrica natural (~12 deg)
+        ctx.rotate(0.26); // Inclinación isométrica natural (~15 deg)
         
-        const grad = ctx.createRadialGradient(0, 0, cW * 0.08, 0, 0, cW * 0.5);
-        const alphaMax = isDead ? 0.15 : 0.30;
-        grad.addColorStop(0, `rgba(4, 20, 8, ${alphaMax})`);
-        grad.addColorStop(0.6, `rgba(6, 26, 10, ${alphaMax * 0.55})`);
-        grad.addColorStop(1, 'rgba(6, 26, 10, 0)');
+        const grad = ctx.createRadialGradient(0, 0, cW * 0.05, 0, 0, cW * 0.5);
+        const maxOpacity = isDead ? 0.18 : 0.34;
+        grad.addColorStop(0, `rgba(8, 28, 10, ${maxOpacity})`);
+        grad.addColorStop(0.5, `rgba(10, 32, 12, ${maxOpacity * 0.55})`);
+        grad.addColorStop(0.85, `rgba(12, 38, 15, ${maxOpacity * 0.20})`);
+        grad.addColorStop(1, 'rgba(12, 38, 15, 0)');
         
         ctx.fillStyle = grad;
         ctx.beginPath();
@@ -350,21 +352,28 @@ class Entity {
         ctx.restore();
       }
 
-      // 2. Oclusión ambiental del tronco (contacto de raíces/tocón con el suelo)
-      const rootW = Math.max(6, Math.round(w * (isStump ? 0.65 : 0.28)));
-      const rootH = Math.max(3, Math.round(rootW * 0.35));
-      ctx.fillStyle = 'rgba(2, 12, 4, 0.48)';
+      // 2. OCLUSIÓN AMBIENTAL DE LA RAÍZ / TRONCO (Punto de contacto con la tierra)
+      const rootW = Math.max(8, Math.round(w * (isStump ? 0.85 : 0.32)));
+      const rootH = Math.max(4, Math.round(rootW * 0.38));
+      
+      const rootGrad = ctx.createRadialGradient(centerX, shadowBaseY - 1, rootW * 0.05, centerX, shadowBaseY - 1, rootW * 0.5);
+      rootGrad.addColorStop(0, 'rgba(2, 14, 4, 0.62)');
+      rootGrad.addColorStop(0.7, 'rgba(4, 18, 6, 0.30)');
+      rootGrad.addColorStop(1, 'rgba(4, 18, 6, 0)');
+
+      ctx.fillStyle = rootGrad;
       ctx.beginPath();
       ctx.ellipse(centerX, shadowBaseY - 1, rootW * 0.5, rootH * 0.5, 0, 0, Math.PI * 2);
       ctx.fill();
 
     } else {
-      // Sombras adaptativas para otras entidades (castores, guardaparques, diques, etc.)
-      const shadowW = Math.max(8, Math.round(w * 0.42));
-      const shadowH = Math.max(3, Math.round(shadowW * 0.28));
+      // Sombras adaptativas para castores, guardaparques, diques y objetos
+      const shadowW = Math.max(10, Math.round(w * 0.48));
+      const shadowH = Math.max(4, Math.round(shadowW * 0.32));
       
       const grad = ctx.createRadialGradient(centerX, shadowBaseY - 1, shadowW * 0.05, centerX, shadowBaseY - 1, shadowW * 0.5);
-      grad.addColorStop(0, 'rgba(0, 0, 0, 0.38)');
+      grad.addColorStop(0, 'rgba(0, 0, 0, 0.45)');
+      grad.addColorStop(0.7, 'rgba(0, 0, 0, 0.20)');
       grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
       
       ctx.fillStyle = grad;
