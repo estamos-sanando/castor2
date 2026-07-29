@@ -153,7 +153,8 @@ class BeaverGame {
     for (let i = 0; i < 20; i++) {
       const rx = 600 + (Math.random() - 0.5) * 80;
       const ry = 180 + Math.random() * 400;
-      const b = new Beaver(rx, ry);
+      const isBuilder = (i < 8); // Los primeros 8 castores son constructores de diques
+      const b = new Beaver(rx, ry, false, isBuilder);
       this.entities.push(b);
     }
     this.beaversReleased = 20;
@@ -456,6 +457,35 @@ class BeaverGame {
     return this.speedMultiplier === 2.0;
   }
 
+  _updateProliferation(dt) {
+    if (this.act !== 2) return;
+
+    this._proliferateTimer = (this._proliferateTimer || 0) + dt;
+    
+    // Multiplicación progresiva de castores cada 1.5s hasta alcanzar los 60 castores
+    if (this._proliferateTimer >= 1.5) {
+      this._proliferateTimer = 0;
+
+      const activeBeavers = this.entities.filter(e => e instanceof Beaver && !e.dead && !e.captured);
+      if (activeBeavers.length < 60) {
+        const isLeft = Math.random() < 0.5;
+        const rx = isLeft ? (60 + Math.random() * 450) : (750 + Math.random() * 450);
+        const ry = 120 + Math.random() * 520;
+        
+        // Castores de proliferación (isBuilder = false): talan sin construir diques adicionales
+        const babyBeaver = new Beaver(rx, ry, Math.random() < 0.35, false);
+        this.entities.push(babyBeaver);
+
+        if (this.particles) {
+          this.particles.burst(rx, ry - 10, 'wood', 4);
+        }
+      }
+    }
+
+    const currentBeavers = this.entities.filter(e => e instanceof Beaver && !e.dead && !e.captured);
+    this.stats.beavers = currentBeavers.length;
+  }
+
   _update(dt) {
     if (!this.started) return;
     const effectiveDt = dt * (this.speedMultiplier || 1.0);
@@ -464,6 +494,7 @@ class BeaverGame {
     this.timelinePct = Math.min(1, (this.year - 1946) / 80);
 
     this._updateMapTransition(effectiveDt);
+    this._updateProliferation(effectiveDt);
     this.particles.update(effectiveDt);
 
     for (const e of this.entities) {
