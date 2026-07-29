@@ -441,14 +441,8 @@ html, body {
   box-shadow: 0 0 34px rgba(46,204,113,0.5);
 }
 
-/* ── Panel de Depuración Visual Isométrica */
 #debug-panel {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  display: flex;
-  gap: 8px;
-  z-index: 100;
+  display: none !important;
 }
 
 .debug-btn {
