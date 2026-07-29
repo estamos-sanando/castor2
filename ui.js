@@ -1,8 +1,9 @@
 'use strict';
 /* ============================================================
-   UI.JS — Interfaz de Usuario Límpida y Modal Elegante AAA
-   - Removido logo e identificación de diario de todas las ventanas
-   - Modal responsivo compacto con estética AAA de videojuego
+   UI.JS — Interfaz de Usuario Limpia con Guía de Juego y Botón Central
+   - Menú derecho transparente flotante sobre el mapa
+   - Instrucciones claras del lado derecho para hacer clic en ACEPTAR y luego LIBERAR CASTORES
+   - Botón de agregar castores en posición central destacada
    ============================================================ */
 
 class GameUI {
@@ -23,15 +24,24 @@ class GameUI {
           <h3 class="sidebar-game-title">PROYECTO CASTOR</h3>
         </div>
 
+        <div class="sidebar-guide-box">
+          <div class="guide-title">💡 GUÍA DE JUEGO</div>
+          <p class="guide-step">1️⃣ Haz clic en <strong>ACEPTAR</strong> en la tarjeta explicativa.</p>
+          <p class="guide-step">2️⃣ Presiona el botón <strong>LIBERAR CASTORES</strong> para comenzar la simulación.</p>
+        </div>
+
         <div class="sidebar-section-title">🎮 CONTROLES</div>
         <div id="hud-controls-vertical">
           <button class="hud-speed-btn" id="btn-speed-toggle" title="Cambiar Velocidad (1x / 2x)">
             <span class="speed-icon">⏩ VELOCIDAD:</span>
             <span class="speed-val" id="speed-val">1x</span>
           </button>
-          <button class="pure-image-btn" id="btn-add-beaver" title="LIBERAR 20 CASTORES (1946)">
-            <img src="assets/BOTON.png" alt="Agregar Castores" />
-          </button>
+          
+          <div class="central-beaver-btn-wrapper">
+            <button class="pure-image-btn" id="btn-add-beaver" title="LIBERAR 20 CASTORES (1946)">
+              <img src="assets/BOTON.png" alt="Agregar Castores" />
+            </button>
+          </div>
         </div>
       </div>
     `;
@@ -64,7 +74,7 @@ class GameUI {
           </div>
 
           <div class="popup-footer">
-            <button class="popup-start-btn" id="btn-start-game">¡COMENZAR! ➔</button>
+            <button class="popup-start-btn" id="btn-start-game">ACEPTAR ➔</button>
           </div>
         </div>
       </div>
@@ -99,7 +109,7 @@ class GameUI {
     });
   }
 
-  // ── Tarjeta Emergente Izquierda Centrada (sin logos de diario) ──
+  // ── Tarjeta Emergente Izquierda Centrada ──
   showEditorialNewsCard(opts) {
     const oldCard = document.querySelector('.left-center-news-popup');
     if (oldCard) oldCard.remove();
