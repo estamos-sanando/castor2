@@ -21,13 +21,13 @@ class GameUI {
       <div id="hud-top-bar">
         <div class="hud-brand">
           <img src="assets/diario.png" alt="Diario" class="brand-newspaper-img" />
-          <span class="brand-title">TIERRA DEL FUEGO — EL CASTOR EN LA PATAGONIA</span>
+          <span class="brand-title">EL CASTOR EN TIERRA DEL FUEGO</span>
         </div>
         <div class="hud-stats">
-          <div class="stat-pill"><span class="pill-label">🦫 CASTORES</span><span class="pill-val" id="val-beavers">0</span></div>
-          <div class="stat-pill"><span class="pill-label">🔥 BOSQUE PERDIDO</span><span class="pill-val" id="val-loss">0%</span></div>
-          <div class="stat-pill"><span class="pill-label">🌊 INUNDACIÓN</span><span class="pill-val" id="val-flooded">0 ha</span></div>
-          <div class="stat-pill"><span class="pill-label">🪵 DIQUES</span><span class="pill-val" id="val-dams">0</span></div>
+          <div class="stat-pill"><span class="pill-icon">🦫</span><span class="pill-label">CASTORES</span><span class="pill-val" id="val-beavers">0</span></div>
+          <div class="stat-pill"><span class="pill-icon">🔥</span><span class="pill-label">BOSQUE PERDIDO</span><span class="pill-val" id="val-loss">0%</span></div>
+          <div class="stat-pill"><span class="pill-icon">🌊</span><span class="pill-label">INUNDACIÓN</span><span class="pill-val" id="val-flooded">0 ha</span></div>
+          <div class="stat-pill"><span class="pill-icon">🪵</span><span class="pill-label">DIQUES</span><span class="pill-val" id="val-dams">0</span></div>
         </div>
       </div>
 

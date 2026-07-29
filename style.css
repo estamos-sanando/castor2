@@ -53,149 +53,155 @@ html, body {
   filter: saturate(0.95) contrast(1.05);
 }
 
-/* ── HUD ──────────────────────────────────────────────────── */
-#hud {
+/* ── HUD PRINCIPAL DEL JUEGO (FLOTANTE SOBRE EL CANVAS) ── */
+#hud-container {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 20;
+  z-index: 100;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding: 12px 16px;
+  overflow: hidden;
 }
 
-/* HUD Superior: Marca e Indicadores (Fijo arriba) */
-#hud-top {
-  pointer-events: all;
+/* ── HUD SUPERIOR: MARCA E INDICADORES HORA Y ESTADÍSTICAS ── */
+#hud-top-bar {
+  pointer-events: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 12px 20px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0) 100%);
+  background: linear-gradient(135deg, rgba(12, 22, 16, 0.94), rgba(5, 12, 8, 0.97));
+  border: 1.5px solid var(--gold);
+  border-radius: 12px;
+  padding: 8px 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.85), 0 0 15px rgba(212, 175, 55, 0.2) inset;
+  backdrop-filter: blur(10px);
 }
 
 .hud-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
-.flag-icon { font-size: 26px; }
-
-.brand-titles .game-title {
-  font-family: 'Cinzel', serif;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--gold);
-  letter-spacing: 1.5px;
-  text-shadow: 0 0 12px rgba(212,175,55,0.4);
+.brand-newspaper-img {
+  height: 28px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
 }
 
-.year-badge {
-  display: inline-block;
+.brand-title {
   font-family: 'Cinzel', serif;
-  font-size: 12px;
+  font-size: 13.5px;
   font-weight: 700;
   color: var(--gold-light);
-  background: rgba(212,175,55,0.15);
-  border: 1px solid var(--gold);
-  border-radius: 4px;
-  padding: 1px 8px;
-  margin-top: 2px;
+  letter-spacing: 1px;
+  white-space: nowrap;
 }
 
-/* Stats Grid */
-.hud-stats-grid {
+.hud-stats {
   display: flex;
-  gap: 8px;
-}
-
-.hud-stat-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: var(--dark-panel);
-  border: 1px solid var(--panel-border);
-  border-radius: var(--radius);
-  padding: 6px 12px;
-  min-width: 78px;
-  box-shadow: var(--shadow);
-}
-
-.stat-icon { font-size: 14px; margin-bottom: 2px; }
-.stat-val  { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; color: var(--gold-light); }
-.stat-lbl  { font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
-
-/* ── BARRA TÁCTICA INFERIOR (Fija en la parte inferior de la pantalla) ── */
-#hud-bottom-bar {
-  pointer-events: all;
-  width: 100%;
-  background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(5,10,5,0.85) 100%);
-  border-top: 2px solid var(--gold);
-  box-shadow: 0 -8px 32px rgba(0,0,0,0.9);
-  padding: 10px 20px 14px;
-  display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 10px;
-  z-index: 30;
+  flex-wrap: nowrap;
 }
 
-/* Timeline adentro de la barra inferior */
-#hud-timeline {
+.stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 20px;
+  padding: 5px 12px;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.pill-icon {
+  font-size: 14px;
+}
+
+.pill-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #9ca3af;
+  letter-spacing: 0.5px;
+}
+
+.pill-val {
+  font-family: 'Cinzel', serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--gold-light);
+}
+
+/* ── HUD INFERIOR: LÍNEA DE TIEMPO Y CONTROLES DE ACCIÓN ── */
+#hud-bottom-bar {
+  pointer-events: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
-  max-width: 850px;
-  background: rgba(0,0,0,0.4);
-  border: 1px solid rgba(212,175,55,0.25);
-  border-radius: var(--radius);
-  padding: 6px 14px;
+  background: linear-gradient(135deg, rgba(12, 22, 16, 0.94), rgba(5, 12, 8, 0.97));
+  border: 1.5px solid var(--gold);
+  border-radius: 12px;
+  padding: 8px 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.85), 0 0 15px rgba(212, 175, 55, 0.2) inset;
+  backdrop-filter: blur(10px);
 }
 
-#timeline-bar {
+#hud-timeline {
+  flex: 1;
+  max-width: 520px;
+  margin-right: 20px;
+}
+
+.timeline-track {
   position: relative;
   height: 8px;
-  background: rgba(255,255,255,0.12);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 4px;
-  cursor: pointer;
 }
 
-#timeline-fill {
-  position: absolute; top: 0; left: 0;
+.timeline-fill {
+  position: absolute;
+  top: 0; left: 0;
   height: 100%;
   background: linear-gradient(90deg, #27ae60, var(--gold));
   border-radius: 4px;
-  transition: width 0.3s;
-  pointer-events: none;
+  transition: width 0.3s ease;
 }
 
-#timeline-thumb {
-  position: absolute; top: 50%;
-  width: 16px; height: 16px;
+.timeline-thumb {
+  position: absolute;
+  top: 50%;
+  width: 16px;
+  height: 16px;
   background: var(--gold);
   border: 2px solid #000;
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 10px rgba(212,175,55,0.7);
-  pointer-events: none;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.8);
 }
 
-#timeline-labels {
+.timeline-labels {
   display: flex;
   justify-content: space-between;
   margin-top: 4px;
-  font-size: 9px;
-  color: var(--text-dim);
   font-family: 'Cinzel', serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--gold-light);
 }
 
-/* Panel de Control (2 Botones Principales Alineados) */
 #hud-controls {
   display: flex;
-  justify-content: center;
-  gap: 16px;
-  width: 100%;
-  max-width: 850px;
+  align-items: center;
+  gap: 12px;
 }
 
 .hud-speed-btn {
