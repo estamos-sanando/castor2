@@ -692,7 +692,7 @@ class Beaver extends Entity {
   }
 
   _doWalkTo(dt, tx, ty, nextState) {
-    this.action = 'walk';
+    this.action = this.carryingLog ? 'carry' : 'walk';
     const arrived = this._moveTo(tx, ty, dt, this.speed);
     if (arrived) {
       this.state = nextState;
