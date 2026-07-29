@@ -308,19 +308,63 @@ class Entity {
     const w = Math.round(targetW * scaleFactor);
     const h = Math.round(targetW * (imgH / imgW) * scaleFactor);
 
-    // Punto de contacto directo del tronco con el suelo (elimina efecto flotante)
+    // ── SOMBRAS ADAPTATIVAS CON OCLUSIÓN AMBIENTAL E INCLINACIÓN SOLAR ──
     const isTree = (this instanceof Tree);
     const yOffset = isTree ? Math.round(h * 0.07) : 0;
-    const shadowY = Math.round(this.y - yOffset);
+    const shadowBaseY = Math.round(this.y - yOffset);
+    const centerX = Math.round(this.x);
 
-    // Sombra sutil directamente adherida a las raíces del árbol
-    const shadowW = Math.max(8, Math.round(w * (isTree ? 0.35 : 0.42)));
-    const shadowH = Math.max(3, Math.round(shadowW * 0.28));
-    
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.18)';
-    ctx.beginPath();
-    ctx.ellipse(Math.round(this.x), shadowY - 2, shadowW * 0.5, shadowH * 0.5, 0, 0, Math.PI * 2);
-    ctx.fill();
+    if (isTree) {
+      const isStump = this.state === 'stump_fresh' || this.state === 'stump_old';
+      const isDead = this.state === 'dead' || this.state === 'flooded';
+
+      // 1. Sombra proyectada de la copa (inclinación solar isométrica)
+      if (!isStump) {
+        const canopyScale = isDead ? 0.45 : 0.75;
+        const cW = Math.max(14, Math.round(w * canopyScale));
+        const cH = Math.max(6, Math.round(cW * 0.40));
+        const projX = centerX + Math.round(cW * 0.18);
+        const projY = shadowBaseY + Math.round(cH * 0.15);
+
+        ctx.save();
+        ctx.translate(projX, projY);
+        ctx.rotate(0.22); // Inclinación isométrica natural (~12 deg)
+        
+        const grad = ctx.createRadialGradient(0, 0, cW * 0.08, 0, 0, cW * 0.5);
+        const alphaMax = isDead ? 0.15 : 0.30;
+        grad.addColorStop(0, `rgba(4, 20, 8, ${alphaMax})`);
+        grad.addColorStop(0.6, `rgba(6, 26, 10, ${alphaMax * 0.55})`);
+        grad.addColorStop(1, 'rgba(6, 26, 10, 0)');
+        
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, cW * 0.5, cH * 0.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // 2. Oclusión ambiental del tronco (contacto de raíces con el suelo)
+      const rootW = Math.max(6, Math.round(w * 0.28));
+      const rootH = Math.max(3, Math.round(rootW * 0.35));
+      ctx.fillStyle = 'rgba(2, 12, 4, 0.48)';
+      ctx.beginPath();
+      ctx.ellipse(centerX, shadowBaseY - 1, rootW * 0.5, rootH * 0.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+    } else {
+      // Sombras adaptativas para otras entidades (castores, guardaparques, diques, etc.)
+      const shadowW = Math.max(8, Math.round(w * 0.42));
+      const shadowH = Math.max(3, Math.round(shadowW * 0.28));
+      
+      const grad = ctx.createRadialGradient(centerX, shadowBaseY - 1, shadowW * 0.05, centerX, shadowBaseY - 1, shadowW * 0.5);
+      grad.addColorStop(0, 'rgba(0, 0, 0, 0.38)');
+      grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.ellipse(centerX, shadowBaseY - 1, shadowW * 0.5, shadowH * 0.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     const drawY = Math.round(this.y - h + yOffset);
 
