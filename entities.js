@@ -283,23 +283,30 @@ class Entity {
 
     let targetW = 32;
     if (this instanceof Tree) {
-      targetW = 75;
+      if (this.state === 'stump_fresh' || this.state === 'stump_old') {
+        targetW = 24; // Tocón: base del tronco corta proporcional al suelo (~0.5m)
+      } else if (this.state === 'dead' || this.state === 'flooded') {
+        targetW = 60; // Árbol muerto / fantasma
+      } else {
+        targetW = 75; // Copa de árbol sano (~15m de alto)
+      }
     } else if (this instanceof Beaver) {
-      targetW = this.isSmall ? 20 : 28;
+      targetW = this.isSmall ? 18 : 26; // Castor (~0.8m)
     } else if (this instanceof Ranger) {
-      targetW = 24;
+      targetW = 24; // Guardaparque (~1.75m)
     } else if (this instanceof Dam) {
-      targetW = this.level === 1 ? 140 : (this.level === 2 ? 180 : 230);
+      const lvl = Math.max(1, Math.min(3, this.level));
+      targetW = lvl === 1 ? 68 : (lvl === 2 ? 88 : 110); // Dique ajustado al ancho del río
     } else if (this instanceof LogEntity) {
-      targetW = 36;
+      targetW = 28; // Rama en el suelo
     } else if (this instanceof Rock) {
-      targetW = (this.variant === 1 || this.variant === 2) ? 68 : 44;
+      targetW = (this.variant === 1 || this.variant === 2) ? 64 : 36;
     } else if (this instanceof Bush) {
-      targetW = 32;
+      targetW = 26;
     } else if (this instanceof Cage) {
-      targetW = 32;
+      targetW = 30;
     } else if (this instanceof Seedling) {
-      targetW = 22;
+      targetW = 16;
     } else {
       targetW = (this.sprite.width && this.sprite.width !== imgW) ? this.sprite.width : 32;
     }
@@ -310,12 +317,12 @@ class Entity {
 
     // ── SOMBRAS ADAPTATIVAS CON OCLUSIÓN AMBIENTAL E INCLINACIÓN SOLAR ──
     const isTree = (this instanceof Tree);
-    const yOffset = isTree ? Math.round(h * 0.07) : 0;
+    const isStump = isTree && (this.state === 'stump_fresh' || this.state === 'stump_old');
+    const yOffset = (isTree && !isStump) ? Math.round(h * 0.07) : 0;
     const shadowBaseY = Math.round(this.y - yOffset);
     const centerX = Math.round(this.x);
 
     if (isTree) {
-      const isStump = this.state === 'stump_fresh' || this.state === 'stump_old';
       const isDead = this.state === 'dead' || this.state === 'flooded';
 
       // 1. Sombra proyectada de la copa (inclinación solar isométrica)
@@ -343,8 +350,8 @@ class Entity {
         ctx.restore();
       }
 
-      // 2. Oclusión ambiental del tronco (contacto de raíces con el suelo)
-      const rootW = Math.max(6, Math.round(w * 0.28));
+      // 2. Oclusión ambiental del tronco (contacto de raíces/tocón con el suelo)
+      const rootW = Math.max(6, Math.round(w * (isStump ? 0.65 : 0.28)));
       const rootH = Math.max(3, Math.round(rootW * 0.35));
       ctx.fillStyle = 'rgba(2, 12, 4, 0.48)';
       ctx.beginPath();
@@ -509,15 +516,25 @@ class Dam extends Entity {
     ctx.save();
     ctx.globalAlpha = this.alpha;
 
-    const w = Math.round(this.sprite.width * (this.scale || 1.0));
-    const h = Math.round(this.sprite.height * (this.scale || 1.0));
+    const imgW = this.sprite.naturalWidth || this.sprite.width || 300;
+    const imgH = this.sprite.naturalHeight || this.sprite.height || 150;
+    const lvl = Math.max(1, Math.min(3, this.level));
 
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    // Dimensiones proporcionales al cauce del río (68px, 88px, 110px)
+    const targetW = lvl === 1 ? 68 : (lvl === 2 ? 88 : 110);
+    const w = Math.round(targetW * (this.scale || 1.0));
+    const h = Math.round(targetW * (imgH / imgW) * (this.scale || 1.0));
+
+    const grad = ctx.createRadialGradient(Math.round(this.x), Math.round(this.y), w * 0.05, Math.round(this.x), Math.round(this.y), w * 0.45);
+    grad.addColorStop(0, 'rgba(0, 0, 0, 0.40)');
+    grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+    ctx.fillStyle = grad;
     ctx.beginPath();
-    ctx.ellipse(Math.round(this.x), Math.round(this.y), w * 0.45, Math.max(4, h * 0.25), 0, 0, Math.PI * 2);
+    ctx.ellipse(Math.round(this.x), Math.round(this.y + h * 0.1), w * 0.45, Math.max(4, h * 0.25), 0, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.drawImage(this.sprite, Math.round(this.x - w * 0.5), Math.round(this.y - h * 0.5), w, h);
+    ctx.drawImage(this.sprite, Math.round(this.x - w * 0.5), Math.round(this.y - h * 0.45), w, h);
     ctx.restore();
   }
 }
