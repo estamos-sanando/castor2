@@ -1,9 +1,8 @@
 'use strict';
 /* ============================================================
-   UI.JS — Interfaz de Usuario Limpia con Modales Centrales de Cambio de Escena
-   - Soporte para opts.centered (modal central con overlay oscuro para noticias de gran impacto)
-   - Transición de mapa y limpieza de tocones solo al hacer clic en ACEPTAR
-   - Cola estricta de modales para evitar cierres o avances automáticos
+   UI.JS — Interfaz de Usuario Limpia con Drag and Drop de Cabaña y Cartel
+   - Ventana de Estrategia Binacional mostrada ANTES del inventario
+   - El jugador arrastra Cabaña y Cartel desde el inventario y elige libremente dónde soltarlos en el mapa
    ============================================================ */
 
 class GameUI {
@@ -108,7 +107,7 @@ class GameUI {
     });
   }
 
-  // ── Tarjeta Emergente Periodística (con opción de Modal Central de Cambio de Escena) ──
+  // ── Tarjeta Emergente Periodística (con opción de Modal Central) ──
   showEditorialNewsCard(opts) {
     if (document.querySelector('.left-center-news-popup') || document.querySelector('.centered-news-overlay')) {
       this.newsQueue.push(opts);
@@ -207,7 +206,7 @@ class GameUI {
     cardEl.querySelector('#btn-close-journal')?.addEventListener('click', closeFn);
   }
 
-  // ── Ventana Lateral Izquierda de Puesto ENEEI ──
+  // ── Ventana Lateral Izquierda de Inventario con Drag & Drop ──
   showCabinInventory() {
     if (document.getElementById('eneei-sidebar-panel')) return;
 
@@ -218,26 +217,26 @@ class GameUI {
         <div class="sidebar-header">
           <h4>PUESTO DE CONTROL ENEEI</h4>
         </div>
-        <p class="sidebar-desc">Selecciona e instala la Cabaña y el Cartel Informativo en el terreno:</p>
+        <p class="sidebar-desc"><strong>ARRASTRA Y SUELTA</strong> la Cabaña y el Cartel en la zona del terreno donde quieras instalarlos:</p>
         
         <div class="sidebar-items">
-          <div class="sidebar-item" id="btn-place-cabin">
+          <div class="sidebar-item draggable-item" id="item-cabin" draggable="true" data-type="cabin">
             <div class="item-preview">
               <img src="assets/cabana.png" alt="Cabaña" class="sidebar-img" />
             </div>
             <div class="item-info">
               <span class="item-title">1. Cabaña Guardaparques</span>
-              <span class="item-status" id="status-cabin">⚪ Pendiente</span>
+              <span class="item-status" id="status-cabin">✋ Arrastrar o Clic</span>
             </div>
           </div>
 
-          <div class="sidebar-item" id="btn-place-sign">
+          <div class="sidebar-item draggable-item" id="item-sign" draggable="true" data-type="sign">
             <div class="item-preview">
               <img src="assets/cartel.png" alt="Cartel" class="sidebar-img" />
             </div>
             <div class="item-info">
               <span class="item-title">2. Cartel Informativo</span>
-              <span class="item-status" id="status-sign">⚪ Pendiente</span>
+              <span class="item-status" id="status-sign">✋ Arrastrar o Clic</span>
             </div>
           </div>
         </div>
@@ -245,20 +244,118 @@ class GameUI {
     `;
     document.getElementById('game-container').appendChild(sidebar);
 
-    document.getElementById('btn-place-cabin')?.addEventListener('click', () => {
-      if (this.game.cabinPlaced) return;
-      this.game.placeCabin(480, 320);
-      document.getElementById('status-cabin').textContent = '🟢 Instalado';
-      document.getElementById('status-cabin').style.color = '#22c55e';
-      document.getElementById('btn-place-cabin').classList.add('installed');
+    this._setupDragAndDrop();
+  }
+
+  _setupDragAndDrop() {
+    const canvas = document.getElementById('game-canvas');
+    if (!canvas) return;
+
+    const cabinItem = document.getElementById('item-cabin');
+    const signItem = document.getElementById('item-sign');
+
+    const getCanvasCoords = (clientX, clientY) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = 1280 / rect.width;
+      const scaleY = 720 / rect.height;
+      const x = Math.round((clientX - rect.left) * scaleX);
+      const y = Math.round((clientY - rect.top) * scaleY);
+      return { x: Math.max(60, Math.min(1220, x)), y: Math.max(100, Math.min(670, y)) };
+    };
+
+    // 1. Drag & Drop nativo de HTML5
+    [cabinItem, signItem].forEach(item => {
+      if (!item) return;
+
+      item.addEventListener('dragstart', (e) => {
+        const type = item.getAttribute('data-type');
+        if ((type === 'cabin' && this.game.cabinPlaced) || (type === 'sign' && this.game.signPlaced)) {
+          e.preventDefault();
+          return;
+        }
+        e.dataTransfer.setData('text/plain', type);
+      });
     });
 
-    document.getElementById('btn-place-sign')?.addEventListener('click', () => {
-      if (this.game.signPlaced) return;
-      this.game.placeSign(410, 360);
-      document.getElementById('status-sign').textContent = '🟢 Instalado';
-      document.getElementById('status-sign').style.color = '#22c55e';
-      document.getElementById('btn-place-sign').classList.add('installed');
+    canvas.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+    });
+
+    canvas.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const type = e.dataTransfer.getData('text/plain');
+      const coords = getCanvasCoords(e.clientX, e.clientY);
+
+      if (type === 'cabin' && !this.game.cabinPlaced) {
+        this.game.placeCabin(coords.x, coords.y);
+        const statusCabin = document.getElementById('status-cabin');
+        if (statusCabin) {
+          statusCabin.textContent = '🟢 Instalado';
+          statusCabin.style.color = '#22c55e';
+        }
+        cabinItem?.classList.add('installed');
+      } else if (type === 'sign' && !this.game.signPlaced) {
+        this.game.placeSign(coords.x, coords.y);
+        const statusSign = document.getElementById('status-sign');
+        if (statusSign) {
+          statusSign.textContent = '🟢 Instalado';
+          statusSign.style.color = '#22c55e';
+        }
+        signItem?.classList.add('installed');
+      }
+    });
+
+    // 2. Clic & Colocar en Mapa (Fallback para pantallas táctiles y clic directo)
+    let activeType = null;
+
+    [cabinItem, signItem].forEach(item => {
+      if (!item) return;
+
+      item.addEventListener('click', () => {
+        const type = item.getAttribute('data-type');
+        if ((type === 'cabin' && this.game.cabinPlaced) || (type === 'sign' && this.game.signPlaced)) return;
+
+        if (activeType === type) {
+          activeType = null;
+          item.style.borderColor = 'rgba(212, 175, 55, 0.6)';
+          item.style.background = 'rgba(255, 255, 255, 0.06)';
+        } else {
+          activeType = type;
+          cabinItem.style.borderColor = 'rgba(212, 175, 55, 0.6)';
+          signItem.style.borderColor = 'rgba(212, 175, 55, 0.6)';
+          cabinItem.style.background = 'rgba(255, 255, 255, 0.06)';
+          signItem.style.background = 'rgba(255, 255, 255, 0.06)';
+
+          item.style.borderColor = '#22c55e';
+          item.style.background = 'rgba(34, 197, 94, 0.2)';
+        }
+      });
+    });
+
+    canvas.addEventListener('click', (e) => {
+      if (!activeType) return;
+      const coords = getCanvasCoords(e.clientX, e.clientY);
+
+      if (activeType === 'cabin' && !this.game.cabinPlaced) {
+        this.game.placeCabin(coords.x, coords.y);
+        const statusCabin = document.getElementById('status-cabin');
+        if (statusCabin) {
+          statusCabin.textContent = '🟢 Instalado';
+          statusCabin.style.color = '#22c55e';
+        }
+        cabinItem?.classList.add('installed');
+        activeType = null;
+      } else if (activeType === 'sign' && !this.game.signPlaced) {
+        this.game.placeSign(coords.x, coords.y);
+        const statusSign = document.getElementById('status-sign');
+        if (statusSign) {
+          statusSign.textContent = '🟢 Instalado';
+          statusSign.style.color = '#22c55e';
+        }
+        signItem?.classList.add('installed');
+        activeType = null;
+      }
     });
   }
 

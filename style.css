@@ -602,8 +602,13 @@ html, body {
   display: flex;
   align-items: center;
   gap: 12px;
-  cursor: pointer;
+  cursor: grab;
+  user-select: none;
   transition: all 0.2s ease;
+}
+
+.sidebar-item:active {
+  cursor: grabbing;
 }
 
 .sidebar-item:hover {

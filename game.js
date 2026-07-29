@@ -238,7 +238,7 @@ class BeaverGame {
       quote: 'Las pérdidas económicas anuales superan los 66.5 millones de dólares en infraestructura, ganadería y conservación.',
       fact: 'Las inundaciones anegan puentes, carreteras y sistemas de agua potable en toda la Isla Grande.',
       year: '2005',
-      centered: true, // VENTANA CENTRAL DE CAMBIO DE ESCENA
+      centered: true,
       onAccept: () => {
         // AL DAR ACEPTAR SE CAMBIA EL MAPA Y DESAPARECEN LOS TOCONES!
         this._transitionToMap(2); // map_04_bosque_inundado.jpg
@@ -255,10 +255,25 @@ class BeaverGame {
           }
         });
 
-        // Abrir panel ENEEI para colocar Cabaña y Cartel
+        // Mostrar la ventana de la Estrategia Binacional ANTES de abrir el inventario
         setTimeout(() => {
-          this.ui.showCabinInventory();
-        }, 1200);
+          this.showBinationalStrategyNews();
+        }, 1000);
+      }
+    });
+  }
+
+  showBinationalStrategyNews() {
+    this.ui.showEditorialNewsCard({
+      title: '📜 ESTRATEGIA BINACIONAL ENEEI: ARGENTINA Y CHILE UNIDOS POR LA BIODIVERSIDAD',
+      subtitle: 'Con apoyo del Fondo para el Medio Ambiente Mundial (FMAM) y la FAO, se activan áreas piloto.',
+      text: 'Técnicos y guardaparques especializados instalan puestos de monitoreo y trampas jaula para erradicar focos invasores y evitar que el castor cruce a la Patagonia continental.',
+      fact: 'Es una de las iniciativas binacionales de control de especies exóticas invasoras más ambiciosas del planeta.',
+      year: '2016',
+      centered: true,
+      onAccept: () => {
+        // AL DAR ACEPTAR SE ABRE EL INVENTARIO DE CABAÑA Y CARTEL PARA ARRASTRAR AL MAPA!
+        this.ui.showCabinInventory();
       }
     });
   }
