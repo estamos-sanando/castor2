@@ -1,8 +1,9 @@
 'use strict';
 /* ============================================================
-   UI.JS — Interfaz de Usuario, Menú Lateral Derecho y Tarjetas Estilo Diario
-   - Línea de tiempo removida
-   - Tarjeta emergente del lado izquierdo más al centro estilo recorte de diario vintage
+   UI.JS — Interfaz de Usuario Limpia
+   - Removidas línea de tiempo y estadísticas
+   - Menú lateral derecho compacto solo con Controles
+   - Tarjeta estilo recorte de diario vintage con callback onAccept
    ============================================================ */
 
 class GameUI {
@@ -22,14 +23,6 @@ class GameUI {
         <div class="sidebar-top-brand">
           <img src="assets/diario.png" alt="Diario" class="brand-newspaper-img" />
           <h3 class="sidebar-game-title">EL CASTOR EN TIERRA DEL FUEGO</h3>
-        </div>
-
-        <div class="sidebar-section-title">📊 ESTADÍSTICAS</div>
-        <div class="hud-stats-vertical">
-          <div class="stat-pill"><span class="pill-icon">🦫</span><span class="pill-label">CASTORES:</span><span class="pill-val" id="val-beavers">0</span></div>
-          <div class="stat-pill"><span class="pill-icon">🔥</span><span class="pill-label">BOSQUE PERDIDO:</span><span class="pill-val" id="val-loss">0%</span></div>
-          <div class="stat-pill"><span class="pill-icon">🌊</span><span class="pill-label">INUNDACIÓN:</span><span class="pill-val" id="val-flooded">0 ha</span></div>
-          <div class="stat-pill"><span class="pill-icon">🪵</span><span class="pill-label">DIQUES:</span><span class="pill-val" id="val-dams">0</span></div>
         </div>
 
         <div class="sidebar-section-title">🎮 CONTROLES</div>
@@ -112,7 +105,7 @@ class GameUI {
     });
   }
 
-  // ── Tarjeta Emergente Izquierda Más al Centro — Estilo Recorte de Diario Impreso ──
+  // ── Tarjeta Emergente Izquierda Centrada (con callback onAccept) ──
   showEditorialNewsCard(opts) {
     const oldCard = document.querySelector('.left-center-news-popup');
     if (oldCard) oldCard.remove();
@@ -140,7 +133,7 @@ class GameUI {
           </div>
 
           <div class="newspaper-footer">
-            <button class="newspaper-action-btn" id="btn-close-journal">CONTINUAR LECTURA ➔</button>
+            <button class="newspaper-action-btn" id="btn-close-journal">ACEPTAR ➔</button>
           </div>
         </div>
       </div>
@@ -153,6 +146,9 @@ class GameUI {
       cardEl.classList.add('slide-out-left');
       setTimeout(() => {
         if (cardEl.parentNode) cardEl.remove();
+        if (typeof opts.onAccept === 'function') {
+          opts.onAccept();
+        }
       }, 350);
     };
 
@@ -259,13 +255,7 @@ class GameUI {
     });
   }
 
-  update(stats, year, timelinePct) {
-    const el = id => document.getElementById(id);
-    if (el('val-beavers')) el('val-beavers').textContent = stats.beavers;
-    if (el('val-loss')) el('val-loss').textContent = stats.forestLoss + '%';
-    if (el('val-flooded')) el('val-flooded').textContent = Math.round(stats.hectaresFlooded) + ' ha';
-    if (el('val-dams')) el('val-dams').textContent = stats.dams;
-  }
+  update(stats, year, timelinePct) {}
 
   showNews(opts) {
     this.showEditorialNewsCard(opts);

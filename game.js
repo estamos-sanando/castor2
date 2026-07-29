@@ -202,50 +202,64 @@ class BeaverGame {
     dam.woodCount = (dam.woodCount || 0) + 1;
     this.stats.dams = this.entities.filter(e => e instanceof Dam && e.active && !e.dead).length;
 
-    // Progresión exacta: 10 maderas = Dique Chico (1), 20 = Dique Mediano (2), 30 = Dique Grande (3) + Inundación
-    if (dam.woodCount >= 30) {
+    // Progresión por dique: 6 maderas = Dique Chico (1), 14 = Dique Mediano (2), 22 = Dique Grande (3)
+    if (dam.woodCount >= 22) {
       if (dam.level < 3) {
         dam.level = 3;
         dam._refreshSprite();
-        this.triggerFloodedCrisis(); // EL MAPA SE INUNDA ÚNICAMENTE CON EL DIQUE GRANDE!
       }
-    } else if (dam.woodCount >= 20) {
+    } else if (dam.woodCount >= 14) {
       if (dam.level < 2) {
         dam.level = 2;
         dam._refreshSprite();
       }
-    } else if (dam.woodCount >= 10) {
+    } else if (dam.woodCount >= 6) {
       if (dam.level < 1) {
         dam.level = 1;
         dam._refreshSprite();
       }
     }
+
+    // SOLO CUANDO LOS DOS DIQUES ESTÁN TERMINADOS EN DIQUEGRANDE SE ABRE LA VENTANA EMERGENTE
+    const damsLevel3 = this.entities.filter(e => e instanceof Dam && e.active && !e.dead && e.level === 3);
+    if (damsLevel3.length >= 2 && !this.floodedTriggered) {
+      this.floodedTriggered = true;
+      this.triggerFloodedCrisis();
+    }
   }
 
-  // ── Inundación y Transformación a Árboles Fantasma (2005) ──
+  // ── Inundación y Transformación a Árboles Fantasma ──
   triggerFloodedCrisis() {
-    this._transitionToMap(2);
-    this.stats.hectaresFlooded = 350;
-
-    this.entities.forEach(e => {
-      if (e instanceof Tree && e.isHealthy) {
-        e.setState('flooded');
-      }
-    });
-
+    // Abrir la ventana emergente con la información periodística real
     this.ui.showEditorialNewsCard({
       title: '🌊 30.000 HECTÁREAS DE BOSQUES FANTASMA Y USD $66.5 MILLONES EN DAÑOS ANUALES',
       subtitle: 'Las represas anegan el suelo, ahogan las raíces de los árboles en pie y destruyen las turberas.',
       text: 'El agua estancada priva de oxígeno a las raíces de los árboles que quedan en pie, secándolos y convirtiéndolos en "bosques fantasma" grises e inertes. Además, destruye las turberas patagónicas, principales captadoras de carbono del planeta.',
       quote: 'Las pérdidas económicas anuales superan los 66.5 millones de dólares en infraestructura, ganadería y conservación.',
       fact: 'Las inundaciones anegan puentes, carreteras y sistemas de agua potable en toda la Isla Grande.',
-      theme: 'danger',
-      year: '2005'
-    });
+      year: '2005',
+      onAccept: () => {
+        // AL DAR ACEPTAR SE CAMBIA EL MAPA Y DESAPARECEN LOS TOCONES JOVENES Y VIEJOS!
+        this._transitionToMap(2); // map_04_bosque_inundado.jpg
+        this.stats.hectaresFlooded = 350;
 
-    setTimeout(() => {
-      this.ui.showCabinInventory();
-    }, 2500);
+        // Eliminar todos los tocones jóvenes y viejos, y convertir árboles sanos en Árboles Fantasma
+        this.entities.forEach(e => {
+          if (e instanceof Tree) {
+            if (e.state === 'stump_fresh' || e.state === 'stump_old') {
+              e.dead = true; // Desaparecen los tocones!
+            } else if (e.isHealthy) {
+              e.setState('flooded'); // Se convierten en Árboles Fantasma!
+            }
+          }
+        });
+
+        // Abrir panel ENEEI para colocar Cabaña y Cartel
+        setTimeout(() => {
+          this.ui.showCabinInventory();
+        }, 1200);
+      }
+    });
   }
 
   // ── Colocación de Cabaña y Cartel -> Proyecto Binacional ENEEI (2016) ──
