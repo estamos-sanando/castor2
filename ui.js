@@ -1,9 +1,8 @@
 'use strict';
 /* ============================================================
-   UI.JS — Interfaz de Usuario Limpia
-   - Removidas línea de tiempo y estadísticas
-   - Menú lateral derecho compacto solo con Controles
-   - Tarjeta estilo recorte de diario vintage con callback onAccept
+   UI.JS — Interfaz de Usuario Límpida y Modal Elegante AAA
+   - Removido logo e identificación de diario de todas las ventanas
+   - Modal responsivo compacto con estética AAA de videojuego
    ============================================================ */
 
 class GameUI {
@@ -21,8 +20,7 @@ class GameUI {
     const hudHtml = `
       <div id="hud-right-sidebar">
         <div class="sidebar-top-brand">
-          <img src="assets/diario.png" alt="Diario" class="brand-newspaper-img" />
-          <h3 class="sidebar-game-title">EL CASTOR EN TIERRA DEL FUEGO</h3>
+          <h3 class="sidebar-game-title">PROYECTO CASTOR</h3>
         </div>
 
         <div class="sidebar-section-title">🎮 CONTROLES</div>
@@ -52,25 +50,21 @@ class GameUI {
     this.tutorialEl = document.createElement('div');
     this.tutorialEl.id = 'tutorial-overlay';
     this.tutorialEl.innerHTML = `
-      <div class="newspaper-clipping-card centered-welcome-window">
-        <div class="newspaper-masthead">
-          <div class="masthead-left">
-            <img src="assets/diario.png" alt="Diario" class="masthead-img" />
-            <span class="masthead-name">EL DIARIO DE TIERRA DEL FUEGO</span>
-          </div>
-          <span class="masthead-date">1946</span>
+      <div class="game-popup-modal centered-welcome-window">
+        <div class="popup-modal-header">
+          <span class="popup-year-badge">1946 — TIERRA DEL FUEGO</span>
         </div>
         
-        <div class="newspaper-content">
-          <h2 class="newspaper-headline">EN 1946, ARGENTINA INTRODUJO 20 CASTORES PARA CREAR UNA INDUSTRIA PELETERA: 80 AÑOS DESPUÉS, HAN DEVASTADO LOS BOSQUES</h2>
-          <div class="newspaper-subhead">Impacto de la especie exótica en la Isla Grande de Tierra del Fuego.</div>
+        <div class="popup-modal-body">
+          <h2 class="popup-headline">EN 1946, ARGENTINA INTRODUJO 20 CASTORES PARA CREAR UNA INDUSTRIA PELETERA: 80 AÑOS DESPUÉS, HAN DEVASTADO LOS BOSQUES</h2>
+          <div class="popup-subhead">Impacto de la especie exótica en la Isla Grande de Tierra del Fuego.</div>
           
-          <div class="newspaper-body">
-            <p class="newspaper-lead">La Marina de Guerra Argentina introdujo 10 parejas de <em>Castor canadensis</em> importadas de Canadá. La industria peletera nunca se concretó y los ejemplares fueron abandonados. Sin depredadores naturales en la Patagonia, la especie colonizó la isla alterando el 95% de las cuencas hídricas.</p>
+          <div class="popup-text-content">
+            <p class="popup-lead">La Marina de Guerra Argentina introdujo 10 parejas de <em>Castor canadensis</em> importadas de Canadá. La industria peletera nunca se concretó y los ejemplares fueron abandonados. Sin depredadores naturales en la Patagonia, la especie colonizó la isla alterando el 95% de las cuencas hídricas.</p>
           </div>
 
-          <div class="newspaper-footer">
-            <button class="tutorial-start-btn" id="btn-start-game">¡COMENZAR! ➔</button>
+          <div class="popup-footer">
+            <button class="popup-start-btn" id="btn-start-game">¡COMENZAR! ➔</button>
           </div>
         </div>
       </div>
@@ -105,7 +99,7 @@ class GameUI {
     });
   }
 
-  // ── Tarjeta Emergente Izquierda Centrada (con callback onAccept) ──
+  // ── Tarjeta Emergente Izquierda Centrada (sin logos de diario) ──
   showEditorialNewsCard(opts) {
     const oldCard = document.querySelector('.left-center-news-popup');
     if (oldCard) oldCard.remove();
@@ -113,27 +107,23 @@ class GameUI {
     const cardEl = document.createElement('div');
     cardEl.className = 'left-center-news-popup';
     cardEl.innerHTML = `
-      <div class="newspaper-clipping-card">
-        <div class="newspaper-masthead">
-          <div class="masthead-left">
-            <img src="assets/diario.png" alt="Diario" class="masthead-img" />
-            <span class="masthead-name">EL DIARIO DE TIERRA DEL FUEGO</span>
-          </div>
-          <span class="masthead-date">${opts.year || '1946'}</span>
+      <div class="game-popup-modal left-center-card">
+        <div class="popup-modal-header">
+          <span class="popup-year-badge">TIERRA DEL FUEGO — ${opts.year || '1946'}</span>
         </div>
         
-        <div class="newspaper-content">
-          <h2 class="newspaper-headline">${opts.title}</h2>
-          ${opts.subtitle ? `<div class="newspaper-subhead">${opts.subtitle}</div>` : ''}
+        <div class="popup-modal-body">
+          <h2 class="popup-headline">${opts.title}</h2>
+          ${opts.subtitle ? `<div class="popup-subhead">${opts.subtitle}</div>` : ''}
           
-          <div class="newspaper-body">
-            <p class="newspaper-lead">${opts.text}</p>
-            ${opts.quote ? `<blockquote class="newspaper-quote">"${opts.quote}"</blockquote>` : ''}
-            ${opts.fact ? `<div class="newspaper-fact-box"><strong>DATO DESTACADO:</strong> ${opts.fact}</div>` : ''}
+          <div class="popup-text-content">
+            <p class="popup-lead">${opts.text}</p>
+            ${opts.quote ? `<blockquote class="popup-quote">"${opts.quote}"</blockquote>` : ''}
+            ${opts.fact ? `<div class="popup-fact-box"><strong>DATO DESTACADO:</strong> ${opts.fact}</div>` : ''}
           </div>
 
-          <div class="newspaper-footer">
-            <button class="newspaper-action-btn" id="btn-close-journal">ACEPTAR ➔</button>
+          <div class="popup-footer">
+            <button class="popup-action-btn" id="btn-close-journal">ACEPTAR ➔</button>
           </div>
         </div>
       </div>
@@ -164,7 +154,6 @@ class GameUI {
     sidebar.innerHTML = `
       <div class="sidebar-card">
         <div class="sidebar-header">
-          <img src="assets/diario.png" alt="Diario" class="sidebar-icon-img" />
           <h4>PUESTO DE CONTROL ENEEI</h4>
         </div>
         <p class="sidebar-desc">Selecciona e instala la Cabaña y el Cartel Informativo en el terreno:</p>
