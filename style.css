@@ -198,6 +198,42 @@ html, body {
   max-width: 850px;
 }
 
+.hud-speed-btn {
+  background: linear-gradient(135deg, rgba(25, 40, 30, 0.9), rgba(10, 20, 15, 0.95));
+  border: 1.5px solid var(--gold);
+  border-radius: 20px;
+  padding: 6px 14px;
+  color: #fff;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+  transition: all 0.2s ease;
+  height: 40px;
+}
+
+.hud-speed-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  background: rgba(212, 175, 55, 0.2);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+}
+
+.hud-speed-btn.active-2x {
+  background: linear-gradient(135deg, #27ae60, #1e8449);
+  border-color: #2ecc71;
+  box-shadow: 0 0 20px rgba(46, 204, 113, 0.7);
+  animation: pulse2x 1.5s infinite alternate;
+}
+
+@keyframes pulse2x {
+  from { box-shadow: 0 0 12px rgba(46, 204, 113, 0.5); }
+  to { box-shadow: 0 0 24px rgba(46, 204, 113, 0.9); }
+}
+
 .pure-image-btn {
   background: transparent !important;
   border: none !important;

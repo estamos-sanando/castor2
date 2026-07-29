@@ -49,6 +49,7 @@ class BeaverGame {
     this.beaversReleased = 0;
     this.cabinPlaced = false;
     this.signPlaced = false;
+    this.speedMultiplier = 1.0;
 
     this._lastTime = 0;
     this._fixedDt  = 1 / 60;
@@ -388,17 +389,23 @@ class BeaverGame {
     }
   }
 
+  toggleSpeed() {
+    this.speedMultiplier = (this.speedMultiplier === 2.0) ? 1.0 : 2.0;
+    return this.speedMultiplier === 2.0;
+  }
+
   _update(dt) {
     if (!this.started) return;
+    const effectiveDt = dt * (this.speedMultiplier || 1.0);
 
-    this.year += dt * 0.5;
+    this.year += effectiveDt * 0.5;
     this.timelinePct = Math.min(1, (this.year - 1946) / 80);
 
-    this._updateMapTransition(dt);
-    this.particles.update(dt);
+    this._updateMapTransition(effectiveDt);
+    this.particles.update(effectiveDt);
 
     for (const e of this.entities) {
-      e.update(dt, this);
+      e.update(effectiveDt, this);
     }
 
     for (let i = this.entities.length - 1; i >= 0; i--) {

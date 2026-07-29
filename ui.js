@@ -47,6 +47,10 @@ class GameUI {
         </div>
 
         <div id="hud-controls">
+          <button class="hud-speed-btn" id="btn-speed-toggle" title="Cambiar Velocidad (1x / 2x)">
+            <span class="speed-icon">⏩</span>
+            <span class="speed-val" id="speed-val">1x</span>
+          </button>
           <button class="pure-image-btn" id="btn-add-beaver" title="LIBERAR 20 CASTORES (1946)">
             <img src="assets/BOTON.png" alt="Agregar Castores" />
           </button>
@@ -105,6 +109,18 @@ class GameUI {
 
     document.getElementById('btn-add-beaver')?.addEventListener('click', () => {
       this.game.releaseAll20BeaversAtOnce();
+    });
+
+    document.getElementById('btn-speed-toggle')?.addEventListener('click', (e) => {
+      const btn = e.currentTarget;
+      const is2x = this.game.toggleSpeed();
+      const txt = document.getElementById('speed-val');
+      if (txt) txt.textContent = is2x ? '2x' : '1x';
+      if (is2x) {
+        btn.classList.add('active-2x');
+      } else {
+        btn.classList.remove('active-2x');
+      }
     });
   }
 
