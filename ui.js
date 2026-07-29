@@ -1,9 +1,9 @@
 'use strict';
 /* ============================================================
-   UI.JS — Interfaz de Usuario Limpia con Guía de Juego y Botón Central
-   - Menú derecho transparente flotante sobre el mapa
-   - Instrucciones claras del lado derecho para hacer clic en ACEPTAR y luego LIBERAR CASTORES
-   - Botón de agregar castores en posición central destacada
+   UI.JS — Interfaz de Usuario Limpia con Cola Estricta de Tarjetas
+   - Las ventanas NUNCA se cierran ni avanzan solas
+   - Permanecen abiertas indefinidamente hasta que el jugador hace clic en ACEPTAR
+   - Cola FIFO (newsQueue) para que ninguna información se sobrescriba ni se pierda
    ============================================================ */
 
 class GameUI {
@@ -108,10 +108,13 @@ class GameUI {
     });
   }
 
-  // ── Tarjeta Emergente Izquierda Centrada ──
+  // ── Tarjeta Emergente Izquierda Centrada (Cola Estricta de Aceptación) ──
   showEditorialNewsCard(opts) {
-    const oldCard = document.querySelector('.left-center-news-popup');
-    if (oldCard) oldCard.remove();
+    // Si ya hay una tarjeta activa en pantalla, encolar la siguiente para no cerrar ni sobrescribir la actual
+    if (document.querySelector('.left-center-news-popup')) {
+      this.newsQueue.push(opts);
+      return;
+    }
 
     const cardEl = document.createElement('div');
     cardEl.className = 'left-center-news-popup';
@@ -147,6 +150,11 @@ class GameUI {
         if (cardEl.parentNode) cardEl.remove();
         if (typeof opts.onAccept === 'function') {
           opts.onAccept();
+        }
+        // Desencolar la siguiente tarjeta solo al dar ACEPTAR
+        if (this.newsQueue.length > 0) {
+          const nextOpts = this.newsQueue.shift();
+          this.showEditorialNewsCard(nextOpts);
         }
       }, 350);
     };
