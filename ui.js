@@ -26,8 +26,7 @@ class GameUI {
 
         <div class="sidebar-guide-box">
           <div class="guide-title">💡 GUÍA DE JUEGO</div>
-          <p class="guide-step">1️⃣ Haz clic en <strong>ACEPTAR</strong> en la tarjeta explicativa.</p>
-          <p class="guide-step">2️⃣ Presiona el botón <strong>LIBERAR CASTORES</strong> para comenzar la simulación.</p>
+          <p class="guide-step">Presiona el botón <strong>LIBERAR CASTORES</strong> para comenzar la simulación.</p>
         </div>
 
         <div class="sidebar-section-title">🎮 CONTROLES</div>
