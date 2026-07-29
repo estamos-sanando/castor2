@@ -1,6 +1,7 @@
 'use strict';
 /* ============================================================
-   UI.JS — Interfaz de Usuario, Panel Lateral ENEEI y Minijuegos
+   UI.JS — Interfaz de Usuario, Tarjetas Periodísticas y Minijuegos
+   Noticia Interactiva basada en Vistazo / Proyecto Castor ENEEI
    ============================================================ */
 
 class GameUI {
@@ -19,11 +20,11 @@ class GameUI {
       <div id="hud-top-bar">
         <div class="hud-brand">
           <span class="brand-icon">🦫</span>
-          <span class="brand-title">PROYECTO CASTOR — TIERRA DEL FUEGO</span>
+          <span class="brand-title">NEWSGAME — LA INVASIÓN DEL CASTOR EN TIERRA DEL FUEGO</span>
         </div>
         <div class="hud-stats">
           <div class="stat-pill"><span class="pill-label">🦫 CASTORES</span><span class="pill-val" id="val-beavers">0</span></div>
-          <div class="stat-pill"><span class="pill-label">🔥 PÉRDIDA BOSQUE</span><span class="pill-val" id="val-loss">0%</span></div>
+          <div class="stat-pill"><span class="pill-label">🔥 BOSQUE PERDIDO</span><span class="pill-val" id="val-loss">0%</span></div>
           <div class="stat-pill"><span class="pill-label">🌊 INUNDACIÓN</span><span class="pill-val" id="val-flooded">0 ha</span></div>
           <div class="stat-pill"><span class="pill-label">🪵 DIQUES</span><span class="pill-val" id="val-dams">0</span></div>
         </div>
@@ -67,12 +68,13 @@ class GameUI {
     this.tutorialEl.id = 'tutorial-overlay';
     this.tutorialEl.innerHTML = `
       <div class="tutorial-card">
-        <h2>🦫 PROYECTO CASTOR: INVASIÓN Y RESTAURACIÓN</h2>
-        <p class="tut-subtitle">Noticia Interactiva sobre el Control de Especies Exóticas Invasoras en Tierra del Fuego</p>
+        <span class="journal-tag">📰 VISTAZO INVESTIGA / REPORTAJE ESPECIAL</span>
+        <h2>1946: 20 CASTORES PARA CREAR UNA INDUSTRIA PELETERA EN TIERRA DEL FUEGO</h2>
+        <p class="tut-subtitle">80 años después, más de 100.000 ejemplares han devastado miles de hectáreas de bosque patagónico.</p>
         <div class="tut-body">
-          <p>En 1946, 20 castores canadienses fueron liberados en Tierra del Fuego. Sin predadores naturales, su tala y represas destruyeron miles de hectáreas de Lenga nativa.</p>
+          <p>En 1946, la Marina Argentina introdujo 20 ejemplares de <em>Castor canadensis</em> importados de Canadá. Sin predadores naturales (osos o lobos), la especie colonizó el fin del mundo alterando las cuencas para siempre.</p>
         </div>
-        <button class="tutorial-start-btn" id="btn-start-game">¡COMENZAR EXPERIENCIA!</button>
+        <button class="tutorial-start-btn" id="btn-start-game">¡COMENZAR INVESTIGACIÓN INTERACTIVA!</button>
       </div>
     `;
     document.getElementById('game-container').appendChild(this.tutorialEl);
@@ -93,6 +95,45 @@ class GameUI {
     });
   }
 
+  // ── Tarjetas Periodísticas Editoriales de Gran Impacto (Newsgame Overlay) ──
+  showEditorialNewsCard(opts) {
+    const cardEl = document.createElement('div');
+    cardEl.className = 'news-journal-overlay';
+    cardEl.innerHTML = `
+      <div class="journal-card journal-theme-${opts.theme || 'danger'}">
+        <div class="journal-top-meta">
+          <span class="journal-tag">📰 VISTAZO / NOTICIA EN DESARROLLO</span>
+          <span class="journal-date">TIERRA DEL FUEGO — ${opts.year || '1946-2026'}</span>
+        </div>
+        
+        <h2 class="journal-headline">${opts.title}</h2>
+        ${opts.subtitle ? `<div class="journal-subhead">${opts.subtitle}</div>` : ''}
+        
+        <div class="journal-body">
+          <p class="journal-lead">${opts.text}</p>
+          ${opts.quote ? `<blockquote class="journal-quote">"${opts.quote}"</blockquote>` : ''}
+          ${opts.fact ? `<div class="journal-fact-box"><strong>📊 DATO CLAVE:</strong> ${opts.fact}</div>` : ''}
+        </div>
+
+        <div class="journal-footer">
+          <button class="journal-action-btn" id="btn-close-journal">CONTINUAR JUGANDO ➔</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('game-container').appendChild(cardEl);
+
+    // Pausar simulación mientras lee la noticia
+    if (this.game) this.game.running = false;
+
+    cardEl.querySelector('#btn-close-journal').addEventListener('click', () => {
+      cardEl.classList.add('fade-out');
+      setTimeout(() => {
+        cardEl.remove();
+        if (this.game) this.game.running = true;
+      }, 350);
+    });
+  }
+
   // ── Ventana Lateral Izquierda de Inventario ENEEI: Cabaña + Cartel ──
   showCabinInventory() {
     if (document.getElementById('eneei-sidebar-panel')) return;
@@ -105,7 +146,7 @@ class GameUI {
           <span class="sidebar-icon">📜</span>
           <h4>INVENTARIO DE CONTROL ENEEI</h4>
         </div>
-        <p class="sidebar-desc">Tratado Binacional Argentina-Chile. Haz clic o arrastra los <strong>2 elementos</strong> al mapa para instalarlos:</p>
+        <p class="sidebar-desc">Tratado Binacional Argentina-Chile. Haz clic en los <strong>2 elementos</strong> para instalarlos en el mapa:</p>
         
         <div class="sidebar-items">
           <div class="sidebar-item" id="btn-place-cabin">
@@ -189,10 +230,13 @@ class GameUI {
     document.getElementById('btn-precision-click')?.addEventListener('click', () => {
       clearInterval(interval);
       miniEl.remove();
-      this.showNews({
-        title: '🎯 ¡CAPTURA EXITOSA!',
-        text: 'Los guardaparques inician la patrulla continua con trampa jaula y desmantelamiento de represas.',
-        type: 'success'
+      this.showEditorialNewsCard({
+        title: '🎯 ¡CAPTURA EXITOSA EN ÁREAS PILOTO!',
+        subtitle: 'Comienza la estrategia binacional de patrulla con trampas jaula y restauración de cuencas.',
+        text: 'Los guardaparques especializados inician el retiro de represas y la captura humanitaria para frenar la migración del castor hacia la Patagonia continental.',
+        fact: 'Se protegen las cuencas del río Lapataia y la Isla Navarino en Chile.',
+        theme: 'success',
+        year: '2016'
       });
       this.game.startRangerSimulation();
     });
@@ -213,33 +257,8 @@ class GameUI {
   }
 
   showNews(opts) {
-    this.newsQueue.push(opts);
+    this.showEditorialNewsCard(opts);
   }
 
-  _processNews() {
-    if (this.activeNews || this.newsQueue.length === 0) return;
-    const opts = this.newsQueue.shift();
-
-    const card = document.createElement('div');
-    card.className = `news-card news-${opts.type || 'info'}`;
-    card.innerHTML = `
-      <div class="news-header">
-        <span class="news-badge">${opts.type === 'danger' ? '🔴 ALERTA' : opts.type === 'warning' ? '⚠️ ADVERTENCIA' : '📰 NOTICIA'}</span>
-        <h4>${opts.title}</h4>
-      </div>
-      <p>${opts.text}</p>
-      <button class="news-close-btn">ENTENDIDO</button>
-    `;
-
-    this.newsContainer.appendChild(card);
-    this.activeNews = card;
-
-    card.querySelector('.news-close-btn').addEventListener('click', () => {
-      card.classList.add('fade-out');
-      setTimeout(() => {
-        card.remove();
-        this.activeNews = null;
-      }, 300);
-    });
-  }
+  _processNews() {}
 }

@@ -76,10 +76,13 @@ class BeaverGame {
   start() {
     this.started = true;
     this.running = true;
-    this.ui.showNews({
-      title: '🌲 1946: BOSQUE NATIVO PRÍSTINO',
-      text: 'Presiona el botón de madera para liberar los 20 castores iniciales en el río central y comenzar la simulación.',
-      type: 'info'
+    this.ui.showEditorialNewsCard({
+      title: '1946: 20 CASTORES EN EL FIN DEL MUNDO PARA UNA INDUSTRIA PELETERA',
+      subtitle: 'La Marina Argentina importó 20 ejemplares de Castor canadensis desde Canadá.',
+      text: 'El plan original buscaba crear un mercado de pieles en Tierra del Fuego. Sin depredadores naturales (osos/lobos) y con abundante agua pura, la especie comenzó su multiplicación imparable.',
+      fact: '80 años después, 20 castores se convirtieron en más de 100.000 a 150.000 ejemplares.',
+      theme: 'info',
+      year: '1946'
     });
   }
 
@@ -148,10 +151,13 @@ class BeaverGame {
     this.stats.beavers = 20;
     this.act = 2;
 
-    this.ui.showNews({
-      title: '🚨 INVASIÓN EN CURSO (1965-2005)',
-      text: 'Los 20 castores se dividen en 2 equipos de 10 castores que construyen colaborativamente los 2 diques principales del río central.',
-      type: 'warning'
+    this.ui.showEditorialNewsCard({
+      title: '🚨 INVASIÓN EN CURSO Y TALA MASIVA DE LA LENGA',
+      subtitle: 'Los castores avanzan en 2 equipos construyendo represas colaborativas.',
+      text: 'Los roedores cortan la madera nativa con sus incisivos y arrastran las ramas hacia el cauce central. La especie alteró más del 95% de las cuencas de la isla.',
+      fact: 'El castor no tiene oponentes naturales en la Patagonia.',
+      theme: 'warning',
+      year: '1965'
     });
   }
 
@@ -167,6 +173,19 @@ class BeaverGame {
 
     this.stats.forestLoss = Math.min(100, this.stats.forestLoss + 2);
     this.stats.health = Math.max(0, 100 - this.stats.forestLoss);
+
+    if (!this._lengaWarnShown) {
+      this._lengaWarnShown = true;
+      this.ui.showEditorialNewsCard({
+        title: '⚠️ LA TRAGEDIA DE LA LENGA: 200 AÑOS EN CRECER',
+        subtitle: 'A diferencia de los árboles del hemisferio norte, la Lenga NO rebota del tocón.',
+        text: 'Nothofagus pumilio tardó dos siglos en alcanzar la madurez. Al ser talada por el castor, la Lenga muere definitivamente a escala humana.',
+        quote: 'Cada árbol caído en Tierra del Fuego representa una pérdida irrecuperable para la biodiversidad.',
+        fact: 'No hubo coevolución entre los árboles patagónicos y el castor.',
+        theme: 'warning',
+        year: '1980'
+      });
+    }
   }
 
   // ── Evento: Entrega de Madera al Río -> 2 Diques Colectivos (10 Castores por Dique) ──
@@ -214,11 +233,20 @@ class BeaverGame {
       }
     });
 
-    this.ui.showNews({
-      title: '🌊 BOSQUE INUNDADO Y ÁRBOLES FANTASMA',
-      text: 'Los diques inundaron la cuenca. Los árboles de Lenga no soportan la inmersión en agua y se convierten en árboles muertos fantasma. ¡Se requiere la intervención ENEEI!',
-      type: 'danger'
+    this.ui.showEditorialNewsCard({
+      title: '🌊 BOSQUES FANTASMA Y USD $66.5 MILLONES EN DAÑOS ANUALES',
+      subtitle: 'Las represas inundan el suelo, ahogan las raíces y destruyen las turberas.',
+      text: 'Más de 30.000 hectáreas de bosque nativo se han convertido en cementerios de árboles de pie. Las pérdidas económicas superan los 66.5 millones de dólares al año.',
+      fact: 'El castor inundó cuencas enteras y cruzó el Canal Beagle colonizando Chile.',
+      theme: 'danger',
+      year: '2005'
     });
+
+    // Abrir ventana lateral de inventario ENEEI
+    setTimeout(() => {
+      this.ui.showCabinInventory();
+    }, 2500);
+  }
 
     // Abrir inventario para arrastrar la cabaña del guardaparque
     setTimeout(() => {
