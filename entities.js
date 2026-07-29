@@ -598,7 +598,7 @@ class Beaver extends Entity {
     this.captured = false;
     this.state = 'idle';
     this.action = 'idle';
-    this.speed = isSmall ? 25 : 40;
+    this.speed = isSmall ? 16 : 22;
     this.targetX = x; this.targetY = y;
     this.targetTree = null;
     this.targetLog = null;
@@ -694,8 +694,8 @@ class Beaver extends Entity {
     const arrived = this._moveTo(tx, ty, dt, this.speed);
     if (arrived) {
       this.state = nextState;
-      this.cutTimer = 2.5 + Math.random();
-      this.buildTimer = 3.0 + Math.random();
+      this.cutTimer = 6.0 + Math.random() * 4.0;
+      this.buildTimer = 5.0 + Math.random() * 3.0;
     }
   }
 

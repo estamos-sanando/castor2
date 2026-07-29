@@ -222,44 +222,65 @@ class BeaverGame {
   // ── Colocación de Cabaña -> Acuerdo Argentina y Chile + Aparición de Guardaparques ──
   placeCabin(x, y) {
     this.cabinPlaced = true;
-    const cabin = new Rock(x, y, 1); // cabana.png
-    cabin.scale = 1.3;
+    const cabin = new Rock(x, y, 2); // cabana.png
+    cabin.scale = 1.4;
     this.entities.push(cabin);
 
+    // Instanciar guardaparques custodiando el área de la cabaña
+    const ranger1 = new Ranger(x + 40, y + 20);
+    ranger1.setPatrol([{ x: x + 40, y: y + 20 }, { x: 620, y: 320 }, { x: x + 40, y: y + 20 }]);
+    this.entities.push(ranger1);
+
+    const ranger2 = new Ranger(x - 40, y + 30);
+    ranger2.setPatrol([{ x: x - 40, y: y + 30 }, { x: 640, y: 440 }, { x: x - 40, y: y + 30 }]);
+    this.entities.push(ranger2);
+
+    // Instanciar trampas jaula en la ribera del río
+    const cage1 = new Cage(610, 300);
+    const cage2 = new Cage(650, 420);
+    this.entities.push(cage1);
+    this.entities.push(cage2);
+
     this.ui.showNews({
-      title: '📜 ACUERDO BINACIONAL ARGENTINA-CHILE (ENEEI)',
-      text: 'Se instaló el puesto de control del guardaparques. Se inicia la estrategia de erradicación humanitaria y restauración de cuencas.',
+      title: '📜 ACUERDO BINACIONAL ARGENTINA-CHILE (ENEEI 2016)',
+      text: 'Se instaló el puesto de control del guardaparques. Se inicia la estrategia de erradicación humanitaria con trampas jaula y restauración de cuencas.',
       type: 'info'
     });
 
-    // Abrir Minijuego de Precisión
+    // Abrir Minijuego de Precisión tras 1.5 segundos
     setTimeout(() => {
       this.ui.openPrecisionMinigame();
-    }, 1800);
+    }, 1500);
   }
 
   // ── Éxito del Minijuego -> Simulación de Guardaparques Capturando Castores ──
   startRangerSimulation() {
     this.act = 3;
-    const ranger = new Ranger(360, 360);
-    ranger.setPatrol([
-      { x: 360, y: 360 }, { x: 620, y: 360 }, { x: 800, y: 360 }
-    ]);
-    this.entities.push(ranger);
 
-    // Simulación de captura y remoción de diques
+    // Simulación progresiva de captura y remoción gradual de diques
     let captureInterval = setInterval(() => {
       const beavers = this.entities.filter(e => e instanceof Beaver && !e.dead);
       if (beavers.length > 0) {
         const b = beavers.pop();
         b.dead = true;
-        this.particles.burst(b.x, b.y - 15, 'leaf', 12);
+        this.particles.burst(b.x, b.y - 15, 'leaf', 16);
         this.stats.beavers = Math.max(0, this.stats.beavers - 1);
+
+        // Deterioro progresivo del dique
+        const dam = this.entities.find(e => e instanceof Dam && e.active && !e.dead);
+        if (dam) {
+          if (dam.level > 1) {
+            dam.level--;
+            dam._refreshSprite();
+          } else {
+            dam.remove();
+          }
+        }
       } else {
         clearInterval(captureInterval);
         this.restoreEcosystem();
       }
-    }, 800);
+    }, 1500);
   }
 
   restoreEcosystem() {
@@ -267,7 +288,7 @@ class BeaverGame {
     this.stats.health = 85;
     this.stats.hectaresFlooded = 0;
 
-    // Desmantelar diques
+    // Desmantelar todos los diques restantes
     this.entities.forEach(e => {
       if (e instanceof Dam) e.remove();
     });
