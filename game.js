@@ -317,18 +317,9 @@ class BeaverGame {
       this.entities.push(cage1);
       this.entities.push(cage2);
 
-      this.ui.showEditorialNewsCard({
-        title: '📜 ESTRATEGIA BINACIONAL ENEEI: ARGENTINA Y CHILE UNIDOS POR LA BIODIVERSIDAD',
-        subtitle: 'Con apoyo del Fondo para el Medio Ambiente Mundial (FMAM) y la FAO, se activan áreas piloto.',
-        text: 'Técnicos y guardaparques especializados instalan puestos de monitoreo y trampas jaula para erradicar focos invasores y evitar que el castor cruce a la Patagonia continental.',
-        fact: 'Es una de las iniciativas binacionales de control de especies exóticas invasoras más ambiciosas del planeta.',
-        theme: 'info',
-        year: '2016'
-      });
-
       setTimeout(() => {
         this.ui.openPrecisionMinigame();
-      }, 1500);
+      }, 1000);
     }
   }
 
@@ -361,7 +352,6 @@ class BeaverGame {
   }
 
   restoreEcosystem() {
-    this._transitionToMap(3);
     this.stats.health = 85;
     this.stats.hectaresFlooded = 0;
 
@@ -369,14 +359,19 @@ class BeaverGame {
       if (e instanceof Dam) e.remove();
     });
 
+    // Ventana central con overlay que obliga a leer antes del cambio de escena final
     this.ui.showEditorialNewsCard({
       title: '🌱 DESMANTELAMIENTO DE DIQUES Y REAPARICIÓN DE LOS PRIMEROS RENUEVOS NATIVOS',
       subtitle: 'La remoción manual de represas permite que los ríos recuperen su escurrimiento natural.',
       text: 'Al drenarse el agua estancada, los biólogos y guardaparques reforestan activamente con plantines de Lenga nativa, frenando la invasión de pastos exóticos y devolviendo el equilibrio a la cuenca fueguina.',
       quote: 'La restauración de un ecosistema devastado por 80 años toma décadas, pero los primeros brotes verdes marcan el retorno del equilibrio.',
       fact: 'La recuperación de las cuencas de agua dulce permite el retorno de la fauna nativa y la fijación de carbono.',
-      theme: 'success',
-      year: '2026'
+      year: '2026',
+      centered: true, // VENTANA CENTRAL DE CAMBIO DE ESCENA
+      onAccept: () => {
+        // AL DAR ACEPTAR SE CAMBIA LA ESCENA AL MAPA DE RESTAURACIÓN!
+        this._transitionToMap(3); // map_06_restauracion_parcial.jpg
+      }
     });
   }
 
