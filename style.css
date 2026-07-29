@@ -1025,19 +1025,43 @@ html, body {
 }
 
 /* ── Responsivo Adaptable para Móviles y Tablets ──────────── */
+@media (max-width: 1024px) {
+  #hud-right-sidebar {
+    width: 250px;
+    padding: 16px 12px;
+  }
+  .sidebar-game-title {
+    font-size: 11.5px;
+  }
+  .bottom-left-news-popup {
+    width: 380px;
+  }
+}
+
 @media (max-width: 768px) {
-  #hud-top { flex-direction: column; gap: 8px; align-items: flex-start; padding: 8px 12px; }
-  .hud-stats-grid { width: 100%; justify-content: space-between; }
-  .hud-stat-card { min-width: 60px; padding: 4px 6px; }
-  .stat-val { font-size: 13px; }
-  .stat-lbl { font-size: 8px; }
-  #hud-bottom-bar { padding: 8px 12px 10px; }
-  #hud-controls { flex-direction: column; gap: 6px; }
-  .news-btn { padding: 10px 14px; font-size: 11px; width: 100%; }
-  .tutorial-box { padding: 22px 18px; }
-  .news-card { padding: 16px 18px; }
-  .news-title { font-size: 15px; }
-  .news-text { font-size: 12px; }
+  #hud-right-sidebar {
+    width: 210px;
+    padding: 12px 10px;
+    gap: 10px;
+  }
+  .pill-label {
+    font-size: 9.5px;
+  }
+  .pill-val {
+    font-size: 12px;
+  }
+  .bottom-left-news-popup {
+    left: 10px;
+    bottom: 10px;
+    width: calc(100vw - 230px);
+  }
+  .journal-headline {
+    font-size: 15px;
+  }
+  .journal-lead {
+    font-size: 11px;
+  }
+}
 }
 
 @media (max-width: 480px) {

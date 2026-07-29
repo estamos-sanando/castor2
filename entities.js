@@ -337,22 +337,29 @@ class Entity {
     const w = Math.round(this.sprite.width * (this.scale || 1.0));
     const h = Math.round(this.sprite.height * (this.scale || 1.0));
 
-    // Ground shadow underneath baseline (feet / root base)
-    const shadowW = Math.max(8, Math.round(w * 0.45));
-    const shadowH = Math.max(4, Math.round(shadowW * 0.35));
+    // Punto de contacto directo del tronco con el suelo (elimina efecto flotante)
+    const isTree = (this instanceof Tree);
+    const yOffset = isTree ? Math.round(h * 0.07) : 0;
+    const shadowY = Math.round(this.y - yOffset);
+
+    // Sombra sutil directamente adherida a las raíces del árbol
+    const shadowW = Math.max(8, Math.round(w * (isTree ? 0.32 : 0.42)));
+    const shadowH = Math.max(3, Math.round(shadowW * 0.28));
     
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.18)';
     ctx.beginPath();
-    ctx.ellipse(Math.round(this.x), Math.round(this.y), shadowW * 0.5, shadowH * 0.5, 0, 0, Math.PI * 2);
+    ctx.ellipse(Math.round(this.x), shadowY - 2, shadowW * 0.5, shadowH * 0.5, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Sprite Rendering with Bottom-Center (0.5, 1.0) Pivot Anchor Point
+    const drawY = Math.round(this.y - h + yOffset);
+
+    // Renderizado con punto de anclaje ajustado a la raíz
     if (this.facingLeft) {
-      ctx.translate(Math.round(this.x), Math.round(this.y));
+      ctx.translate(Math.round(this.x), drawY + h);
       ctx.scale(-1, 1);
       ctx.drawImage(this.sprite, -Math.round(w * 0.5), -h, w, h);
     } else {
-      ctx.drawImage(this.sprite, Math.round(this.x - w * 0.5), Math.round(this.y - h), w, h);
+      ctx.drawImage(this.sprite, Math.round(this.x - w * 0.5), drawY, w, h);
     }
     ctx.restore();
   }
