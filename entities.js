@@ -671,24 +671,24 @@ class Beaver extends Entity {
   }
 
   _doSearch(dt, game) {
-    let best = null, bestDist = Infinity;
-    for (const e of game.entities) {
-      if (e instanceof Tree && e.isHealthy) {
-        const d = this.distanceTo(e);
-        if (d < bestDist) { bestDist = d; best = e; }
-      }
+    this.action = 'walk';
+    const g = (game && game.entities) ? game : dt;
+    const trees = (g && g.entities) ? g.entities.filter(e => e instanceof Tree && e.isHealthy && !e.being_cut) : [];
+    if (trees.length === 0) {
+      this.state = 'idle';
+      return;
     }
 
-    if (best) {
-      best.being_cut = true;
-      this.targetTree = best;
-      this.targetX = best.x + (Math.random() - 0.5) * 10;
-      this.targetY = best.y + 4;
-      this.state = 'walk_tree';
-      this.action = 'walk';
-    } else {
-      this.state = 'idle';
-    }
+    // Alternar selección entre los 5 árboles más cercanos
+    trees.sort((a, b) => this.distanceTo(a) - this.distanceTo(b));
+    const poolSize = Math.min(5, trees.length);
+    const chosen = trees[Math.floor(Math.random() * poolSize)];
+
+    chosen.being_cut = true;
+    this.targetTree = chosen;
+    this.targetX = chosen.x + (Math.random() - 0.5) * 10;
+    this.targetY = chosen.y + 4;
+    this.state = 'walk_tree';
   }
 
   _doWalkTo(dt, tx, ty, nextState) {

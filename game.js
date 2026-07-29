@@ -92,19 +92,19 @@ class BeaverGame {
     };
   }
 
-  // ── INICIO: Bosque nativo denso (160+ árboles) alrededor del río central ──
+  // ── INICIO: Bosque nativo denso (220+ árboles) a ambos lados del río ──
   _populateInitialForest() {
     this.entities = [];
     const treePositions = [];
-    const minDistance = 22;
+    const minDistance = 18;
 
-    // Margen Izquierdo (x: 50 - 520, y: 120 - 640)
-    for (let i = 0; i < 80; i++) {
+    // Margen Izquierdo (x: 40 - 530, y: 110 - 650) -> 110 árboles
+    for (let i = 0; i < 110; i++) {
       let attempts = 0;
-      while (attempts < 80) {
+      while (attempts < 100) {
         attempts++;
-        const x = 50 + Math.random() * 470;
-        const y = 120 + Math.random() * 520;
+        const x = 40 + Math.random() * 490;
+        const y = 110 + Math.random() * 540;
         if (!treePositions.some(p => Math.hypot(p.x - x, p.y - y) < minDistance)) {
           treePositions.push({ x, y });
           break;
@@ -112,13 +112,13 @@ class BeaverGame {
       }
     }
 
-    // Margen Derecho (x: 760 - 1230, y: 120 - 640)
-    for (let i = 0; i < 80; i++) {
+    // Margen Derecho (x: 750 - 1240, y: 110 - 650) -> 110 árboles
+    for (let i = 0; i < 110; i++) {
       let attempts = 0;
-      while (attempts < 80) {
+      while (attempts < 100) {
         attempts++;
-        const x = 760 + Math.random() * 470;
-        const y = 120 + Math.random() * 520;
+        const x = 750 + Math.random() * 490;
+        const y = 110 + Math.random() * 540;
         if (!treePositions.some(p => Math.hypot(p.x - x, p.y - y) < minDistance)) {
           treePositions.push({ x, y });
           break;
@@ -166,7 +166,7 @@ class BeaverGame {
     this.entities.push(log);
     beaver.targetLog = log;
 
-    this.stats.forestLoss = Math.min(100, this.stats.forestLoss + 2);
+    this.stats.forestLoss = Math.min(100, this.stats.forestLoss + 1);
     this.stats.health = Math.max(0, 100 - this.stats.forestLoss);
 
     if (!this._lengaWarnShown) {
@@ -183,7 +183,7 @@ class BeaverGame {
     }
   }
 
-  // ── Evento: Entrega de Madera al Río -> 2 Diques Colectivos ──
+  // ── Evento: Entrega de Madera al Río -> 10 = Dique Chico, 20 = Dique Mediano, 30 = Dique Grande + Inundación ──
   onBeaverDeliveredWood(beaver) {
     this.stats.woodDelivered++;
 
@@ -201,16 +201,23 @@ class BeaverGame {
     dam.woodCount = (dam.woodCount || 0) + 1;
     this.stats.dams = this.entities.filter(e => e instanceof Dam && e.active && !e.dead).length;
 
-    if (dam.woodCount >= 12) {
-      dam.level = 3;
-      dam._refreshSprite();
-      this.triggerFloodedCrisis(); // El mapa cambia ÚNICAMENTE con Dique Grande
-    } else if (dam.woodCount >= 7) {
-      dam.level = 2;
-      dam._refreshSprite();
-    } else if (dam.woodCount >= 3) {
-      dam.level = 1;
-      dam._refreshSprite();
+    // Progresión exacta: 10 maderas = Dique Chico (1), 20 = Dique Mediano (2), 30 = Dique Grande (3) + Inundación
+    if (dam.woodCount >= 30) {
+      if (dam.level < 3) {
+        dam.level = 3;
+        dam._refreshSprite();
+        this.triggerFloodedCrisis(); // EL MAPA SE INUNDA ÚNICAMENTE CON EL DIQUE GRANDE!
+      }
+    } else if (dam.woodCount >= 20) {
+      if (dam.level < 2) {
+        dam.level = 2;
+        dam._refreshSprite();
+      }
+    } else if (dam.woodCount >= 10) {
+      if (dam.level < 1) {
+        dam.level = 1;
+        dam._refreshSprite();
+      }
     }
   }
 
