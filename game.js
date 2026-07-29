@@ -130,53 +130,77 @@ class BeaverGame {
     });
   }
 
-  // ── Bosque Nativo a Ambos Lados del Río Central ──
+  // ── Bosque Nativo Denso de Lenga a Ambos Lados del Río Central ──
   _populateCleanForest() {
     this.entities = [];
 
-    // Margen Izquierdo del Río Central
-    const leftBank = [
-      { x:120, y:240 }, { x:200, y:210 }, { x:280, y:280 }, { x:160, y:360 },
-      { x:340, y:220 }, { x:420, y:300 }, { x:240, y:440 }, { x:140, y:520 },
-      { x:380, y:420 }, { x:280, y:540 }, { x:460, y:480 }, { x:320, y:340 }
-    ];
+    const treePositions = [];
+    const minDistance = 42; // Distancia mínima para solapamiento natural estilo bosque AoE2
 
-    // Margen Derecho del Río Central
-    const rightBank = [
-      { x:820, y:220 }, { x:900, y:200 }, { x:980, y:260 }, { x:860, y:320 },
-      { x:1060, y:240 }, { x:1140, y:300 }, { x:940, y:420 }, { x:1040, y:440 },
-      { x:880, y:500 }, { x:1000, y:540 }, { x:1120, y:460 }, { x:780, y:380 }
-    ];
+    // Generar racimos orgánicos en el Margen Izquierdo (x: 80 - 500)
+    for (let i = 0; i < 35; i++) {
+      let attempts = 0;
+      while (attempts < 50) {
+        attempts++;
+        const x = 80 + Math.random() * 420;
+        const y = 140 + Math.random() * 480;
+        const tooClose = treePositions.some(p => Math.hypot(p.x - x, p.y - y) < minDistance);
+        if (!tooClose) {
+          treePositions.push({ x, y });
+          break;
+        }
+      }
+    }
 
-    let v = 0;
-    [...leftBank, ...rightBank].forEach(spot => {
-      const tree = new Tree(spot.x, spot.y, v % 8);
-      v++;
+    // Generar racimos orgánicos en el Margen Derecho (x: 780 - 1200)
+    for (let i = 0; i < 35; i++) {
+      let attempts = 0;
+      while (attempts < 50) {
+        attempts++;
+        const x = 780 + Math.random() * 420;
+        const y = 140 + Math.random() * 480;
+        const tooClose = treePositions.some(p => Math.hypot(p.x - x, p.y - y) < minDistance);
+        if (!tooClose) {
+          treePositions.push({ x, y });
+          break;
+        }
+      }
+    }
+
+    // Instanciar árboles con variantes (1 a 9) y escala aleatoria natural (0.85x - 1.3x)
+    treePositions.forEach((spot, idx) => {
+      const tree = new Tree(spot.x, spot.y, idx % 9);
+      tree.scale = 0.85 + Math.random() * 0.45;
       this.entities.push(tree);
     });
 
-    // Rocas y arbustos bordeando el cauce central
-    [[480,360],[520,480],[760,360],[800,480]].forEach(([rx,ry], i) => {
-      this.entities.push(new Rock(rx, ry, i));
-    });
-    [[440,280],[500,520],[780,280],[840,520]].forEach(([bx,by], i) => {
-      this.entities.push(new Bush(bx, by, i));
+    // Rocas y arbustos en el sotobosque y márgenes
+    [[140, 280], [380, 460], [480, 220], [820, 480], [1020, 260], [1120, 520]].forEach(([rx, ry], i) => {
+      const rock = new Rock(rx, ry, i % 3);
+      rock.scale = 0.9 + Math.random() * 0.3;
+      this.entities.push(rock);
     });
 
-    // Castores iniciales posicionados en el río central
+    [[180, 420], [320, 180], [460, 540], [860, 220], [960, 440], [1080, 340]].forEach(([bx, by], i) => {
+      const bush = new Bush(bx, by, i % 2);
+      bush.scale = 0.85 + Math.random() * 0.35;
+      this.entities.push(bush);
+    });
+
+    // Castores iniciales en el río central
     this.spawnBeaver(620, 320);
     this.spawnBeaver(660, 420);
 
-    // Personal ENEEI
-    const scientist = new Scientist(780, 310);
+    // Personal ENEEI (Guardaparque y Científico)
+    const scientist = new Scientist(820, 310);
     this.entities.push(scientist);
 
     const ranger = new Ranger(340, 310);
     ranger.setPatrol([
-      { x: 280, y: 290 },
+      { x: 260, y: 290 },
       { x: 440, y: 290 },
-      { x: 440, y: 350 },
-      { x: 280, y: 350 }
+      { x: 440, y: 380 },
+      { x: 260, y: 380 }
     ]);
     this.entities.push(ranger);
   }
