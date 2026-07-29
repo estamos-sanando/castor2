@@ -1,7 +1,8 @@
 'use strict';
 /* ============================================================
-   UI.JS — Interfaz de Usuario, Tarjetas Periodísticas y Minijuegos
-   Newsgame basado 100% en la noticia real de Vistazo & Proyecto ENEEI
+   UI.JS — Interfaz de Usuario y Ventanas Emergentes Estilo Diario
+   - Fondo de diario con asset assets/diario.png
+   - Sin etiquetas meta (sin decir "noticia", "investigación" o "newsgame")
    ============================================================ */
 
 class GameUI {
@@ -19,14 +20,14 @@ class GameUI {
     const hudHtml = `
       <div id="hud-top-bar">
         <div class="hud-brand">
-          <span class="brand-icon">📰</span>
-          <span class="brand-title">VISTAZO NEWSGAME — LA DEVASTACIÓN DEL CASTOR EN TIERRA DEL FUEGO</span>
+          <img src="assets/diario.png" alt="Diario" class="brand-newspaper-img" />
+          <span class="brand-title">TIERRA DEL FUEGO — EL CASTOR EN LA PATAGONIA</span>
         </div>
         <div class="hud-stats">
-          <div class="stat-pill"><span class="pill-label">🦫 EST. POBLACIÓN</span><span class="pill-val" id="val-beavers">0</span></div>
+          <div class="stat-pill"><span class="pill-label">🦫 CASTORES</span><span class="pill-val" id="val-beavers">0</span></div>
           <div class="stat-pill"><span class="pill-label">🔥 BOSQUE PERDIDO</span><span class="pill-val" id="val-loss">0%</span></div>
-          <div class="stat-pill"><span class="pill-label">🌊 HECTÁREAS ANEGADAS</span><span class="pill-val" id="val-flooded">0 ha</span></div>
-          <div class="stat-pill"><span class="pill-label">🪵 DIQUES EN CUENCA</span><span class="pill-val" id="val-dams">0</span></div>
+          <div class="stat-pill"><span class="pill-label">🌊 INUNDACIÓN</span><span class="pill-val" id="val-flooded">0 ha</span></div>
+          <div class="stat-pill"><span class="pill-label">🪵 DIQUES</span><span class="pill-val" id="val-dams">0</span></div>
         </div>
       </div>
 
@@ -37,11 +38,11 @@ class GameUI {
             <div class="timeline-thumb" id="timeline-thumb"></div>
           </div>
           <div class="timeline-labels">
-            <span class="t-label active">1946 (INTRODUCCIÓN)</span>
-            <span class="t-label">1965 (EXPANSIÓN)</span>
-            <span class="t-label">2005 (BOSQUES FANTASMA)</span>
-            <span class="t-label">2016 (PROYECTO ENEEI)</span>
-            <span class="t-label">2026 (RESTAURACIÓN)</span>
+            <span class="t-label active">1946</span>
+            <span class="t-label">1965</span>
+            <span class="t-label">2005</span>
+            <span class="t-label">2016</span>
+            <span class="t-label">2026</span>
           </div>
         </div>
 
@@ -67,14 +68,26 @@ class GameUI {
     this.tutorialEl = document.createElement('div');
     this.tutorialEl.id = 'tutorial-overlay';
     this.tutorialEl.innerHTML = `
-      <div class="tutorial-card">
-        <span class="journal-tag">📰 VISTAZO INVESTIGA / REPORTAJE ESPECIAL AMBIENTAL</span>
-        <h2>EN 1946, ARGENTINA INTRODUJO 20 CASTORES PARA CREAR UNA INDUSTRIA PELETERA: 80 AÑOS DESPUÉS, HAN DEVASTADO LOS BOSQUES</h2>
-        <p class="tut-subtitle">Investigación periodística interactiva sobre el mayor desastre biológico en los bosques subantárticos de Tierra del Fuego.</p>
-        <div class="tut-body">
-          <p>La Marina de Guerra Argentina introdujo 10 parejas de <em>Castor canadensis</em> importadas de Canadá. La industria peletera nunca se concretó y los ejemplares fueron abandonados. Sin depredadores naturales en la Patagonia, la especie colonizó la Isla Grande alterando el 95% de las cuencas hídricas.</p>
+      <div class="journal-popup-window">
+        <div class="popup-window-bar">
+          <div class="window-bar-left">
+            <img src="assets/diario.png" alt="Diario" class="newspaper-icon-img" />
+            <span class="popup-window-title">1946 — TIERRA DEL FUEGO</span>
+          </div>
         </div>
-        <button class="tutorial-start-btn" id="btn-start-game">¡COMENZAR REPORTAJE INTERACTIVO!</button>
+        
+        <div class="popup-window-body">
+          <h2 class="journal-headline">EN 1946, ARGENTINA INTRODUJO 20 CASTORES PARA CREAR UNA INDUSTRIA PELETERA: 80 AÑOS DESPUÉS, HAN DEVASTADO LOS BOSQUES</h2>
+          <div class="journal-subhead">Impacto de la especie exótica en la Isla Grande de Tierra del Fuego.</div>
+          
+          <div class="journal-text-content">
+            <p class="journal-lead">La Marina de Guerra Argentina introdujo 10 parejas de <em>Castor canadensis</em> importadas de Canadá. La industria peletera nunca se concretó y los ejemplares fueron abandonados. Sin depredadores naturales en la Patagonia, la especie colonizó la isla alterando el 95% de las cuencas hídricas.</p>
+          </div>
+
+          <div class="journal-footer">
+            <button class="tutorial-start-btn" id="btn-start-game">¡COMENZAR! ➔</button>
+          </div>
+        </div>
       </div>
     `;
     document.getElementById('game-container').appendChild(this.tutorialEl);
@@ -95,46 +108,53 @@ class GameUI {
     });
   }
 
-  // ── Tarjetas Periodísticas Editoriales 100% Periodismo Real (Vistazo / Proyecto ENEEI) ──
+  // ── Ventana Emergente Estilo Diario con Asset assets/diario.png ──
   showEditorialNewsCard(opts) {
     const cardEl = document.createElement('div');
     cardEl.className = 'news-journal-overlay';
     cardEl.innerHTML = `
-      <div class="journal-card journal-theme-${opts.theme || 'info'}">
-        <div class="journal-top-meta">
-          <span class="journal-tag">📰 VISTAZO / INVESTIGACIÓN AMBIENTAL</span>
-          <span class="journal-date">TIERRA DEL FUEGO — ${opts.year || '1946-2026'}</span>
+      <div class="journal-popup-window">
+        <div class="popup-window-bar">
+          <div class="window-bar-left">
+            <img src="assets/diario.png" alt="Diario" class="newspaper-icon-img" />
+            <span class="popup-window-title">TIERRA DEL FUEGO — ${opts.year || '1946-2026'}</span>
+          </div>
+          <button class="popup-close-x" id="btn-close-journal-x">✕</button>
         </div>
         
-        <h2 class="journal-headline">${opts.title}</h2>
-        ${opts.subtitle ? `<div class="journal-subhead">${opts.subtitle}</div>` : ''}
-        
-        <div class="journal-body">
-          <p class="journal-lead">${opts.text}</p>
-          ${opts.quote ? `<blockquote class="journal-quote">"${opts.quote}"</blockquote>` : ''}
-          ${opts.fact ? `<div class="journal-fact-box"><strong>📊 DATO OFICIAL:</strong> ${opts.fact}</div>` : ''}
-        </div>
+        <div class="popup-window-body">
+          <h2 class="journal-headline">${opts.title}</h2>
+          ${opts.subtitle ? `<div class="journal-subhead">${opts.subtitle}</div>` : ''}
+          
+          <div class="journal-text-content">
+            <p class="journal-lead">${opts.text}</p>
+            ${opts.quote ? `<blockquote class="journal-quote">"${opts.quote}"</blockquote>` : ''}
+            ${opts.fact ? `<div class="journal-fact-box"><strong>DATO:</strong> ${opts.fact}</div>` : ''}
+          </div>
 
-        <div class="journal-footer">
-          <button class="journal-action-btn" id="btn-close-journal">CONTINUAR LECTURA ➔</button>
+          <div class="journal-footer">
+            <button class="journal-action-btn" id="btn-close-journal">CONTINUAR ➔</button>
+          </div>
         </div>
       </div>
     `;
     document.getElementById('game-container').appendChild(cardEl);
 
-    // Pausar simulación durante la lectura del reportaje
     if (this.game) this.game.running = false;
 
-    cardEl.querySelector('#btn-close-journal').addEventListener('click', () => {
+    const closeFn = () => {
       cardEl.classList.add('fade-out');
       setTimeout(() => {
         cardEl.remove();
         if (this.game) this.game.running = true;
       }, 350);
-    });
+    };
+
+    cardEl.querySelector('#btn-close-journal')?.addEventListener('click', closeFn);
+    cardEl.querySelector('#btn-close-journal-x')?.addEventListener('click', closeFn);
   }
 
-  // ── Ventana Lateral Izquierda de Puesto ENEEI ──
+  // ── Ventana Lateral Izquierda ──
   showCabinInventory() {
     if (document.getElementById('eneei-sidebar-panel')) return;
 
@@ -143,10 +163,10 @@ class GameUI {
     sidebar.innerHTML = `
       <div class="sidebar-card">
         <div class="sidebar-header">
-          <span class="sidebar-icon">📜</span>
-          <h4>ESTRATEGIA ENEEI (ARGENTINA-CHILE)</h4>
+          <img src="assets/diario.png" alt="Diario" class="sidebar-icon-img" />
+          <h4>PUESTO DE CONTROL ENEEI</h4>
         </div>
-        <p class="sidebar-desc">Puesto de Control Binacional. Selecciona e instala la Cabaña y el Cartel Informativo en el terreno:</p>
+        <p class="sidebar-desc">Selecciona e instala la Cabaña y el Cartel Informativo en el terreno:</p>
         
         <div class="sidebar-items">
           <div class="sidebar-item" id="btn-place-cabin">
@@ -164,7 +184,7 @@ class GameUI {
               <img src="assets/cartel.png" alt="Cartel" class="sidebar-img" />
             </div>
             <div class="item-info">
-              <span class="item-title">2. Cartel Informativo ENEEI</span>
+              <span class="item-title">2. Cartel Informativo</span>
               <span class="item-status" id="status-sign">⚪ Pendiente</span>
             </div>
           </div>
@@ -198,14 +218,14 @@ class GameUI {
     }
   }
 
-  // ── Minijuego de Precisión ENEEI ──
+  // ── Minijuego de Precisión ──
   openPrecisionMinigame() {
     const miniEl = document.createElement('div');
     miniEl.id = 'precision-minigame-modal';
     miniEl.innerHTML = `
       <div class="modal-card precision-card">
-        <h3>🪤 MINIJUEGO DE CONTROL PRECISO ENEEI</h3>
-        <p>Ajusta el indicador de la trampa jaula en la <strong>ZONA VERDE</strong> para iniciar las operaciones de erradicación humanitaria.</p>
+        <h3>🪤 CONTROL PRECISO DE CUENCAS</h3>
+        <p>Ajusta el indicador de la trampa jaula en la <strong>ZONA VERDE</strong> para iniciar las operaciones de erradicación.</p>
         <div class="meter-bar-container">
           <div class="meter-bar">
             <div class="meter-zone-green"></div>
