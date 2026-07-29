@@ -572,12 +572,50 @@ html, body {
   to { opacity: 1; transform: translateX(0); }
 }
 
+/* ── VENTANA EMERGENTE ABAJO A LA IZQUIERDA (NO FRENA LA SIMULACIÓN) ── */
+.bottom-left-news-popup {
+  position: absolute;
+  left: 20px;
+  bottom: 85px;
+  width: 360px;
+  z-index: 220;
+  pointer-events: auto;
+  animation: slideUpBottomLeft 0.4s cubic-bezier(0.17, 0.67, 0.36, 1.2);
+}
+
+.bottom-left-news-popup.slide-out-bottom {
+  animation: slideOutBottomLeft 0.35s ease forwards;
+}
+
+.journal-popup-window.bottom-left-card {
+  max-width: 100%;
+  width: 100%;
+  max-height: 380px;
+  overflow-y: auto;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.95), 0 0 20px rgba(212, 175, 55, 0.25) inset;
+}
+
+.centered-welcome-window {
+  position: relative;
+  z-index: 310;
+}
+
+@keyframes slideUpBottomLeft {
+  from { opacity: 0; transform: translateY(50px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideOutBottomLeft {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(50px); }
+}
+
 /* ── VENTANA EMERGENTE ESTILO DIARIO IMPRESO ── */
 .news-journal-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -1,8 +1,8 @@
 'use strict';
 /* ============================================================
-   UI.JS — Interfaz de Usuario y Ventanas Emergentes Estilo Diario
-   - Fondo de diario con asset assets/diario.png
-   - Sin etiquetas meta (sin decir "noticia", "investigación" o "newsgame")
+   UI.JS — Interfaz de Usuario y Ventanas Emergentes Abajo a la Izquierda
+   - Ventanas emergentes abajo a la izquierda que NO frenan la simulación
+   - Con asset assets/diario.png y auto-cierre
    ============================================================ */
 
 class GameUI {
@@ -68,7 +68,7 @@ class GameUI {
     this.tutorialEl = document.createElement('div');
     this.tutorialEl.id = 'tutorial-overlay';
     this.tutorialEl.innerHTML = `
-      <div class="journal-popup-window">
+      <div class="journal-popup-window centered-welcome-window">
         <div class="popup-window-bar">
           <div class="window-bar-left">
             <img src="assets/diario.png" alt="Diario" class="newspaper-icon-img" />
@@ -108,12 +108,16 @@ class GameUI {
     });
   }
 
-  // ── Ventana Emergente Estilo Diario con Asset assets/diario.png ──
+  // ── Ventana Emergente Abajo a la Izquierda — NO frena la simulación ──
   showEditorialNewsCard(opts) {
+    // Si ya hay una tarjeta activa, removerla suavemente
+    const oldCard = document.querySelector('.bottom-left-news-popup');
+    if (oldCard) oldCard.remove();
+
     const cardEl = document.createElement('div');
-    cardEl.className = 'news-journal-overlay';
+    cardEl.className = 'bottom-left-news-popup';
     cardEl.innerHTML = `
-      <div class="journal-popup-window">
+      <div class="journal-popup-window bottom-left-card">
         <div class="popup-window-bar">
           <div class="window-bar-left">
             <img src="assets/diario.png" alt="Diario" class="newspaper-icon-img" />
@@ -133,25 +137,30 @@ class GameUI {
           </div>
 
           <div class="journal-footer">
-            <button class="journal-action-btn" id="btn-close-journal">CONTINUAR ➔</button>
+            <button class="journal-action-btn" id="btn-close-journal">ENTENDIDO ➔</button>
           </div>
         </div>
       </div>
     `;
     document.getElementById('game-container').appendChild(cardEl);
 
-    if (this.game) this.game.running = false;
+    // LA SIMULACIÓN CONTINÚA CORRIENDO SIN FRENARSE!
+    if (this.game) this.game.running = true;
 
     const closeFn = () => {
-      cardEl.classList.add('fade-out');
+      cardEl.classList.add('slide-out-bottom');
       setTimeout(() => {
-        cardEl.remove();
-        if (this.game) this.game.running = true;
+        if (cardEl.parentNode) cardEl.remove();
       }, 350);
     };
 
     cardEl.querySelector('#btn-close-journal')?.addEventListener('click', closeFn);
     cardEl.querySelector('#btn-close-journal-x')?.addEventListener('click', closeFn);
+
+    // Auto-cierre sin interrumpir la simulación tras 12 segundos
+    setTimeout(() => {
+      if (document.body.contains(cardEl)) closeFn();
+    }, 12000);
   }
 
   // ── Ventana Lateral Izquierda ──
