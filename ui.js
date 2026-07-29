@@ -154,13 +154,9 @@ class GameUI {
       }, 350);
     };
 
+    // SOLO SE CIERRA CUANDO EL JUGADOR HACE CLIC EN 'ENTENDIDO ➔' O EN '✕'
     cardEl.querySelector('#btn-close-journal')?.addEventListener('click', closeFn);
     cardEl.querySelector('#btn-close-journal-x')?.addEventListener('click', closeFn);
-
-    // Auto-cierre sin interrumpir la simulación tras 12 segundos
-    setTimeout(() => {
-      if (document.body.contains(cardEl)) closeFn();
-    }, 12000);
   }
 
   // ── Ventana Lateral Izquierda ──
