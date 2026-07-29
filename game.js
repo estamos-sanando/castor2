@@ -248,12 +248,6 @@ class BeaverGame {
     }, 2500);
   }
 
-    // Abrir inventario para arrastrar la cabaña del guardaparque
-    setTimeout(() => {
-      this.ui.showCabinInventory();
-    }, 2500);
-  }
-
   // ── Colocación de Cabaña y Cartel -> Requisito de Ambos para Iniciar Minijuego ──
   placeCabin(x, y) {
     if (this.cabinPlaced) return;
