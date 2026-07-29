@@ -1,8 +1,8 @@
 'use strict';
 /* ============================================================
-   UI.JS — Interfaz de Usuario con Menú Lateral Derecho Estilo RTS
-   - Menú lateral derecho con estadísticas, línea de tiempo y controles
-   - Asset assets/diario.png y botón 2x integrados
+   UI.JS — Interfaz de Usuario, Menú Lateral Derecho y Tarjetas Estilo Diario
+   - Línea de tiempo removida
+   - Tarjeta emergente del lado izquierdo más al centro estilo recorte de diario vintage
    ============================================================ */
 
 class GameUI {
@@ -32,21 +32,6 @@ class GameUI {
           <div class="stat-pill"><span class="pill-icon">🪵</span><span class="pill-label">DIQUES:</span><span class="pill-val" id="val-dams">0</span></div>
         </div>
 
-        <div class="sidebar-section-title">⏱️ LÍNEA DE TIEMPO</div>
-        <div id="hud-timeline">
-          <div class="timeline-track" id="timeline-bar">
-            <div class="timeline-fill" id="timeline-fill"></div>
-            <div class="timeline-thumb" id="timeline-thumb"></div>
-          </div>
-          <div class="timeline-labels">
-            <span class="t-label active">1946</span>
-            <span class="t-label">1965</span>
-            <span class="t-label">2005</span>
-            <span class="t-label">2016</span>
-            <span class="t-label">2026</span>
-          </div>
-        </div>
-
         <div class="sidebar-section-title">🎮 CONTROLES</div>
         <div id="hud-controls-vertical">
           <button class="hud-speed-btn" id="btn-speed-toggle" title="Cambiar Velocidad (1x / 2x)">
@@ -74,23 +59,24 @@ class GameUI {
     this.tutorialEl = document.createElement('div');
     this.tutorialEl.id = 'tutorial-overlay';
     this.tutorialEl.innerHTML = `
-      <div class="journal-popup-window centered-welcome-window">
-        <div class="popup-window-bar">
-          <div class="window-bar-left">
-            <img src="assets/diario.png" alt="Diario" class="newspaper-icon-img" />
-            <span class="popup-window-title">1946 — TIERRA DEL FUEGO</span>
+      <div class="newspaper-clipping-card centered-welcome-window">
+        <div class="newspaper-masthead">
+          <div class="masthead-left">
+            <img src="assets/diario.png" alt="Diario" class="masthead-img" />
+            <span class="masthead-name">EL DIARIO DE TIERRA DEL FUEGO</span>
           </div>
+          <span class="masthead-date">1946</span>
         </div>
         
-        <div class="popup-window-body">
-          <h2 class="journal-headline">EN 1946, ARGENTINA INTRODUJO 20 CASTORES PARA CREAR UNA INDUSTRIA PELETERA: 80 AÑOS DESPUÉS, HAN DEVASTADO LOS BOSQUES</h2>
-          <div class="journal-subhead">Impacto de la especie exótica en la Isla Grande de Tierra del Fuego.</div>
+        <div class="newspaper-content">
+          <h2 class="newspaper-headline">EN 1946, ARGENTINA INTRODUJO 20 CASTORES PARA CREAR UNA INDUSTRIA PELETERA: 80 AÑOS DESPUÉS, HAN DEVASTADO LOS BOSQUES</h2>
+          <div class="newspaper-subhead">Impacto de la especie exótica en la Isla Grande de Tierra del Fuego.</div>
           
-          <div class="journal-text-content">
-            <p class="journal-lead">La Marina de Guerra Argentina introdujo 10 parejas de <em>Castor canadensis</em> importadas de Canadá. La industria peletera nunca se concretó y los ejemplares fueron abandonados. Sin depredadores naturales en la Patagonia, la especie colonizó la isla alterando el 95% de las cuencas hídricas.</p>
+          <div class="newspaper-body">
+            <p class="newspaper-lead">La Marina de Guerra Argentina introdujo 10 parejas de <em>Castor canadensis</em> importadas de Canadá. La industria peletera nunca se concretó y los ejemplares fueron abandonados. Sin depredadores naturales en la Patagonia, la especie colonizó la isla alterando el 95% de las cuencas hídricas.</p>
           </div>
 
-          <div class="journal-footer">
+          <div class="newspaper-footer">
             <button class="tutorial-start-btn" id="btn-start-game">¡COMENZAR! ➔</button>
           </div>
         </div>
@@ -126,35 +112,35 @@ class GameUI {
     });
   }
 
-  // ── Ventana Emergente Abajo a la Izquierda — NO frena la simulación ──
+  // ── Tarjeta Emergente Izquierda Más al Centro — Estilo Recorte de Diario Impreso ──
   showEditorialNewsCard(opts) {
-    const oldCard = document.querySelector('.bottom-left-news-popup');
+    const oldCard = document.querySelector('.left-center-news-popup');
     if (oldCard) oldCard.remove();
 
     const cardEl = document.createElement('div');
-    cardEl.className = 'bottom-left-news-popup';
+    cardEl.className = 'left-center-news-popup';
     cardEl.innerHTML = `
-      <div class="journal-popup-window bottom-left-card">
-        <div class="popup-window-bar">
-          <div class="window-bar-left">
-            <img src="assets/diario.png" alt="Diario" class="newspaper-icon-img" />
-            <span class="popup-window-title">TIERRA DEL FUEGO — ${opts.year || '1946-2026'}</span>
+      <div class="newspaper-clipping-card">
+        <div class="newspaper-masthead">
+          <div class="masthead-left">
+            <img src="assets/diario.png" alt="Diario" class="masthead-img" />
+            <span class="masthead-name">EL DIARIO DE TIERRA DEL FUEGO</span>
           </div>
-          <button class="popup-close-x" id="btn-close-journal-x">✕</button>
+          <span class="masthead-date">${opts.year || '1946'}</span>
         </div>
         
-        <div class="popup-window-body">
-          <h2 class="journal-headline">${opts.title}</h2>
-          ${opts.subtitle ? `<div class="journal-subhead">${opts.subtitle}</div>` : ''}
+        <div class="newspaper-content">
+          <h2 class="newspaper-headline">${opts.title}</h2>
+          ${opts.subtitle ? `<div class="newspaper-subhead">${opts.subtitle}</div>` : ''}
           
-          <div class="journal-text-content">
-            <p class="journal-lead">${opts.text}</p>
-            ${opts.quote ? `<blockquote class="journal-quote">"${opts.quote}"</blockquote>` : ''}
-            ${opts.fact ? `<div class="journal-fact-box"><strong>DATO:</strong> ${opts.fact}</div>` : ''}
+          <div class="newspaper-body">
+            <p class="newspaper-lead">${opts.text}</p>
+            ${opts.quote ? `<blockquote class="newspaper-quote">"${opts.quote}"</blockquote>` : ''}
+            ${opts.fact ? `<div class="newspaper-fact-box"><strong>DATO DESTACADO:</strong> ${opts.fact}</div>` : ''}
           </div>
 
-          <div class="journal-footer">
-            <button class="journal-action-btn" id="btn-close-journal">ENTENDIDO ➔</button>
+          <div class="newspaper-footer">
+            <button class="newspaper-action-btn" id="btn-close-journal">CONTINUAR LECTURA ➔</button>
           </div>
         </div>
       </div>
@@ -164,14 +150,13 @@ class GameUI {
     if (this.game) this.game.running = true;
 
     const closeFn = () => {
-      cardEl.classList.add('slide-out-bottom');
+      cardEl.classList.add('slide-out-left');
       setTimeout(() => {
         if (cardEl.parentNode) cardEl.remove();
       }, 350);
     };
 
     cardEl.querySelector('#btn-close-journal')?.addEventListener('click', closeFn);
-    cardEl.querySelector('#btn-close-journal-x')?.addEventListener('click', closeFn);
   }
 
   // ── Ventana Lateral Izquierda de Puesto ENEEI ──
@@ -280,10 +265,6 @@ class GameUI {
     if (el('val-loss')) el('val-loss').textContent = stats.forestLoss + '%';
     if (el('val-flooded')) el('val-flooded').textContent = Math.round(stats.hectaresFlooded) + ' ha';
     if (el('val-dams')) el('val-dams').textContent = stats.dams;
-
-    const tFill = el('timeline-fill'), tThumb = el('timeline-thumb');
-    if (tFill) tFill.style.width = (timelinePct * 100) + '%';
-    if (tThumb) tThumb.style.left = (timelinePct * 100) + '%';
   }
 
   showNews(opts) {
