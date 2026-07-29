@@ -331,23 +331,28 @@ class BeaverGame {
       this.entities.push(cage1);
       this.entities.push(cage2);
 
-      setTimeout(() => {
-        this.ui.openPrecisionMinigame();
-      }, 1000);
+      // Iniciar simulación de guardaparques y abrir minijuego de 30 segundos a la izquierda
+      this.startRangerSimulation();
+      this.ui.openBeaverCatcherMinigame();
     }
   }
 
-  // ── Simulación de Guardaparques y Restauración de Cuencas (2026) ──
+  // ── Simulación de Guardaparques y Captura Interactiva ──
   startRangerSimulation() {
     this.act = 3;
 
-    let captureInterval = setInterval(() => {
+    if (this._rangerCaptureInterval) clearInterval(this._rangerCaptureInterval);
+
+    this._rangerCaptureInterval = setInterval(() => {
+      if (!this.running) return;
+
       const beavers = this.entities.filter(e => e instanceof Beaver && !e.dead);
       if (beavers.length > 0) {
         const b = beavers.pop();
         b.dead = true;
         this.particles.burst(b.x, b.y - 15, 'leaf', 16);
         this.stats.beavers = Math.max(0, this.stats.beavers - 1);
+        this.ui.onBeaverCapturedByPlayer();
 
         const dam = this.entities.find(e => e instanceof Dam && e.active && !e.dead);
         if (dam) {
@@ -358,14 +363,16 @@ class BeaverGame {
             dam.remove();
           }
         }
-      } else {
-        clearInterval(captureInterval);
-        this.restoreEcosystem();
       }
-    }, 1500);
+    }, 1200);
   }
 
   restoreEcosystem() {
+    if (this._rangerCaptureInterval) {
+      clearInterval(this._rangerCaptureInterval);
+      this._rangerCaptureInterval = null;
+    }
+
     this.stats.health = 85;
     this.stats.hectaresFlooded = 0;
 

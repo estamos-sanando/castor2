@@ -1,8 +1,8 @@
 'use strict';
 /* ============================================================
-   UI.JS — Interfaz de Usuario Limpia sin Emojis
-   - Removidos todos los emojis de titulos, etiquetas e indicadores
-   - Reducción del panel derecho al liberar castores (dejando solo el botón de velocidad)
+   UI.JS — Interfaz de Usuario con Minijuego de Captura de 30 Segundos
+   - Minijuego emergente del lado izquierdo durante la simulación de captura de castores
+   - Contador regresivo de 30 segundos y score de castores capturados
    ============================================================ */
 
 class GameUI {
@@ -11,6 +11,8 @@ class GameUI {
     this.newsQueue = [];
     this.activeNews = null;
     this.tutorialVisible = true;
+    this.capturedCount = 0;
+    this.timeLeft = 30;
     this._initHUD();
     this._initTutorial();
     this._bindEvents();
@@ -270,7 +272,6 @@ class GameUI {
       return { x: Math.max(60, Math.min(1220, x)), y: Math.max(100, Math.min(670, y)) };
     };
 
-    // 1. Drag & Drop nativo de HTML5
     [cabinItem, signItem].forEach(item => {
       if (!item) return;
 
@@ -313,7 +314,6 @@ class GameUI {
       }
     });
 
-    // 2. Clic & Colocar en Mapa (Fallback)
     let activeType = null;
 
     [cabinItem, signItem].forEach(item => {
@@ -374,40 +374,107 @@ class GameUI {
     }
   }
 
-  // ── Minijuego de Precisión ──
-  openPrecisionMinigame() {
-    const miniEl = document.createElement('div');
-    miniEl.id = 'precision-minigame-modal';
-    miniEl.innerHTML = `
-      <div class="modal-card precision-card">
-        <h3>CONTROL PRECISO DE CUENCAS</h3>
-        <p>Ajusta el indicador de la trampa jaula en la <strong>ZONA VERDE</strong> para iniciar las operaciones de erradicación.</p>
-        <div class="meter-bar-container">
-          <div class="meter-bar">
-            <div class="meter-zone-green"></div>
-            <div class="meter-indicator" id="meter-indicator"></div>
+  // ── Minijuego de Captura de Castores de 30 Segundos (Lado Izquierdo) ──
+  openBeaverCatcherMinigame() {
+    if (document.getElementById('beaver-catcher-panel')) return;
+
+    this.capturedCount = 0;
+    this.timeLeft = 30;
+
+    const panel = document.createElement('div');
+    panel.id = 'beaver-catcher-panel';
+    panel.innerHTML = `
+      <div class="sidebar-card catcher-card">
+        <div class="sidebar-header">
+          <h4>OPERACIONES DE CONTROL Y CAPTURA</h4>
+        </div>
+        <p class="sidebar-desc">Presiona el botón o haz clic directamente sobre los castores en el mapa para acelerar la erradicación antes de 0:30s.</p>
+        
+        <div class="catcher-stats-grid">
+          <div class="catcher-stat-box">
+            <span class="stat-lbl">TIEMPO RESTANTE</span>
+            <span class="stat-val timer-val" id="minigame-timer">0:30</span>
+          </div>
+
+          <div class="catcher-stat-box">
+            <span class="stat-lbl">CAPTURADOS</span>
+            <span class="stat-val score-val" id="minigame-score">0 / 20</span>
           </div>
         </div>
-        <button class="news-btn btn-success" id="btn-precision-click" style="margin-top: 15px;">
-          Activar Puesto ENEEI
+
+        <button class="popup-action-btn" id="btn-manual-catch-action" style="margin-top: 14px; width: 100%;">
+          CAPTURAR CASTOR
         </button>
       </div>
     `;
-    document.getElementById('game-container').appendChild(miniEl);
+    document.getElementById('game-container').appendChild(panel);
 
-    let pos = 0, dir = 2;
-    const indicator = document.getElementById('meter-indicator');
-    const interval = setInterval(() => {
-      pos += dir;
-      if (pos >= 100 || pos <= 0) dir = -dir;
-      if (indicator) indicator.style.left = pos + '%';
-    }, 16);
+    this.game.minigameActive = true;
 
-    document.getElementById('btn-precision-click')?.addEventListener('click', () => {
-      clearInterval(interval);
-      miniEl.remove();
-      this.game.startRangerSimulation();
+    if (this._minigameTimerInt) clearInterval(this._minigameTimerInt);
+
+    this._minigameTimerInt = setInterval(() => {
+      this.timeLeft--;
+      const timerEl = document.getElementById('minigame-timer');
+      if (timerEl) {
+        const secs = this.timeLeft < 10 ? `0${this.timeLeft}` : `${this.timeLeft}`;
+        timerEl.textContent = `0:${secs}`;
+      }
+
+      if (this.timeLeft <= 0 || this.game.stats.beavers <= 0) {
+        this.finishBeaverCatcherMinigame();
+      }
+    }, 1000);
+
+    document.getElementById('btn-manual-catch-action')?.addEventListener('click', () => {
+      const beaver = this.game.entities.find(b => b instanceof Beaver && !b.dead);
+      if (beaver) {
+        beaver.dead = true;
+        this.game.particles.burst(beaver.x, beaver.y - 15, 'leaf', 16);
+        this.game.stats.beavers = Math.max(0, this.game.stats.beavers - 1);
+        this.onBeaverCapturedByPlayer();
+
+        const dam = this.game.entities.find(d => d instanceof Dam && d.active && !d.dead);
+        if (dam) {
+          if (dam.level > 1) {
+            dam.level--;
+            dam._refreshSprite();
+          } else {
+            dam.remove();
+          }
+        }
+      }
     });
+  }
+
+  onBeaverCapturedByPlayer() {
+    this.capturedCount++;
+    const scoreEl = document.getElementById('minigame-score');
+    if (scoreEl) {
+      scoreEl.textContent = `${this.capturedCount} / 20`;
+    }
+  }
+
+  finishBeaverCatcherMinigame() {
+    if (this._minigameTimerInt) {
+      clearInterval(this._minigameTimerInt);
+      this._minigameTimerInt = null;
+    }
+
+    this.game.minigameActive = false;
+
+    const panel = document.getElementById('beaver-catcher-panel');
+    if (panel) {
+      panel.classList.add('fade-out');
+      setTimeout(() => panel.remove(), 400);
+    }
+
+    // Eliminar castores restantes y pasar a la restauración del ecosistema
+    this.game.entities.forEach(e => {
+      if (e instanceof Beaver) e.dead = true;
+    });
+
+    this.game.restoreEcosystem();
   }
 
   update(stats, year, timelinePct) {}

@@ -565,6 +565,51 @@ html, body {
   transition: all 0.2s ease;
 }
 
+/* ── MINIJUEGO DE CAPTURA DE 30 SEGUNDOS (LADO IZQUIERDO) ── */
+#beaver-catcher-panel {
+  position: absolute;
+  top: 30px;
+  left: 24px;
+  width: 290px;
+  z-index: 180;
+  animation: slideInLeft 0.4s cubic-bezier(0.17, 0.67, 0.36, 1.2);
+}
+
+.catcher-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.catcher-stat-box {
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 8px;
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.stat-lbl {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  color: #9ca3af;
+  margin-bottom: 3px;
+  letter-spacing: 0.5px;
+}
+
+.stat-val {
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #22c55e;
+}
+
+.timer-val {
+  color: var(--gold-light);
+}
+
 /* ── VENTANA LATERAL IZQUIERDA DE INVENTARIO ENEEI (DEL LADO IZQUIERDO) ── */
 #eneei-sidebar-panel {
   position: absolute;
