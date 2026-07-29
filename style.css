@@ -65,20 +65,19 @@ html, body {
   position: absolute;
   right: 16px;
   top: 16px;
-  bottom: 16px;
-  width: 280px;
-  background: linear-gradient(180deg, rgba(12, 22, 16, 0.78), rgba(5, 12, 8, 0.84));
+  width: 260px;
+  height: auto;
+  background: linear-gradient(180deg, rgba(12, 22, 16, 0.84), rgba(5, 12, 8, 0.9));
   border: 1.5px solid var(--gold);
   border-radius: 16px;
-  padding: 20px 16px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   color: #fff;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.85), 0 0 20px rgba(212, 175, 55, 0.2) inset;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85), 0 0 20px rgba(212, 175, 55, 0.2) inset;
   backdrop-filter: blur(10px);
   pointer-events: auto;
-  overflow-y: auto;
 }
 
 .sidebar-top-brand {
