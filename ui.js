@@ -1,8 +1,8 @@
 'use strict';
 /* ============================================================
-   UI.JS — Interfaz de Usuario Limpia con Drag and Drop de Cabaña y Cartel
-   - Ventana de Estrategia Binacional mostrada ANTES del inventario
-   - El jugador arrastra Cabaña y Cartel desde el inventario y elige libremente dónde soltarlos en el mapa
+   UI.JS — Interfaz de Usuario Limpia sin Emojis
+   - Removidos todos los emojis de titulos, etiquetas e indicadores
+   - Reducción del panel derecho al liberar castores (dejando solo el botón de velocidad)
    ============================================================ */
 
 class GameUI {
@@ -23,19 +23,19 @@ class GameUI {
           <h3 class="sidebar-game-title">PROYECTO CASTOR</h3>
         </div>
 
-        <div class="sidebar-guide-box">
-          <div class="guide-title">💡 GUÍA DE JUEGO</div>
+        <div class="sidebar-guide-box" id="sidebar-guide-box">
+          <div class="guide-title">GUÍA DE JUEGO</div>
           <p class="guide-step">Presiona el botón <strong>LIBERAR CASTORES</strong> para comenzar la simulación.</p>
         </div>
 
-        <div class="sidebar-section-title">🎮 CONTROLES</div>
+        <div class="sidebar-section-title" id="sidebar-controls-title">CONTROLES</div>
         <div id="hud-controls-vertical">
           <button class="hud-speed-btn" id="btn-speed-toggle" title="Cambiar Velocidad (1x / 2x)">
-            <span class="speed-icon">⏩ VELOCIDAD:</span>
+            <span class="speed-icon">VELOCIDAD:</span>
             <span class="speed-val" id="speed-val">1x</span>
           </button>
           
-          <div class="central-beaver-btn-wrapper">
+          <div class="central-beaver-btn-wrapper" id="beaver-btn-wrapper">
             <button class="pure-image-btn" id="btn-add-beaver" title="LIBERAR 20 CASTORES (1946)">
               <img src="assets/BOTON.png" alt="Agregar Castores" />
             </button>
@@ -52,6 +52,13 @@ class GameUI {
     this.newsContainer = document.createElement('div');
     this.newsContainer.id = 'news-container';
     document.getElementById('game-container').appendChild(this.newsContainer);
+  }
+
+  onBeaversReleased() {
+    const sidebar = document.getElementById('hud-right-sidebar');
+    if (sidebar) {
+      sidebar.classList.add('beavers-released');
+    }
   }
 
   _initTutorial() {
@@ -226,7 +233,7 @@ class GameUI {
             </div>
             <div class="item-info">
               <span class="item-title">1. Cabaña Guardaparques</span>
-              <span class="item-status" id="status-cabin">✋ Arrastrar o Clic</span>
+              <span class="item-status" id="status-cabin">Arrastrar o Clic</span>
             </div>
           </div>
 
@@ -236,7 +243,7 @@ class GameUI {
             </div>
             <div class="item-info">
               <span class="item-title">2. Cartel Informativo</span>
-              <span class="item-status" id="status-sign">✋ Arrastrar o Clic</span>
+              <span class="item-status" id="status-sign">Arrastrar o Clic</span>
             </div>
           </div>
         </div>
@@ -291,7 +298,7 @@ class GameUI {
         this.game.placeCabin(coords.x, coords.y);
         const statusCabin = document.getElementById('status-cabin');
         if (statusCabin) {
-          statusCabin.textContent = '🟢 Instalado';
+          statusCabin.textContent = 'Instalado';
           statusCabin.style.color = '#22c55e';
         }
         cabinItem?.classList.add('installed');
@@ -299,14 +306,14 @@ class GameUI {
         this.game.placeSign(coords.x, coords.y);
         const statusSign = document.getElementById('status-sign');
         if (statusSign) {
-          statusSign.textContent = '🟢 Instalado';
+          statusSign.textContent = 'Instalado';
           statusSign.style.color = '#22c55e';
         }
         signItem?.classList.add('installed');
       }
     });
 
-    // 2. Clic & Colocar en Mapa (Fallback para pantallas táctiles y clic directo)
+    // 2. Clic & Colocar en Mapa (Fallback)
     let activeType = null;
 
     [cabinItem, signItem].forEach(item => {
@@ -341,7 +348,7 @@ class GameUI {
         this.game.placeCabin(coords.x, coords.y);
         const statusCabin = document.getElementById('status-cabin');
         if (statusCabin) {
-          statusCabin.textContent = '🟢 Instalado';
+          statusCabin.textContent = 'Instalado';
           statusCabin.style.color = '#22c55e';
         }
         cabinItem?.classList.add('installed');
@@ -350,7 +357,7 @@ class GameUI {
         this.game.placeSign(coords.x, coords.y);
         const statusSign = document.getElementById('status-sign');
         if (statusSign) {
-          statusSign.textContent = '🟢 Instalado';
+          statusSign.textContent = 'Instalado';
           statusSign.style.color = '#22c55e';
         }
         signItem?.classList.add('installed');
@@ -373,7 +380,7 @@ class GameUI {
     miniEl.id = 'precision-minigame-modal';
     miniEl.innerHTML = `
       <div class="modal-card precision-card">
-        <h3>🪤 CONTROL PRECISO DE CUENCAS</h3>
+        <h3>CONTROL PRECISO DE CUENCAS</h3>
         <p>Ajusta el indicador de la trampa jaula en la <strong>ZONA VERDE</strong> para iniciar las operaciones de erradicación.</p>
         <div class="meter-bar-container">
           <div class="meter-bar">
@@ -382,7 +389,7 @@ class GameUI {
           </div>
         </div>
         <button class="news-btn btn-success" id="btn-precision-click" style="margin-top: 15px;">
-          🎯 Activar Puesto ENEEI
+          Activar Puesto ENEEI
         </button>
       </div>
     `;

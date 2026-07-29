@@ -78,6 +78,26 @@ html, body {
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85), 0 0 20px rgba(212, 175, 55, 0.2) inset;
   backdrop-filter: blur(10px);
   pointer-events: auto;
+  transition: all 0.35s ease;
+}
+
+/* ── Panel Compacto al Liberar Castores (Solo Botón de Velocidad) ── */
+#hud-right-sidebar.beavers-released {
+  width: auto;
+  padding: 8px 12px;
+  gap: 0;
+  border-radius: 25px;
+}
+
+#hud-right-sidebar.beavers-released .sidebar-top-brand,
+#hud-right-sidebar.beavers-released .sidebar-guide-box,
+#hud-right-sidebar.beavers-released .sidebar-section-title,
+#hud-right-sidebar.beavers-released .central-beaver-btn-wrapper {
+  display: none !important;
+}
+
+#hud-right-sidebar.beavers-released #hud-controls-vertical {
+  margin-top: 0;
 }
 
 .sidebar-top-brand {

@@ -159,8 +159,10 @@ class BeaverGame {
     this.stats.beavers = 20;
     this.act = 2;
 
+    this.ui.onBeaversReleased();
+
     this.ui.showEditorialNewsCard({
-      title: '🚨 EXPANSIÓN IMPARABLE Y ALTERACIÓN DEL 95% DE LAS CUENCAS',
+      title: 'EXPANSIÓN IMPARABLE Y ALTERACIÓN DEL 95% DE LAS CUENCAS',
       subtitle: 'Los castores construyen represas alterando la red hidrográfica de Tierra del Fuego.',
       text: 'Los roedores talan la madera nativa con sus potentes incisivos y arrastran los troncos hacia los ríos. Sus represas detienen el flujo natural de las aguas, cruzando el Canal Beagle hasta la Isla Navarino en Chile.',
       fact: 'El castor no tiene oponentes naturales ni depredadores en toda la Patagonia austral.',
@@ -184,7 +186,7 @@ class BeaverGame {
     if (!this._lengaWarnShown) {
       this._lengaWarnShown = true;
       this.ui.showEditorialNewsCard({
-        title: '⚠️ LA BIOLOGÍA DE LA LENGA: 200 AÑOS EN CRECER Y NO REBROTA DEL TOCÓN',
+        title: 'LA BIOLOGÍA DE LA LENGA: 200 AÑOS EN CRECER Y NO REBROTA DEL TOCÓN',
         subtitle: 'A diferencia de los bosques del Hemisferio Norte, la flora fueguina no evolucionó con el castor.',
         text: 'Cuando un bosque nativo de Canadá o Estados Unidos es talado, los árboles rebrotan de sus raíces. Nothofagus pumilio carece de esta propiedad biológica: cada Lenga caída muere definitivamente.',
         quote: 'Un castor derriba en pocas horas un árbol centenario que tardó dos siglos en alcanzar la madurez.',
@@ -195,7 +197,7 @@ class BeaverGame {
     }
   }
 
-  // ── Evento: Entrega de Madera al Río -> 10 = Dique Chico, 20 = Dique Mediano, 30 = Dique Grande + Inundación ──
+  // ── Evento: Entrega de Madera al Río ──
   onBeaverDeliveredWood(beaver) {
     this.stats.woodDelivered++;
 
@@ -243,7 +245,7 @@ class BeaverGame {
   triggerFloodedCrisis() {
     // Ventana central con overlay oscuro que obliga a leer antes del cambio de escena
     this.ui.showEditorialNewsCard({
-      title: '🌊 30.000 HECTÁREAS DE BOSQUES FANTASMA Y USD $66.5 MILLONES EN DAÑOS ANUALES',
+      title: '30.000 HECTÁREAS DE BOSQUES FANTASMA Y USD $66.5 MILLONES EN DAÑOS ANUALES',
       subtitle: 'Las represas anegan el suelo, ahogan las raíces de los árboles en pie y destruyen las turberas.',
       text: 'El agua estancada priva de oxígeno a las raíces de los árboles que quedan en pie, secándolos y convirtiéndolos en "bosques fantasma" grises e inertes. Además, destruye las turberas patagónicas, principales captadoras de carbono del planeta.',
       quote: 'Las pérdidas económicas anuales superan los 66.5 millones de dólares en infraestructura, ganadería y conservación.',
@@ -276,7 +278,7 @@ class BeaverGame {
 
   showBinationalStrategyNews() {
     this.ui.showEditorialNewsCard({
-      title: '📜 ESTRATEGIA BINACIONAL ENEEI: ARGENTINA Y CHILE UNIDOS POR LA BIODIVERSIDAD',
+      title: 'ESTRATEGIA BINACIONAL ENEEI: ARGENTINA Y CHILE UNIDOS POR LA BIODIVERSIDAD',
       subtitle: 'Con apoyo del Fondo para el Medio Ambiente Mundial (FMAM) y la FAO, se activan áreas piloto.',
       text: 'Técnicos y guardaparques especializados instalan puestos de monitoreo y trampas jaula para erradicar focos invasores y evitar que el castor cruce a la Patagonia continental.',
       fact: 'Es una de las iniciativas binacionales de control de especies exóticas invasoras más ambiciosas del planeta.',
