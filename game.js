@@ -230,7 +230,7 @@ class BeaverGame {
 
   // ── Inundación y Transformación a Árboles Fantasma ──
   triggerFloodedCrisis() {
-    // Abrir la ventana emergente con la información periodística real
+    // Ventana central con overlay oscuro que obliga a leer antes del cambio de escena
     this.ui.showEditorialNewsCard({
       title: '🌊 30.000 HECTÁREAS DE BOSQUES FANTASMA Y USD $66.5 MILLONES EN DAÑOS ANUALES',
       subtitle: 'Las represas anegan el suelo, ahogan las raíces de los árboles en pie y destruyen las turberas.',
@@ -238,18 +238,19 @@ class BeaverGame {
       quote: 'Las pérdidas económicas anuales superan los 66.5 millones de dólares en infraestructura, ganadería y conservación.',
       fact: 'Las inundaciones anegan puentes, carreteras y sistemas de agua potable en toda la Isla Grande.',
       year: '2005',
+      centered: true, // VENTANA CENTRAL DE CAMBIO DE ESCENA
       onAccept: () => {
-        // AL DAR ACEPTAR SE CAMBIA EL MAPA Y DESAPARECEN LOS TOCONES JOVENES Y VIEJOS!
+        // AL DAR ACEPTAR SE CAMBIA EL MAPA Y DESAPARECEN LOS TOCONES!
         this._transitionToMap(2); // map_04_bosque_inundado.jpg
         this.stats.hectaresFlooded = 350;
 
-        // Eliminar todos los tocones jóvenes y viejos, y convertir árboles sanos en Árboles Fantasma
+        // Eliminar tocones jóvenes y viejos y convertir árboles en Árboles Fantasma
         this.entities.forEach(e => {
           if (e instanceof Tree) {
             if (e.state === 'stump_fresh' || e.state === 'stump_old') {
-              e.dead = true; // Desaparecen los tocones!
+              e.dead = true;
             } else if (e.isHealthy) {
-              e.setState('flooded'); // Se convierten en Árboles Fantasma!
+              e.setState('flooded');
             }
           }
         });

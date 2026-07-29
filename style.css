@@ -677,6 +677,22 @@ html, body {
 }
 
 /* ── MODAL EMERGENTE AAA DE JUEGO (CENTRADITO Y COMPACTO, NO EXTENDIDO) ── */
+.centered-news-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 350;
+  animation: fade-in 0.4s ease;
+}
+
+.centered-news-overlay.fade-out {
+  animation: fade-out 0.35s ease forwards;
+}
+
 #tutorial-overlay {
   position: absolute;
   inset: 0;

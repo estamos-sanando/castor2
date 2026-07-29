@@ -1,9 +1,9 @@
 'use strict';
 /* ============================================================
-   UI.JS — Interfaz de Usuario Limpia con Cola Estricta de Tarjetas
-   - Las ventanas NUNCA se cierran ni avanzan solas
-   - Permanecen abiertas indefinidamente hasta que el jugador hace clic en ACEPTAR
-   - Cola FIFO (newsQueue) para que ninguna información se sobrescriba ni se pierda
+   UI.JS — Interfaz de Usuario Limpia con Modales Centrales de Cambio de Escena
+   - Soporte para opts.centered (modal central con overlay oscuro para noticias de gran impacto)
+   - Transición de mapa y limpieza de tocones solo al hacer clic en ACEPTAR
+   - Cola estricta de modales para evitar cierres o avances automáticos
    ============================================================ */
 
 class GameUI {
@@ -108,11 +108,57 @@ class GameUI {
     });
   }
 
-  // ── Tarjeta Emergente Izquierda Centrada (Cola Estricta de Aceptación) ──
+  // ── Tarjeta Emergente Periodística (con opción de Modal Central de Cambio de Escena) ──
   showEditorialNewsCard(opts) {
-    // Si ya hay una tarjeta activa en pantalla, encolar la siguiente para no cerrar ni sobrescribir la actual
-    if (document.querySelector('.left-center-news-popup')) {
+    if (document.querySelector('.left-center-news-popup') || document.querySelector('.centered-news-overlay')) {
       this.newsQueue.push(opts);
+      return;
+    }
+
+    if (opts.centered) {
+      const overlayEl = document.createElement('div');
+      overlayEl.className = 'centered-news-overlay';
+      overlayEl.innerHTML = `
+        <div class="game-popup-modal centered-welcome-window">
+          <div class="popup-modal-header">
+            <span class="popup-year-badge">TIERRA DEL FUEGO — ${opts.year || '2005'}</span>
+          </div>
+          
+          <div class="popup-modal-body">
+            <h2 class="popup-headline">${opts.title}</h2>
+            ${opts.subtitle ? `<div class="popup-subhead">${opts.subtitle}</div>` : ''}
+            
+            <div class="popup-text-content">
+              <p class="popup-lead">${opts.text}</p>
+              ${opts.quote ? `<blockquote class="popup-quote">"${opts.quote}"</blockquote>` : ''}
+              ${opts.fact ? `<div class="popup-fact-box"><strong>DATO DESTACADO:</strong> ${opts.fact}</div>` : ''}
+            </div>
+
+            <div class="popup-footer">
+              <button class="popup-action-btn" id="btn-close-journal">ACEPTAR ➔</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById('game-container').appendChild(overlayEl);
+
+      if (this.game) this.game.running = true;
+
+      const closeFn = () => {
+        overlayEl.classList.add('fade-out');
+        setTimeout(() => {
+          if (overlayEl.parentNode) overlayEl.remove();
+          if (typeof opts.onAccept === 'function') {
+            opts.onAccept();
+          }
+          if (this.newsQueue.length > 0) {
+            const nextOpts = this.newsQueue.shift();
+            this.showEditorialNewsCard(nextOpts);
+          }
+        }, 350);
+      };
+
+      overlayEl.querySelector('#btn-close-journal')?.addEventListener('click', closeFn);
       return;
     }
 
@@ -151,7 +197,6 @@ class GameUI {
         if (typeof opts.onAccept === 'function') {
           opts.onAccept();
         }
-        // Desencolar la siguiente tarjeta solo al dar ACEPTAR
         if (this.newsQueue.length > 0) {
           const nextOpts = this.newsQueue.shift();
           this.showEditorialNewsCard(nextOpts);
