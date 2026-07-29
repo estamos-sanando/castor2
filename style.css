@@ -646,7 +646,68 @@ html, body {
   background: #ef4444;
   box-shadow: 0 0 10px #ef4444, 0 0 15px #fff;
   border-radius: 3px;
-  transition: left 0.016s linear;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.precision-needle.hit-green {
+  background: #22c55e !important;
+  box-shadow: 0 0 25px #22c55e, 0 0 15px #fff !important;
+}
+
+.precision-needle.hit-miss {
+  background: #ef4444 !important;
+  box-shadow: 0 0 25px #ef4444 !important;
+}
+
+/* ── CAJA DE INGRESO DE INICIALES RETRO ARCADE ── */
+.arcade-name-entry-box {
+  margin: 14px 0 10px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px dashed var(--gold);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+
+.entry-label {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold-light);
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.initials-input-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+#arcade-initials-input {
+  width: 90px;
+  height: 38px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid var(--gold);
+  border-radius: 6px;
+  color: #22c55e;
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 4px;
+  outline: none;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.3) inset;
+}
+
+.score-saved-badge {
+  color: #22c55e;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px;
 }
 
 .precision-feedback-lbl {

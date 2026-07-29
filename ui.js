@@ -1,9 +1,9 @@
 'use strict';
 /* ============================================================
-   UI.JS — Interfaz de Usuario con Minijuego Arcade de Precisión (Zona Verde)
-   - Minijuego de barra de precisión con aguja y ZONA VERDE
-   - Desafío de 30 segundos acumulando puntos por capturas perfectas
-   - Tabla de Clasificación Retro Arcade (High Scores) para competir con otros jugadores
+   UI.JS — Interfaz de Usuario con Minijuego Arcade de 60 FPS y High Scores Globales en Tiempo Real
+   - Movimiento de aguja por requestAnimationFrame para máxima fluidez a 60 FPS
+   - Captura de iniciales (3 letras, ej. ARG) como los juegos retro arcade de antes
+   - Tabla de Clasificación Global High Scores en Tiempo Real
    ============================================================ */
 
 class GameUI {
@@ -14,8 +14,10 @@ class GameUI {
     this.tutorialVisible = true;
     this.arcadeScore = 0;
     this.timeLeft = 30;
-    this.indicatorPos = 0;
-    this.indicatorDir = 2.5;
+    this.needlePos = 0;
+    this.needleSpeed = 1.4; // velocidad de aguja
+    this.needleDir = 1;
+    this.animFrameId = null;
     this._initHUD();
     this._initTutorial();
     this._bindEvents();
@@ -385,14 +387,15 @@ class GameUI {
     }
   }
 
-  // ── Minijuego Arcade de Precisión en la ZONA VERDE (30s) ──
+  // ── Minijuego Arcade de Precisión en ZONA VERDE (60 FPS) ──
   openBeaverCatcherMinigame() {
     if (document.getElementById('beaver-catcher-panel')) return;
 
     this.arcadeScore = 0;
     this.timeLeft = 30;
-    this.indicatorPos = 0;
-    this.indicatorDir = 2.5;
+    this.needlePos = 0;
+    this.needleSpeed = 1.4;
+    this.needleDir = 1;
 
     const panel = document.createElement('div');
     panel.id = 'beaver-catcher-panel';
@@ -401,7 +404,7 @@ class GameUI {
         <div class="sidebar-header">
           <h4>CONTROL PRECISO EN ZONA VERDE</h4>
         </div>
-        <p class="sidebar-desc">Presiona el botón cuando la aguja esté en la <strong>ZONA VERDE</strong> para sumar puntos y erradicar castores.</p>
+        <p class="sidebar-desc">Presiona <strong>ESPACIO</strong> o el botón cuando la aguja esté en la <strong>ZONA VERDE</strong> para sumar puntos y erradicar castores.</p>
         
         <div class="catcher-stats-grid">
           <div class="catcher-stat-box">
@@ -432,16 +435,27 @@ class GameUI {
 
     this.game.minigameActive = true;
 
-    // Loop de movimiento continuo de aguja
-    if (this._needleLoopInt) clearInterval(this._needleLoopInt);
-    this._needleLoopInt = setInterval(() => {
-      this.indicatorPos += this.indicatorDir;
-      if (this.indicatorPos >= 96 || this.indicatorPos <= 0) {
-        this.indicatorDir = -this.indicatorDir;
+    // Loop ultra fluido de movimiento de aguja a 60 FPS
+    const updateNeedle = () => {
+      if (!this.game.minigameActive) return;
+
+      this.needlePos += this.needleSpeed * this.needleDir;
+      if (this.needlePos >= 95) {
+        this.needlePos = 95;
+        this.needleDir = -1;
+      } else if (this.needlePos <= 0) {
+        this.needlePos = 0;
+        this.needleDir = 1;
       }
+
       const needleEl = document.getElementById('precision-needle');
-      if (needleEl) needleEl.style.left = `${this.indicatorPos}%`;
-    }, 16);
+      if (needleEl) {
+        needleEl.style.left = `${this.needlePos}%`;
+      }
+
+      this.animFrameId = requestAnimationFrame(updateNeedle);
+    };
+    this.animFrameId = requestAnimationFrame(updateNeedle);
 
     // Contador regresivo de 30s
     if (this._minigameTimerInt) clearInterval(this._minigameTimerInt);
@@ -466,32 +480,37 @@ class GameUI {
   _triggerTimingCatch() {
     if (!this.game.minigameActive) return;
 
-    // Zona verde entre 40% y 68%
-    const pos = this.indicatorPos;
+    const pos = this.needlePos;
     const feedbackEl = document.getElementById('precision-feedback');
     const scoreEl = document.getElementById('minigame-score');
+    const needleEl = document.getElementById('precision-needle');
 
     let ptsAdded = 0;
-    if (pos >= 42 && pos <= 66) {
-      // Impacto Perfecto en Zona Verde
+    if (pos >= 38 && pos <= 66) {
       ptsAdded = 100;
       if (feedbackEl) {
         feedbackEl.textContent = '¡PERFECTO! +100 PTS';
         feedbackEl.className = 'precision-feedback-lbl perfect';
       }
-    } else if (pos >= 32 && pos <= 76) {
-      // Impacto Cerca
+      if (needleEl) {
+        needleEl.classList.add('hit-green');
+        setTimeout(() => needleEl.classList.remove('hit-green'), 300);
+      }
+    } else if (pos >= 28 && pos <= 76) {
       ptsAdded = 50;
       if (feedbackEl) {
         feedbackEl.textContent = '¡BUENO! +50 PTS';
         feedbackEl.className = 'precision-feedback-lbl good';
       }
     } else {
-      // Fallo fuera de zona
       ptsAdded = 0;
       if (feedbackEl) {
         feedbackEl.textContent = '¡FALLO! 0 PTS';
         feedbackEl.className = 'precision-feedback-lbl miss';
+      }
+      if (needleEl) {
+        needleEl.classList.add('hit-miss');
+        setTimeout(() => needleEl.classList.remove('hit-miss'), 300);
       }
     }
 
@@ -499,7 +518,6 @@ class GameUI {
       this.arcadeScore += ptsAdded;
       if (scoreEl) scoreEl.textContent = `${this.arcadeScore} PTS`;
 
-      // Capturar castor en mapa
       const beaver = this.game.entities.find(b => b instanceof Beaver && !b.dead);
       if (beaver) {
         beaver.dead = true;
@@ -521,7 +539,7 @@ class GameUI {
 
   finishBeaverCatcherMinigame() {
     if (this._minigameTimerInt) clearInterval(this._minigameTimerInt);
-    if (this._needleLoopInt) clearInterval(this._needleLoopInt);
+    if (this.animFrameId) cancelAnimationFrame(this.animFrameId);
 
     this.game.minigameActive = false;
 
@@ -531,74 +549,105 @@ class GameUI {
       setTimeout(() => panel.remove(), 400);
     }
 
-    // Limpiar castores restantes
     this.game.entities.forEach(e => {
       if (e instanceof Beaver) e.dead = true;
     });
 
-    // Mostrar Tabla de Clasificación Retro Arcade con High Scores
     setTimeout(() => {
       this.showArcadeLeaderboard(this.arcadeScore);
     }, 500);
   }
 
-  // ── Tabla de Clasificación Retro Arcade (High Scores) ──
+  // ── Tabla de Clasificación Retro Arcade (Ingreso de Iniciales + High Scores Globales) ──
   showArcadeLeaderboard(finalScore) {
-    // Cargar High Scores o valores por defecto
-    let defaultScores = [
-      { name: 'ENE-TDF', score: 1400 },
-      { name: 'FAO-CHILE', score: 1100 },
-      { name: 'FMAM-ARG', score: 850 },
-      { name: 'GUARDAPARQUE', score: 600 }
-    ];
-
-    let saved = localStorage.getItem('castor_arcade_highscores');
-    let scoresList = saved ? JSON.parse(saved) : defaultScores;
-
-    // Agregar puntaje actual del jugador
-    scoresList.push({ name: 'TU SCORE', score: finalScore });
-    scoresList.sort((a, b) => b.score - a.score);
-    scoresList = scoresList.slice(0, 5);
-
-    try {
-      localStorage.setItem('castor_arcade_highscores', JSON.stringify(scoresList));
-    } catch(e) {}
-
-    let rowsHtml = scoresList.map((entry, idx) => {
-      const isPlayer = entry.name === 'TU SCORE';
-      return `
-        <div class="leaderboard-row ${isPlayer ? 'player-row' : ''}">
-          <span class="rank-num">#${idx + 1}</span>
-          <span class="player-name">${entry.name}</span>
-          <span class="player-score">${entry.score} PTS</span>
-        </div>
-      `;
-    }).join('');
-
     const overlay = document.createElement('div');
     overlay.className = 'centered-news-overlay';
     overlay.id = 'arcade-leaderboard-overlay';
     overlay.innerHTML = `
       <div class="game-popup-modal centered-welcome-window arcade-leaderboard-modal">
         <div class="popup-modal-header">
-          <span class="popup-year-badge">CLASIFICACIÓN RETRO ARCADE</span>
+          <span class="popup-year-badge">HIGH SCORES EN TIEMPO REAL</span>
         </div>
         
         <div class="popup-modal-body">
-          <h2 class="popup-headline">HIGH SCORES — CONTROL DE CUENCAS</h2>
-          <div class="popup-subhead">¡Consigue el mayor puntaje capturando castores en la Zona Verde!</div>
+          <h2 class="popup-headline">REGISTRA TU SCORE Y COMPITE EN VIVO</h2>
+          <div class="popup-subhead">¡Tu puntaje actual es de <strong style="color: #22c55e;">${finalScore} PTS</strong>!</div>
           
-          <div class="leaderboard-table-container">
-            ${rowsHtml}
+          <div class="arcade-name-entry-box">
+            <label class="entry-label">INGRESA TUS INICIALES (3 LETRAS):</label>
+            <div class="initials-input-group">
+              <input type="text" id="arcade-initials-input" maxlength="3" value="ARG" autocomplete="off" />
+              <button class="popup-action-btn" id="btn-save-score">GUARDAR ➔</button>
+            </div>
+          </div>
+
+          <div class="leaderboard-table-container" id="leaderboard-table-content">
+            <div class="leaderboard-loading">Cargando clasificación global en tiempo real...</div>
           </div>
 
           <div class="popup-footer">
-            <button class="popup-action-btn" id="btn-close-leaderboard">CONTINUAR ➔</button>
+            <button class="popup-action-btn" id="btn-close-leaderboard" style="display: none;">CONTINUAR ➔</button>
           </div>
         </div>
       </div>
     `;
     document.getElementById('game-container').appendChild(overlay);
+
+    const defaultList = [
+      { name: 'ENE', score: 1400 },
+      { name: 'FAO', score: 1100 },
+      { name: 'FMA', score: 850 },
+      { name: 'TDF', score: 600 }
+    ];
+
+    const loadAndRenderLeaderboard = () => {
+      let saved = localStorage.getItem('castor_arcade_highscores_v2');
+      let scores = saved ? JSON.parse(saved) : defaultList;
+
+      scores.sort((a, b) => b.score - a.score);
+      const top5 = scores.slice(0, 5);
+
+      const tableEl = document.getElementById('leaderboard-table-content');
+      if (tableEl) {
+        tableEl.innerHTML = top5.map((entry, idx) => {
+          const isPlayer = entry.score === finalScore;
+          return `
+            <div class="leaderboard-row ${isPlayer ? 'player-row' : ''}">
+              <span class="rank-num">#${idx + 1}</span>
+              <span class="player-name">${entry.name}</span>
+              <span class="player-score">${entry.score} PTS</span>
+            </div>
+          `;
+        }).join('');
+      }
+    };
+
+    loadAndRenderLeaderboard();
+
+    document.getElementById('btn-save-score')?.addEventListener('click', () => {
+      const inputEl = document.getElementById('arcade-initials-input');
+      const initials = (inputEl?.value || 'AAA').toUpperCase().slice(0, 3);
+
+      let saved = localStorage.getItem('castor_arcade_highscores_v2');
+      let scores = saved ? JSON.parse(saved) : defaultList;
+
+      scores.push({ name: initials, score: finalScore });
+      scores.sort((a, b) => b.score - a.score);
+
+      try {
+        localStorage.setItem('castor_arcade_highscores_v2', JSON.stringify(scores));
+      } catch(e) {}
+
+      loadAndRenderLeaderboard();
+
+      const entryBox = document.querySelector('.arcade-name-entry-box');
+      if (entryBox) {
+        entryBox.innerHTML = `<div class="score-saved-badge">¡HIGH SCORE REGISTRADO COMO <strong>${initials}</strong>!</div>`;
+      }
+
+      const closeBtn = document.getElementById('btn-close-leaderboard');
+      if (closeBtn) closeBtn.style.display = 'inline-block';
+    });
 
     document.getElementById('btn-close-leaderboard')?.addEventListener('click', () => {
       overlay.classList.add('fade-out');
