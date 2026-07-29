@@ -664,14 +664,13 @@ class LogEntity extends Entity {
 // BEAVER ADULT — AI State Machine & Reproduction
 // ──────────────────────────────────────────────────────────────
 class Beaver extends Entity {
-  constructor(x, y, isSmall = false, isBuilder = true) {
+  constructor(x, y, isSmall = false) {
     super(x, y);
     this.isSmall = isSmall;
-    this.isBuilder = isBuilder; // True para castores que construyen diques, False para castores de proliferación
     this.captured = false;
     this.state = 'idle';
     this.action = 'idle';
-    this.speed = isSmall ? 16 : (20 + Math.random() * 6);
+    this.speed = isSmall ? 16 : 22;
     this.targetX = x; this.targetY = y;
     this.targetTree = null;
     this.targetLog = null;
@@ -781,19 +780,11 @@ class Beaver extends Entity {
         this.targetTree.setState('stump_fresh');
         this.treesChopped++;
         game.onTreeFelled(this.targetTree, this);
-        
-        if (this.isBuilder) {
-          // Castores constructores: recogen la madera y van al río a levantar diques
-          const log = new LogEntity(this.targetTree.x + (Math.random()-0.5)*15, this.targetTree.y);
-          game.entities.push(log);
-          this.targetLog = log;
-          this.state = 'walk_log';
-          this.targetX = log.x; this.targetY = log.y;
-        } else {
-          // Castores de proliferación: solo talan árboles sin construir diques!
-          this.state = 'idle';
-          this.idleTimer = 0.4 + Math.random() * 1.2;
-        }
+        const log = new LogEntity(this.targetTree.x + (Math.random()-0.5)*15, this.targetTree.y);
+        game.entities.push(log);
+        this.targetLog = log;
+        this.state = 'walk_log';
+        this.targetX = log.x; this.targetY = log.y;
         this.targetTree = null;
       } else {
         this.state = 'idle';
