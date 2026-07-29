@@ -286,9 +286,10 @@ class Entity {
 
     if (this instanceof Tree) {
       if (this.state === 'stump_fresh' || this.state === 'stump_old') {
-        const targetH = 22; // Tocón: altura corta sobre la superficie
-        h = Math.round(targetH * (this.scale || 1.0));
-        w = Math.round(targetH * (imgW / imgH) * (this.scale || 1.0));
+        const targetH = 14; // Tocón: escala reducida ajustada al grosor real del tronco (~14px)
+        const s = Math.min(1.0, this.scale || 1.0);
+        h = Math.round(targetH * s);
+        w = Math.round(targetH * (imgW / imgH) * s);
       } else if (this.state === 'dead' || this.state === 'flooded') {
         const targetH = 84; // Árbol muerto / fantasma: altura alineada a copa sana (~84px)
         h = Math.round(targetH * (this.scale || 1.0));
@@ -443,6 +444,9 @@ class Tree extends Entity {
   setState(state) {
     this.state = state;
     this.being_cut = false;
+    if (state === 'stump_fresh' || state === 'stump_old') {
+      this.scale = Math.min(1.0, this.scale || 1.0);
+    }
     this._refreshSprite();
   }
 
