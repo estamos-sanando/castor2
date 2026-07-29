@@ -53,80 +53,84 @@ html, body {
   filter: saturate(0.95) contrast(1.05);
 }
 
-/* ── HUD PRINCIPAL DEL JUEGO (FLOTANTE SOBRE EL CANVAS) ── */
+/* ── MENÚ LATERAL DERECHO (#hud-right-sidebar) ── */
 #hud-container {
   position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 100;
+}
+
+#hud-right-sidebar {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 290px;
+  background: linear-gradient(180deg, rgba(12, 22, 16, 0.96), rgba(5, 12, 8, 0.98));
+  border-left: 2px solid var(--gold);
+  padding: 20px 16px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 12px 16px;
-  overflow: hidden;
-}
-
-/* ── HUD SUPERIOR: MARCA E INDICADORES HORA Y ESTADÍSTICAS ── */
-#hud-top-bar {
-  pointer-events: auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  background: linear-gradient(135deg, rgba(12, 22, 16, 0.94), rgba(5, 12, 8, 0.97));
-  border: 1.5px solid var(--gold);
-  border-radius: 12px;
-  padding: 8px 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.85), 0 0 15px rgba(212, 175, 55, 0.2) inset;
+  gap: 14px;
+  color: #fff;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.9), 0 0 20px rgba(212, 175, 55, 0.25) inset;
   backdrop-filter: blur(10px);
+  pointer-events: auto;
+  overflow-y: auto;
 }
 
-.hud-brand {
+.sidebar-top-brand {
   display: flex;
   align-items: center;
   gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1.5px solid rgba(212, 175, 55, 0.4);
 }
 
-.brand-newspaper-img {
-  height: 28px;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
-}
-
-.brand-title {
+.sidebar-game-title {
   font-family: 'Cinzel', serif;
-  font-size: 13.5px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold-light);
+  line-height: 1.35;
+}
+
+.sidebar-section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
   font-weight: 700;
   color: var(--gold-light);
   letter-spacing: 1px;
-  white-space: nowrap;
+  border-bottom: 1px dashed rgba(212, 175, 55, 0.3);
+  padding-bottom: 4px;
+  margin-top: 4px;
 }
 
-.hud-stats {
+.hud-stats-vertical {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: nowrap;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.stat-pill {
+.hud-stats-vertical .stat-pill {
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: rgba(0, 0, 0, 0.5);
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.45);
   border: 1px solid rgba(212, 175, 55, 0.35);
-  border-radius: 20px;
-  padding: 5px 12px;
-  white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  border-radius: 10px;
+  padding: 8px 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 .pill-icon {
   font-size: 14px;
+  margin-right: 4px;
 }
 
 .pill-label {
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 700;
   color: #9ca3af;
   letter-spacing: 0.5px;
@@ -139,25 +143,12 @@ html, body {
   color: var(--gold-light);
 }
 
-/* ── HUD INFERIOR: LÍNEA DE TIEMPO Y CONTROLES DE ACCIÓN ── */
-#hud-bottom-bar {
-  pointer-events: auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  background: linear-gradient(135deg, rgba(12, 22, 16, 0.94), rgba(5, 12, 8, 0.97));
-  border: 1.5px solid var(--gold);
-  border-radius: 12px;
-  padding: 8px 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.85), 0 0 15px rgba(212, 175, 55, 0.2) inset;
-  backdrop-filter: blur(10px);
-}
-
 #hud-timeline {
-  flex: 1;
-  max-width: 520px;
-  margin-right: 20px;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 10px;
+  padding: 10px 12px;
 }
 
 .timeline-track {
@@ -191,17 +182,26 @@ html, body {
 .timeline-labels {
   display: flex;
   justify-content: space-between;
-  margin-top: 4px;
+  margin-top: 6px;
   font-family: 'Cinzel', serif;
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 700;
   color: var(--gold-light);
 }
 
-#hud-controls {
+#hud-controls-vertical {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 12px;
+  margin-top: 4px;
+}
+
+#hud-controls-vertical .hud-speed-btn {
+  width: 100%;
+  justify-content: center;
+  height: 42px;
+  font-size: 13px;
 }
 
 .hud-speed-btn {

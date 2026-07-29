@@ -1,8 +1,8 @@
 'use strict';
 /* ============================================================
-   UI.JS — Interfaz de Usuario y Ventanas Emergentes Abajo a la Izquierda
-   - Ventanas emergentes abajo a la izquierda que NO frenan la simulación
-   - Con asset assets/diario.png y auto-cierre
+   UI.JS — Interfaz de Usuario con Menú Lateral Derecho Estilo RTS
+   - Menú lateral derecho con estadísticas, línea de tiempo y controles
+   - Asset assets/diario.png y botón 2x integrados
    ============================================================ */
 
 class GameUI {
@@ -18,20 +18,21 @@ class GameUI {
 
   _initHUD() {
     const hudHtml = `
-      <div id="hud-top-bar">
-        <div class="hud-brand">
+      <div id="hud-right-sidebar">
+        <div class="sidebar-top-brand">
           <img src="assets/diario.png" alt="Diario" class="brand-newspaper-img" />
-          <span class="brand-title">EL CASTOR EN TIERRA DEL FUEGO</span>
+          <h3 class="sidebar-game-title">EL CASTOR EN TIERRA DEL FUEGO</h3>
         </div>
-        <div class="hud-stats">
-          <div class="stat-pill"><span class="pill-icon">🦫</span><span class="pill-label">CASTORES</span><span class="pill-val" id="val-beavers">0</span></div>
-          <div class="stat-pill"><span class="pill-icon">🔥</span><span class="pill-label">BOSQUE PERDIDO</span><span class="pill-val" id="val-loss">0%</span></div>
-          <div class="stat-pill"><span class="pill-icon">🌊</span><span class="pill-label">INUNDACIÓN</span><span class="pill-val" id="val-flooded">0 ha</span></div>
-          <div class="stat-pill"><span class="pill-icon">🪵</span><span class="pill-label">DIQUES</span><span class="pill-val" id="val-dams">0</span></div>
-        </div>
-      </div>
 
-      <div id="hud-bottom-bar">
+        <div class="sidebar-section-title">📊 ESTADÍSTICAS</div>
+        <div class="hud-stats-vertical">
+          <div class="stat-pill"><span class="pill-icon">🦫</span><span class="pill-label">CASTORES:</span><span class="pill-val" id="val-beavers">0</span></div>
+          <div class="stat-pill"><span class="pill-icon">🔥</span><span class="pill-label">BOSQUE PERDIDO:</span><span class="pill-val" id="val-loss">0%</span></div>
+          <div class="stat-pill"><span class="pill-icon">🌊</span><span class="pill-label">INUNDACIÓN:</span><span class="pill-val" id="val-flooded">0 ha</span></div>
+          <div class="stat-pill"><span class="pill-icon">🪵</span><span class="pill-label">DIQUES:</span><span class="pill-val" id="val-dams">0</span></div>
+        </div>
+
+        <div class="sidebar-section-title">⏱️ LÍNEA DE TIEMPO</div>
         <div id="hud-timeline">
           <div class="timeline-track" id="timeline-bar">
             <div class="timeline-fill" id="timeline-fill"></div>
@@ -46,9 +47,10 @@ class GameUI {
           </div>
         </div>
 
-        <div id="hud-controls">
+        <div class="sidebar-section-title">🎮 CONTROLES</div>
+        <div id="hud-controls-vertical">
           <button class="hud-speed-btn" id="btn-speed-toggle" title="Cambiar Velocidad (1x / 2x)">
-            <span class="speed-icon">⏩</span>
+            <span class="speed-icon">⏩ VELOCIDAD:</span>
             <span class="speed-val" id="speed-val">1x</span>
           </button>
           <button class="pure-image-btn" id="btn-add-beaver" title="LIBERAR 20 CASTORES (1946)">
@@ -126,7 +128,6 @@ class GameUI {
 
   // ── Ventana Emergente Abajo a la Izquierda — NO frena la simulación ──
   showEditorialNewsCard(opts) {
-    // Si ya hay una tarjeta activa, removerla suavemente
     const oldCard = document.querySelector('.bottom-left-news-popup');
     if (oldCard) oldCard.remove();
 
@@ -160,7 +161,6 @@ class GameUI {
     `;
     document.getElementById('game-container').appendChild(cardEl);
 
-    // LA SIMULACIÓN CONTINÚA CORRIENDO SIN FRENARSE!
     if (this.game) this.game.running = true;
 
     const closeFn = () => {
@@ -170,12 +170,11 @@ class GameUI {
       }, 350);
     };
 
-    // SOLO SE CIERRA CUANDO EL JUGADOR HACE CLIC EN 'ENTENDIDO ➔' O EN '✕'
     cardEl.querySelector('#btn-close-journal')?.addEventListener('click', closeFn);
     cardEl.querySelector('#btn-close-journal-x')?.addEventListener('click', closeFn);
   }
 
-  // ── Ventana Lateral Izquierda ──
+  // ── Ventana Lateral Izquierda de Puesto ENEEI ──
   showCabinInventory() {
     if (document.getElementById('eneei-sidebar-panel')) return;
 
