@@ -6,3 +6,6 @@ Thumbs.db
 
 # Log files
 *.log
+
+# Scratch directory
+scratch/

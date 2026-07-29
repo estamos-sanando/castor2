@@ -147,150 +147,94 @@ class SpritePainter {
   }
 
   // Trees: 2.2x - 2.8x Tile Height (~75x85px)
+  // Beaver: 0.35x Tile Height (~28x20px)
+  static beaver(size = 28, action = 'idle') {
+    const key = `beaver_${action}`;
+    const realImg = getLoadedImg(key) || getLoadedImg('beaver_idle');
+    return realImg || this._emptyCanvas(size, size);
+  }
+
+  static beaver_small(size = 20) {
+    const realImg = getLoadedImg('beaver_small_idle');
+    return realImg || this._emptyCanvas(size, size);
+  }
+
+  // Ranger / Scientist: 1.0x - 1.2x Tile Height (~24x36px)
+  static ranger(size = 36, action = 'idle') {
+    const key = `ranger_${action}`;
+    const realImg = getLoadedImg(key) || getLoadedImg('ranger_idle');
+    return realImg || this._emptyCanvas(size, size);
+  }
+
+  static scientist(size = 36, action = 'idle') {
+    const key = `scientist_${action}`;
+    const realImg = getLoadedImg(key) || getLoadedImg('scientist_idle');
+    return realImg || this._emptyCanvas(size, size);
+  }
+
+  // Trees: High-definition native defringed sprites
   static tree_healthy(variant = 0) {
     const idx = (variant % 9) + 1;
     const key = `tree_healthy_${idx}`;
     const realImg = getLoadedImg(key) || getLoadedImg('tree_healthy_1');
-    if (realImg) {
-      const W = 75, H = Math.round(75 * (realImg.height / realImg.width));
-      const c = this._oc(W, H), ctx = c.getContext('2d');
-      ctx.drawImage(realImg, 0, 0, W, H);
-      return c;
-    }
-    return this._emptyCanvas(75, 85);
+    return realImg || this._emptyCanvas(75, 85);
   }
 
   static tree_chewed(variant = 0) {
     const idx = (variant % 9) + 1;
     const key = `tree_healthy_${idx}`;
     const realImg = getLoadedImg(key) || getLoadedImg('tree_healthy_1');
-    if (realImg) {
-      const W = 75, H = Math.round(75 * (realImg.height / realImg.width));
-      const c = this._oc(W, H), ctx = c.getContext('2d');
-      ctx.drawImage(realImg, 0, 0, W, H);
-      return c;
-    }
-    return this.tree_healthy(variant);
+    return realImg || this.tree_healthy(variant);
   }
 
   static tree_dead() {
     const realImg = getLoadedImg('tree_dead_1') || getLoadedImg('tree_dead_2') || getLoadedImg('tree_dead_3');
-    if (realImg) {
-      const W = 60, H = Math.round(60 * (realImg.height / realImg.width));
-      const c = this._oc(W, H), ctx = c.getContext('2d');
-      ctx.drawImage(realImg, 0, 0, W, H);
-      return c;
-    }
-    return this._emptyCanvas(60, 75);
+    return realImg || this._emptyCanvas(60, 75);
   }
 
   static tree_flooded() {
     const realImg = getLoadedImg('tree_flooded_1') || getLoadedImg('tree_flooded_2');
-    if (realImg) {
-      const W = 64, H = Math.round(64 * (realImg.height / realImg.width));
-      const c = this._oc(W, H), ctx = c.getContext('2d');
-      ctx.drawImage(realImg, 0, 0, W, H);
-      return c;
-    }
-    return this._emptyCanvas(64, 78);
+    return realImg || this._emptyCanvas(64, 78);
   }
 
   static stump(age = 'fresh') {
     const key = age === 'fresh' ? 'stump_fresh' : 'stump_old';
     const realImg = getLoadedImg(key) || getLoadedImg('stump_fresh');
-    if (realImg) {
-      const W = 28, H = Math.round(28 * (realImg.height / realImg.width));
-      const c = this._oc(W, H), ctx = c.getContext('2d');
-      ctx.drawImage(realImg, 0, 0, W, H);
-      return c;
-    }
-    return this._emptyCanvas(28, 20);
+    return realImg || this._emptyCanvas(28, 20);
   }
 
   static log(decayed = false) {
     const key = decayed ? 'log_decayed' : 'log_fresh';
     const realImg = getLoadedImg(key) || getLoadedImg('log_fresh');
-    if (realImg) {
-      const W = 36, H = Math.round(36 * (realImg.height / realImg.width));
-      const c = this._oc(W, H), ctx = c.getContext('2d');
-      ctx.drawImage(realImg, 0, 0, W, H);
-      return c;
-    }
-    return this._emptyCanvas(36, 20);
+    return realImg || this._emptyCanvas(36, 20);
   }
 
   static rock(variant = 0) {
     const key = (variant === 1 || variant === 2) ? 'rock_2' : 'rock_1';
     const realImg = getLoadedImg(key) || getLoadedImg('rock_1');
-    if (realImg) {
-      const W = (variant === 1 || variant === 2) ? 68 : 44;
-      const H = Math.round(W * (realImg.height / realImg.width));
-      const c = this._oc(W, H), ctx = c.getContext('2d');
-      ctx.drawImage(realImg, 0, 0, W, H);
-      return c;
-    }
-    return this._emptyCanvas(36, 24);
+    return realImg || this._emptyCanvas(36, 24);
   }
 
   static bush(variant = 0) {
     const realImg = getLoadedImg('bush_1') || getLoadedImg('bush_2');
-    if (realImg) {
-      const W = 32, H = Math.round(32 * (realImg.height / realImg.width));
-      const c = this._oc(W, H), ctx = c.getContext('2d');
-      ctx.drawImage(realImg, 0, 0, W, H);
-      return c;
-    }
-    return this._emptyCanvas(32, 24);
+    return realImg || this._emptyCanvas(32, 24);
   }
 
   static dam(level = 1, state = 'active') {
-    if (state === 'dismantled' || state === 'broken') {
-      const realImg = getLoadedImg('log_decayed') || getLoadedImg('log_fresh');
-      if (realImg) {
-        const W = 54, H = Math.round(54 * (realImg.height / realImg.width));
-        const c = this._oc(W, H), ctx = c.getContext('2d');
-        ctx.globalAlpha = 0.65;
-        ctx.drawImage(realImg, 0, 0, W, H);
-        return c;
-      }
-    }
-
     const lvl = Math.max(1, Math.min(3, level));
     const key = `dique_nivel_${lvl}`;
     const realImg = getLoadedImg(key) || getLoadedImg('dique_real') || getLoadedImg('log_fresh');
-    if (realImg) {
-      // Dimensiones ampliadas proporcionales al cauce del río (140px, 180px, 230px)
-      const W = lvl === 1 ? 140 : (lvl === 2 ? 180 : 230);
-      const H = Math.round(W * (realImg.height / realImg.width));
-      const c = this._oc(W, H), ctx = c.getContext('2d');
-      if (state === 'constructing') ctx.globalAlpha = 0.8;
-      ctx.drawImage(realImg, 0, 0, W, H);
-      return c;
-    }
-    const W = 140 + level * 35, H = 50 + level * 15;
-    return this._oc(W, H);
+    return realImg || this._emptyCanvas(140 + level * 35, 50 + level * 15);
   }
 
   static cage_sprite() {
     const realImg = getLoadedImg('ranger_trap') || getLoadedImg('ranger_idle');
-    if (realImg) {
-      const W = 32, H = Math.round(32 * (realImg.height / realImg.width));
-      const c = this._oc(W, H), ctx = c.getContext('2d');
-      ctx.drawImage(realImg, 0, 0, W, H);
-      return c;
-    }
-    return this._emptyCanvas(32, 24);
+    return realImg || this._emptyCanvas(32, 24);
   }
 
   static seedling_sprite() {
     const realImg = getLoadedImg('tree_healthy_1');
-    if (realImg) {
-      const W = 22, H = Math.round(22 * (realImg.height / realImg.width));
-      const c = this._oc(W, H), ctx = c.getContext('2d');
-      ctx.drawImage(realImg, 0, 0, W, H);
-      return c;
-    }
-    return this._emptyCanvas(22, 24);
+    return realImg || this._emptyCanvas(22, 24);
   }
 
   static leaf_particle() {
@@ -334,8 +278,35 @@ class Entity {
     ctx.save();
     ctx.globalAlpha = this.alpha;
 
-    const w = Math.round(this.sprite.width * (this.scale || 1.0));
-    const h = Math.round(this.sprite.height * (this.scale || 1.0));
+    const imgW = this.sprite.naturalWidth || this.sprite.width || 32;
+    const imgH = this.sprite.naturalHeight || this.sprite.height || 32;
+
+    let targetW = 32;
+    if (this instanceof Tree) {
+      targetW = 75;
+    } else if (this instanceof Beaver) {
+      targetW = this.isSmall ? 20 : 28;
+    } else if (this instanceof Ranger) {
+      targetW = 24;
+    } else if (this instanceof Dam) {
+      targetW = this.level === 1 ? 140 : (this.level === 2 ? 180 : 230);
+    } else if (this instanceof LogEntity) {
+      targetW = 36;
+    } else if (this instanceof Rock) {
+      targetW = (this.variant === 1 || this.variant === 2) ? 68 : 44;
+    } else if (this instanceof Bush) {
+      targetW = 32;
+    } else if (this instanceof Cage) {
+      targetW = 32;
+    } else if (this instanceof Seedling) {
+      targetW = 22;
+    } else {
+      targetW = (this.sprite.width && this.sprite.width !== imgW) ? this.sprite.width : 32;
+    }
+
+    const scaleFactor = (this.scale || 1.0);
+    const w = Math.round(targetW * scaleFactor);
+    const h = Math.round(targetW * (imgH / imgW) * scaleFactor);
 
     // Punto de contacto directo del tronco con el suelo (elimina efecto flotante)
     const isTree = (this instanceof Tree);
@@ -343,7 +314,7 @@ class Entity {
     const shadowY = Math.round(this.y - yOffset);
 
     // Sombra sutil directamente adherida a las raíces del árbol
-    const shadowW = Math.max(8, Math.round(w * (isTree ? 0.32 : 0.42)));
+    const shadowW = Math.max(8, Math.round(w * (isTree ? 0.35 : 0.42)));
     const shadowH = Math.max(3, Math.round(shadowW * 0.28));
     
     ctx.fillStyle = 'rgba(0, 0, 0, 0.18)';
