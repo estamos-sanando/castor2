@@ -1,7 +1,6 @@
 'use strict';
 /* ============================================================
-   UI.JS — Interfaz Newsgame Táctica
-   Barra Táctica Inferior con Botones de Invasión, Captura y Reforestación
+   UI.JS — Interfaz de Usuario, Modales Periodísticos y Minijuegos
    ============================================================ */
 
 class GameUI {
@@ -9,110 +8,71 @@ class GameUI {
     this.game = game;
     this.newsQueue = [];
     this.activeNews = null;
-    this.newsTimer = 0;
     this.tutorialVisible = true;
-    this.endVisible = false;
-    this._buildDOM();
+    this._initHUD();
+    this._initTutorial();
     this._bindEvents();
   }
 
-  _buildDOM() {
-    this.hud = document.getElementById('hud');
-    if (!this.hud) {
-      this.hud = document.createElement('div');
-      this.hud.id = 'hud';
-      document.getElementById('game-container').appendChild(this.hud);
-    }
-    this.hud.innerHTML = `
-      <!-- HUD Superior: Marca e Indicadores Ecologicos -->
-      <div id="hud-top">
+  _initHUD() {
+    const hudHtml = `
+      <div id="hud-top-bar">
         <div class="hud-brand">
-          <div class="brand-titles">
-            <h1 class="game-title">PROYECTO CASTOR — TIERRA DEL FUEGO</h1>
-            <span id="hud-year-label" class="year-badge">1946</span>
-          </div>
+          <span class="brand-icon">🦫</span>
+          <span class="brand-title">PROYECTO CASTOR — TIERRA DEL FUEGO</span>
         </div>
-
-        <div class="hud-stats-grid">
-          <div class="hud-stat-card" id="stat-beavers">
-            <span class="stat-icon">🦫</span>
-            <span class="stat-val" id="val-beavers">2</span>
-            <span class="stat-lbl">Castores</span>
-          </div>
-          <div class="hud-stat-card" id="stat-trees">
-            <span class="stat-icon">🌲</span>
-            <span class="stat-val" id="val-trees">100%</span>
-            <span class="stat-lbl">Bosque Lenga</span>
-          </div>
-          <div class="hud-stat-card" id="stat-loss">
-            <span class="stat-icon">💵</span>
-            <span class="stat-val" id="val-loss">$0M</span>
-            <span class="stat-lbl">Pérdida USD/Año</span>
-          </div>
-          <div class="hud-stat-card" id="stat-dams">
-            <span class="stat-icon">🪵</span>
-            <span class="stat-val" id="val-dams">0</span>
-            <span class="stat-lbl">Diques</span>
-          </div>
+        <div class="hud-stats">
+          <div class="stat-pill"><span class="pill-label">🦫 CASTORES</span><span class="pill-val" id="val-beavers">0</span></div>
+          <div class="stat-pill"><span class="pill-label">🔥 PÉRDIDA BOSQUE</span><span class="pill-val" id="val-loss">0%</span></div>
+          <div class="stat-pill"><span class="pill-label">🌊 INUNDACIÓN</span><span class="pill-val" id="val-flooded">0 ha</span></div>
+          <div class="stat-pill"><span class="pill-label">🪵 DIQUES</span><span class="pill-val" id="val-dams">0</span></div>
         </div>
       </div>
 
-      <!-- Barra Táctica Inferior (Fija en la parte inferior de la pantalla) -->
       <div id="hud-bottom-bar">
-        <!-- Línea de Tiempo Histórica -->
         <div id="hud-timeline">
-          <div id="timeline-bar">
-            <div id="timeline-fill"></div>
-            <div id="timeline-thumb"></div>
+          <div class="timeline-track" id="timeline-bar">
+            <div class="timeline-fill" id="timeline-fill"></div>
+            <div class="timeline-thumb" id="timeline-thumb"></div>
           </div>
-          <div id="timeline-labels">
-            <span>1946 (Liberación)</span><span>1985 (Canal Beagle)</span><span>2005 (Crisis 100k)</span><span>2016 (ENEEI)</span><span>2046</span>
+          <div class="timeline-labels">
+            <span class="t-label active">1946 (LIBERACIÓN)</span>
+            <span class="t-label">1965 (INVASIÓN)</span>
+            <span class="t-label">2005 (CRISIS)</span>
+            <span class="t-label">2016 (ENEEI)</span>
+            <span class="t-label">2026 (RESTAURACIÓN)</span>
           </div>
         </div>
 
-        <!-- Panel de Control (Invasión, Captura y Reforestación) -->
         <div id="hud-controls">
-          <button class="pure-image-btn" id="btn-add-beaver" title="Agregar Castor">
-            <img src="assets/BOTON.png" alt="Agregar Castor" />
-          </button>
-
-          <button class="news-btn btn-success" id="btn-capture-beaver">
-            <span class="btn-icon">🟢</span>
-            <span class="btn-text">🪤 CAPTURAR / DESMANTELAR</span>
-          </button>
-
-          <button class="news-btn btn-plant" id="btn-plant-tree">
-            <span class="btn-icon">🌱</span>
-            <span class="btn-text">PLANTAR LENGA</span>
+          <button class="pure-image-btn" id="btn-add-beaver" title="LIBERAR 20 CASTORES">
+            <img src="assets/BOTON.png" alt="Agregar Castores" />
           </button>
         </div>
       </div>
     `;
 
-    // Contenedor de Tarjetas Periodísticas Modales
+    const hudContainer = document.createElement('div');
+    hudContainer.id = 'hud-container';
+    hudContainer.innerHTML = hudHtml;
+    document.getElementById('game-container').appendChild(hudContainer);
+
     this.newsContainer = document.createElement('div');
     this.newsContainer.id = 'news-container';
     document.getElementById('game-container').appendChild(this.newsContainer);
+  }
 
-    // Pantalla de Tutorial Inicial Periodístico
+  _initTutorial() {
     this.tutorialEl = document.createElement('div');
     this.tutorialEl.id = 'tutorial-overlay';
     this.tutorialEl.innerHTML = `
-      <div class="tutorial-box">
-        <div class="tutorial-header">
-          <h2>PROYECTO CASTOR — TIERRA DEL FUEGO</h2>
-          <p class="tutorial-subtitle">Ministerio de Ambiente de la Nación Argentina / Chile</p>
+      <div class="tutorial-card">
+        <h2>🦫 PROYECTO CASTOR: INVASIÓN Y RESTAURACIÓN</h2>
+        <p class="tut-subtitle">Noticia Interactiva sobre el Control de Especies Exóticas Invasoras en Tierra del Fuego</p>
+        <div class="tut-body">
+          <p>En 1946, 20 castores canadienses fueron liberados en Tierra del Fuego. Sin predadores naturales, su tala y represas destruyeron miles de hectáreas de Lenga nativa.</p>
         </div>
-        <div class="tutorial-body">
-          <p>En <strong>1946</strong>, se introdujeron <strong>20 castores</strong> en Tierra del Fuego. Sin predadores (como los osos o lobos de Canadá), la población superó los <strong>100.000 animales</strong>.</p>
-          <p>El castor altera el <strong>95% de las cuencas</strong> y ha destruido <strong>30.000 hectáreas</strong> de bosque de Lenga, una especie nativa que <em>tarda 200 años en recuperarse y no rebrota del tocón</em>. El daño económico supera los <strong>USD 66.5 millones de dólares anuales</strong>.</p>
-          <div class="tutorial-instructions">
-            <div class="ins-item">🔴 <strong>+ AGREGAR CASTOR</strong>: El castor busca la Lenga, la tala en vivo y lleva la madera al río central construyendo diques e inundando la zona.</div>
-            <div class="ins-item">🟢 <strong>🪤 CAPTURAR / DESMANTELAR</strong>: Captura castores con el guardaparque para deteriorar los diques y recuperar el cauce natural.</div>
-            <div class="ins-item">🌱 <strong>PLANTAR LENGA</strong>: Reforesta activamente el terreno secado con renuevos de Lenga nativa.</div>
-          </div>
-        </div>
-        <button class="tutorial-start-btn" id="btn-start-game">¡COMENZAR!</button>
+        <button class="tutorial-start-btn" id="btn-start-game">¡COMENZAR EXPERIENCIA!</button>
       </div>
     `;
     document.getElementById('game-container').appendChild(this.tutorialEl);
@@ -125,45 +85,83 @@ class GameUI {
         this.tutorialEl.style.display = 'none';
         this.tutorialVisible = false;
         this.game.start();
-      }, 500);
+      }, 400);
     });
 
     document.getElementById('btn-add-beaver')?.addEventListener('click', () => {
-      this.game.spawnBeaver();
+      this.game.releaseAll20BeaversAtOnce();
     });
+  }
 
-    document.getElementById('btn-capture-beaver')?.addEventListener('click', () => {
-      this.game.removeBeaver();
+  // ── Modal de Inventario: Arrastrar Cabaña del Guardaparques ──
+  showCabinInventory() {
+    const invEl = document.createElement('div');
+    invEl.id = 'cabin-inventory-modal';
+    invEl.innerHTML = `
+      <div class="modal-card">
+        <h3>📜 INVENTARIO ENEEI: ACUERDO ARGENTINA Y CHILE</h3>
+        <p>Selecciona e instala la <strong>Cabaña del Guardaparques</strong> en el mapa para iniciar la estrategia binacional de captura y control.</p>
+        <div class="drag-item-container" id="drag-cabin-btn">
+          <img src="assets/cabana.png" alt="Cabaña Guardaparques" class="cabin-icon-img" />
+          <span>🏕️ INSTALAR CABAÑA DE CONTROL</span>
+        </div>
+      </div>
+    `;
+    document.getElementById('game-container').appendChild(invEl);
+
+    document.getElementById('drag-cabin-btn')?.addEventListener('click', () => {
+      invEl.remove();
+      this.game.placeCabin(480, 320);
     });
+  }
 
-    document.getElementById('btn-plant-tree')?.addEventListener('click', () => {
-      this.game.plantTree();
+  // ── Minijuego de Precisión: Captura Humanitaria de Castor ──
+  openPrecisionMinigame() {
+    const miniEl = document.createElement('div');
+    miniEl.id = 'precision-minigame-modal';
+    miniEl.innerHTML = `
+      <div class="modal-card precision-card">
+        <h3>🪤 MINIJUEGO DE CAPTURA PRECISA ENEEI</h3>
+        <p>Haz clic cuando la aguja indicadora pase por la <strong>ZONA VERDE</strong> para asegurar la captura del castor.</p>
+        <div class="meter-bar-container">
+          <div class="meter-bar">
+            <div class="meter-zone-green"></div>
+            <div class="meter-indicator" id="meter-indicator"></div>
+          </div>
+        </div>
+        <button class="news-btn btn-success" id="btn-precision-click" style="margin-top: 15px;">
+          🎯 Capturar Castor
+        </button>
+      </div>
+    `;
+    document.getElementById('game-container').appendChild(miniEl);
+
+    let pos = 0, dir = 2;
+    const indicator = document.getElementById('meter-indicator');
+    const interval = setInterval(() => {
+      pos += dir;
+      if (pos >= 100 || pos <= 0) dir = -dir;
+      if (indicator) indicator.style.left = pos + '%';
+    }, 16);
+
+    document.getElementById('btn-precision-click')?.addEventListener('click', () => {
+      clearInterval(interval);
+      miniEl.remove();
+      this.showNews({
+        title: '🎯 ¡CAPTURA EXITOSA!',
+        text: 'Los guardaparques inician la patrulla continua con trampa jaula y desmantelamiento de represas.',
+        type: 'success'
+      });
+      this.game.startRangerSimulation();
     });
-
-    const tlBar = document.getElementById('timeline-bar');
-    if (tlBar) {
-      let dragging = false;
-      const updateTimeline = (e) => {
-        const rect = tlBar.getBoundingClientRect();
-        const cx = (e.touches ? e.touches[0].clientX : e.clientX);
-        const pct = Math.max(0, Math.min(1, (cx - rect.left) / rect.width));
-        this.game.setTimelinePct(pct);
-      };
-      tlBar.addEventListener('mousedown', e => { dragging = true; updateTimeline(e); });
-      document.addEventListener('mousemove', e => { if (dragging) updateTimeline(e); });
-      document.addEventListener('mouseup', () => { dragging = false; });
-      tlBar.addEventListener('touchstart', e => updateTimeline(e), { passive: true });
-      tlBar.addEventListener('touchmove', e => updateTimeline(e), { passive: true });
-    }
   }
 
   update(stats, year, timelinePct) {
     const el = id => document.getElementById(id);
     if (el('val-beavers')) el('val-beavers').textContent = stats.beavers;
-    if (el('val-trees')) el('val-trees').textContent = Math.round(stats.health) + '%';
-    if (el('val-loss')) el('val-loss').textContent = '$' + (stats.economicLoss || 0).toFixed(1) + 'M';
+    if (el('val-loss')) el('val-loss').textContent = stats.forestLoss + '%';
+    if (el('val-flooded')) el('val-flooded').textContent = Math.round(stats.hectaresFlooded) + ' ha';
     if (el('val-dams')) el('val-dams').textContent = stats.dams;
-    if (el('hud-year-label')) el('hud-year-label').textContent = Math.round(year);
 
     const tFill = el('timeline-fill'), tThumb = el('timeline-thumb');
     if (tFill) tFill.style.width = (timelinePct * 100) + '%';
@@ -177,37 +175,29 @@ class GameUI {
   }
 
   _processNews() {
-    if (this.activeNews) {
-      this.newsTimer -= 1 / 60;
-      if (this.newsTimer <= 0) {
-        this.activeNews.classList.add('news-exit');
-        setTimeout(() => {
-          this.activeNews?.remove();
-          this.activeNews = null;
-        }, 400);
-      }
-      return;
-    }
-    if (this.newsQueue.length === 0) return;
+    if (this.activeNews || this.newsQueue.length === 0) return;
+    const opts = this.newsQueue.shift();
 
-    const news = this.newsQueue.shift();
     const card = document.createElement('div');
-    card.className = `news-card news-${news.type || 'info'}`;
+    card.className = `news-card news-${opts.type || 'info'}`;
     card.innerHTML = `
-      <div class="news-badge">${news.type === 'danger' ? '🚨 ALERTA ECOLÓGICA' : news.type === 'success' ? '✅ RESTAURACIÓN ENEEI' : news.type === 'warning' ? '⚠️ NOTICIA DE IMPACTO' : '📰 DATOS DE LA NOTICIA'}</div>
-      <h3 class="news-title">${news.title}</h3>
-      <p class="news-text">${news.text}</p>
-      <div class="news-footer">Haz clic para continuar leyendo</div>
+      <div class="news-header">
+        <span class="news-badge">${opts.type === 'danger' ? '🔴 ALERTA' : opts.type === 'warning' ? '⚠️ ADVERTENCIA' : '📰 NOTICIA'}</span>
+        <h4>${opts.title}</h4>
+      </div>
+      <p>${opts.text}</p>
+      <button class="news-close-btn">ENTENDIDO</button>
     `;
-    card.addEventListener('click', () => {
-      card.classList.add('news-exit');
+
+    this.newsContainer.appendChild(card);
+    this.activeNews = card;
+
+    card.querySelector('.news-close-btn').addEventListener('click', () => {
+      card.classList.add('fade-out');
       setTimeout(() => {
         card.remove();
         this.activeNews = null;
-      }, 400);
+      }, 300);
     });
-    this.newsContainer.appendChild(card);
-    this.activeNews = card;
-    this.newsTimer = 7.0;
   }
 }

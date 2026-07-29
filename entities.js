@@ -747,7 +747,7 @@ class Beaver extends Entity {
       this.carryingLog = false;
       if (this.targetLog) { this.targetLog.dead = true; this.targetLog = null; }
       this.damsBuilt++;
-      game.onBeaverBuiltDam(this);
+      game.onBeaverDeliveredWood(this);
       this.state = 'idle';
       this.celebrateTimer = 1.0;
     }
