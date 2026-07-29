@@ -188,26 +188,17 @@ class BeaverGame {
     dam.woodCount = (dam.woodCount || 0) + 1;
     this.stats.dams = this.entities.filter(e => e instanceof Dam && e.active && !e.dead).length;
 
-    // Acumulación colectiva de madera por dique: 4 entregas = Chico (1), 8 = Mediano (2), 12 = Grande (3)
+    // Acumulación colectiva de madera por dique: 3 entregas = Chico (1), 7 = Mediano (2), 12 = Grande (3)
     if (dam.woodCount >= 12) {
       dam.level = 3;
       dam._refreshSprite();
+      this.triggerFloodedCrisis(); // El mapa cambia ÚNICAMENTE cuando el dique es GRANDE!
     } else if (dam.woodCount >= 7) {
       dam.level = 2;
       dam._refreshSprite();
     } else if (dam.woodCount >= 3) {
       dam.level = 1;
       dam._refreshSprite();
-    }
-
-    // Evaluación global de diques para cambio de mapa e inundación
-    const activeDams = this.entities.filter(e => e instanceof Dam && e.active && !e.dead);
-    const totalLevel = activeDams.reduce((sum, d) => sum + (d.level || 0), 0);
-
-    if (totalLevel >= 5) {
-      this.triggerFloodedCrisis();
-    } else if (totalLevel >= 2) {
-      this._transitionToMap(1); // Mapa 02 Primer deterioro
     }
   }
 

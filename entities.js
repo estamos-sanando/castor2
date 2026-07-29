@@ -723,17 +723,16 @@ class Beaver extends Entity {
   }
 
   _doCarryLog(dt, game) {
-    if (this.targetLog && !this.targetLog.claimed) {
+    if (this.targetLog) {
       this.targetLog.claimed = true;
-      this.carryingLog = true;
-      this.action = 'carry';
-      const river = game.getNearestRiverPoint(this.x, this.y, this);
-      this.targetX = river.x; this.targetY = river.y;
-      this.state = 'walk_river';
-    } else {
-      this.carryingLog = false;
-      this.state = 'idle';
+      this.targetLog.dead = true; // Desaparece del suelo al ser recogida!
+      this.targetLog = null;
     }
+    this.carryingLog = true;
+    this.action = 'carry';
+    const river = game.getNearestRiverPoint(this.x, this.y, this);
+    this.targetX = river.x; this.targetY = river.y;
+    this.state = 'walk_river';
   }
 
   _doBuild(dt, game) {
