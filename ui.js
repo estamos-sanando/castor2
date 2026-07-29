@@ -1,7 +1,7 @@
 'use strict';
 /* ============================================================
    UI.JS — Interfaz de Usuario, Tarjetas Periodísticas y Minijuegos
-   Noticia Interactiva basada en Vistazo / Proyecto Castor ENEEI
+   Newsgame basado 100% en la noticia real de Vistazo & Proyecto ENEEI
    ============================================================ */
 
 class GameUI {
@@ -19,14 +19,14 @@ class GameUI {
     const hudHtml = `
       <div id="hud-top-bar">
         <div class="hud-brand">
-          <span class="brand-icon">🦫</span>
-          <span class="brand-title">NEWSGAME — LA INVASIÓN DEL CASTOR EN TIERRA DEL FUEGO</span>
+          <span class="brand-icon">📰</span>
+          <span class="brand-title">VISTAZO NEWSGAME — LA DEVASTACIÓN DEL CASTOR EN TIERRA DEL FUEGO</span>
         </div>
         <div class="hud-stats">
-          <div class="stat-pill"><span class="pill-label">🦫 CASTORES</span><span class="pill-val" id="val-beavers">0</span></div>
+          <div class="stat-pill"><span class="pill-label">🦫 EST. POBLACIÓN</span><span class="pill-val" id="val-beavers">0</span></div>
           <div class="stat-pill"><span class="pill-label">🔥 BOSQUE PERDIDO</span><span class="pill-val" id="val-loss">0%</span></div>
-          <div class="stat-pill"><span class="pill-label">🌊 INUNDACIÓN</span><span class="pill-val" id="val-flooded">0 ha</span></div>
-          <div class="stat-pill"><span class="pill-label">🪵 DIQUES</span><span class="pill-val" id="val-dams">0</span></div>
+          <div class="stat-pill"><span class="pill-label">🌊 HECTÁREAS ANEGADAS</span><span class="pill-val" id="val-flooded">0 ha</span></div>
+          <div class="stat-pill"><span class="pill-label">🪵 DIQUES EN CUENCA</span><span class="pill-val" id="val-dams">0</span></div>
         </div>
       </div>
 
@@ -37,16 +37,16 @@ class GameUI {
             <div class="timeline-thumb" id="timeline-thumb"></div>
           </div>
           <div class="timeline-labels">
-            <span class="t-label active">1946 (LIBERACIÓN)</span>
-            <span class="t-label">1965 (INVASIÓN)</span>
-            <span class="t-label">2005 (CRISIS)</span>
-            <span class="t-label">2016 (ENEEI)</span>
+            <span class="t-label active">1946 (INTRODUCCIÓN)</span>
+            <span class="t-label">1965 (EXPANSIÓN)</span>
+            <span class="t-label">2005 (BOSQUES FANTASMA)</span>
+            <span class="t-label">2016 (PROYECTO ENEEI)</span>
             <span class="t-label">2026 (RESTAURACIÓN)</span>
           </div>
         </div>
 
         <div id="hud-controls">
-          <button class="pure-image-btn" id="btn-add-beaver" title="LIBERAR 20 CASTORES">
+          <button class="pure-image-btn" id="btn-add-beaver" title="LIBERAR 20 CASTORES (1946)">
             <img src="assets/BOTON.png" alt="Agregar Castores" />
           </button>
         </div>
@@ -68,13 +68,13 @@ class GameUI {
     this.tutorialEl.id = 'tutorial-overlay';
     this.tutorialEl.innerHTML = `
       <div class="tutorial-card">
-        <span class="journal-tag">📰 VISTAZO INVESTIGA / REPORTAJE ESPECIAL</span>
-        <h2>1946: 20 CASTORES PARA CREAR UNA INDUSTRIA PELETERA EN TIERRA DEL FUEGO</h2>
-        <p class="tut-subtitle">80 años después, más de 100.000 ejemplares han devastado miles de hectáreas de bosque patagónico.</p>
+        <span class="journal-tag">📰 VISTAZO INVESTIGA / REPORTAJE ESPECIAL AMBIENTAL</span>
+        <h2>EN 1946, ARGENTINA INTRODUJO 20 CASTORES PARA CREAR UNA INDUSTRIA PELETERA: 80 AÑOS DESPUÉS, HAN DEVASTADO LOS BOSQUES</h2>
+        <p class="tut-subtitle">Investigación periodística interactiva sobre el mayor desastre biológico en los bosques subantárticos de Tierra del Fuego.</p>
         <div class="tut-body">
-          <p>En 1946, la Marina Argentina introdujo 20 ejemplares de <em>Castor canadensis</em> importados de Canadá. Sin predadores naturales (osos o lobos), la especie colonizó el fin del mundo alterando las cuencas para siempre.</p>
+          <p>La Marina de Guerra Argentina introdujo 10 parejas de <em>Castor canadensis</em> importadas de Canadá. La industria peletera nunca se concretó y los ejemplares fueron abandonados. Sin depredadores naturales en la Patagonia, la especie colonizó la Isla Grande alterando el 95% de las cuencas hídricas.</p>
         </div>
-        <button class="tutorial-start-btn" id="btn-start-game">¡COMENZAR INVESTIGACIÓN INTERACTIVA!</button>
+        <button class="tutorial-start-btn" id="btn-start-game">¡COMENZAR REPORTAJE INTERACTIVO!</button>
       </div>
     `;
     document.getElementById('game-container').appendChild(this.tutorialEl);
@@ -95,14 +95,14 @@ class GameUI {
     });
   }
 
-  // ── Tarjetas Periodísticas Editoriales de Gran Impacto (Newsgame Overlay) ──
+  // ── Tarjetas Periodísticas Editoriales 100% Periodismo Real (Vistazo / Proyecto ENEEI) ──
   showEditorialNewsCard(opts) {
     const cardEl = document.createElement('div');
     cardEl.className = 'news-journal-overlay';
     cardEl.innerHTML = `
-      <div class="journal-card journal-theme-${opts.theme || 'danger'}">
+      <div class="journal-card journal-theme-${opts.theme || 'info'}">
         <div class="journal-top-meta">
-          <span class="journal-tag">📰 VISTAZO / NOTICIA EN DESARROLLO</span>
+          <span class="journal-tag">📰 VISTAZO / INVESTIGACIÓN AMBIENTAL</span>
           <span class="journal-date">TIERRA DEL FUEGO — ${opts.year || '1946-2026'}</span>
         </div>
         
@@ -112,17 +112,17 @@ class GameUI {
         <div class="journal-body">
           <p class="journal-lead">${opts.text}</p>
           ${opts.quote ? `<blockquote class="journal-quote">"${opts.quote}"</blockquote>` : ''}
-          ${opts.fact ? `<div class="journal-fact-box"><strong>📊 DATO CLAVE:</strong> ${opts.fact}</div>` : ''}
+          ${opts.fact ? `<div class="journal-fact-box"><strong>📊 DATO OFICIAL:</strong> ${opts.fact}</div>` : ''}
         </div>
 
         <div class="journal-footer">
-          <button class="journal-action-btn" id="btn-close-journal">CONTINUAR JUGANDO ➔</button>
+          <button class="journal-action-btn" id="btn-close-journal">CONTINUAR LECTURA ➔</button>
         </div>
       </div>
     `;
     document.getElementById('game-container').appendChild(cardEl);
 
-    // Pausar simulación mientras lee la noticia
+    // Pausar simulación durante la lectura del reportaje
     if (this.game) this.game.running = false;
 
     cardEl.querySelector('#btn-close-journal').addEventListener('click', () => {
@@ -134,7 +134,7 @@ class GameUI {
     });
   }
 
-  // ── Ventana Lateral Izquierda de Inventario ENEEI: Cabaña + Cartel ──
+  // ── Ventana Lateral Izquierda de Puesto ENEEI ──
   showCabinInventory() {
     if (document.getElementById('eneei-sidebar-panel')) return;
 
@@ -144,9 +144,9 @@ class GameUI {
       <div class="sidebar-card">
         <div class="sidebar-header">
           <span class="sidebar-icon">📜</span>
-          <h4>INVENTARIO DE CONTROL ENEEI</h4>
+          <h4>ESTRATEGIA ENEEI (ARGENTINA-CHILE)</h4>
         </div>
-        <p class="sidebar-desc">Tratado Binacional Argentina-Chile. Haz clic en los <strong>2 elementos</strong> para instalarlos en el mapa:</p>
+        <p class="sidebar-desc">Puesto de Control Binacional. Selecciona e instala la Cabaña y el Cartel Informativo en el terreno:</p>
         
         <div class="sidebar-items">
           <div class="sidebar-item" id="btn-place-cabin">
@@ -164,7 +164,7 @@ class GameUI {
               <img src="assets/cartel.png" alt="Cartel" class="sidebar-img" />
             </div>
             <div class="item-info">
-              <span class="item-title">2. Cartel Informativo</span>
+              <span class="item-title">2. Cartel Informativo ENEEI</span>
               <span class="item-status" id="status-sign">⚪ Pendiente</span>
             </div>
           </div>
@@ -198,14 +198,14 @@ class GameUI {
     }
   }
 
-  // ── Minijuego de Precisión: Captura Humanitaria de Castor ──
+  // ── Minijuego de Precisión ENEEI ──
   openPrecisionMinigame() {
     const miniEl = document.createElement('div');
     miniEl.id = 'precision-minigame-modal';
     miniEl.innerHTML = `
       <div class="modal-card precision-card">
-        <h3>🪤 MINIJUEGO DE CAPTURA PRECISA ENEEI</h3>
-        <p>Haz clic cuando la aguja indicadora pase por la <strong>ZONA VERDE</strong> para asegurar la captura del castor.</p>
+        <h3>🪤 MINIJUEGO DE CONTROL PRECISO ENEEI</h3>
+        <p>Ajusta el indicador de la trampa jaula en la <strong>ZONA VERDE</strong> para iniciar las operaciones de erradicación humanitaria.</p>
         <div class="meter-bar-container">
           <div class="meter-bar">
             <div class="meter-zone-green"></div>
@@ -213,7 +213,7 @@ class GameUI {
           </div>
         </div>
         <button class="news-btn btn-success" id="btn-precision-click" style="margin-top: 15px;">
-          🎯 Capturar Castor
+          🎯 Activar Puesto ENEEI
         </button>
       </div>
     `;
@@ -230,14 +230,6 @@ class GameUI {
     document.getElementById('btn-precision-click')?.addEventListener('click', () => {
       clearInterval(interval);
       miniEl.remove();
-      this.showEditorialNewsCard({
-        title: '🎯 ¡CAPTURA EXITOSA EN ÁREAS PILOTO!',
-        subtitle: 'Comienza la estrategia binacional de patrulla con trampas jaula y restauración de cuencas.',
-        text: 'Los guardaparques especializados inician el retiro de represas y la captura humanitaria para frenar la migración del castor hacia la Patagonia continental.',
-        fact: 'Se protegen las cuencas del río Lapataia y la Isla Navarino en Chile.',
-        theme: 'success',
-        year: '2016'
-      });
       this.game.startRangerSimulation();
     });
   }
@@ -252,13 +244,9 @@ class GameUI {
     const tFill = el('timeline-fill'), tThumb = el('timeline-thumb');
     if (tFill) tFill.style.width = (timelinePct * 100) + '%';
     if (tThumb) tThumb.style.left = (timelinePct * 100) + '%';
-
-    this._processNews();
   }
 
   showNews(opts) {
     this.showEditorialNewsCard(opts);
   }
-
-  _processNews() {}
 }

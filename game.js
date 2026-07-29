@@ -1,11 +1,7 @@
 'use strict';
 /* ============================================================
-   GAME.JS — Sistema Completo de Jugabilidad Narrativa Noticiosa
-   - Inicio: Bosque puro de Lenga alrededor del río.
-   - Acto I: Liberación de 20 Castores -> Tala -> Caída de Ramas (rama.png) -> Carga (castormadera.png) -> Diques (diquechico -> diquemedio -> diquegrande).
-   - Inundación Dinámica: Transición a map_04_bosque_inundado.jpg + Árboles Fantasma (arbolfantasma1..4.png).
-   - Acto II: Inventario y Drag-and-Drop de Cabaña (cabana.png) + Acuerdo Binacional Argentina-Chile.
-   - Acto III: Minijuego de Precisión + Simulación de Guardaparques (guardaparque.png, guardaparquejaula.png).
+   GAME.JS — Simulación Ecológica y Periodismo Representativo 100% Real
+   Basado en el reportaje especial de Vistazo & Proyecto ENEEI
    ============================================================ */
 
 const STAGES = [
@@ -52,7 +48,7 @@ class BeaverGame {
     this.beaversInventory = 20;
     this.beaversReleased = 0;
     this.cabinPlaced = false;
-    this.minigameActive = false;
+    this.signPlaced = false;
 
     this._lastTime = 0;
     this._fixedDt  = 1 / 60;
@@ -77,10 +73,11 @@ class BeaverGame {
     this.started = true;
     this.running = true;
     this.ui.showEditorialNewsCard({
-      title: '1946: 20 CASTORES EN EL FIN DEL MUNDO PARA UNA INDUSTRIA PELETERA',
-      subtitle: 'La Marina Argentina importó 20 ejemplares de Castor canadensis desde Canadá.',
-      text: 'El plan original buscaba crear un mercado de pieles en Tierra del Fuego. Sin depredadores naturales (osos/lobos) y con abundante agua pura, la especie comenzó su multiplicación imparable.',
-      fact: '80 años después, 20 castores se convirtieron en más de 100.000 a 150.000 ejemplares.',
+      title: 'EN 1946, ARGENTINA INTRODUJO 20 CASTORES PARA CREAR UNA INDUSTRIA PELETERA',
+      subtitle: 'La Marina de Guerra Argentina importó 10 parejas de Castor canadensis desde Canadá.',
+      text: 'El plan oficial buscaba desarrollar el comercio de pieles en la Patagonia. La industria nunca fructificó y los roedores fueron abandonados. Sin depredadores naturales (osos pardos o lobos), la especie comenzó su multiplicación imparable.',
+      quote: 'Lo que comenzó como un experimento económico se transformó en la mayor catástrofe biológica de los bosques subantárticos.',
+      fact: 'De 20 ejemplares en 1946 a una invasión de más de 100.000 a 150.000 castores.',
       theme: 'info',
       year: '1946'
     });
@@ -95,13 +92,13 @@ class BeaverGame {
     };
   }
 
-  // ── INICIO: Bosque nativo denso y frondoso (160+ árboles) a ambos lados del río central ──
+  // ── INICIO: Bosque nativo denso (160+ árboles) alrededor del río central ──
   _populateInitialForest() {
     this.entities = [];
     const treePositions = [];
-    const minDistance = 22; // Espaciado estrecho para formar un bosque tupido realista
+    const minDistance = 22;
 
-    // Margen Izquierdo (x: 50 - 520, y: 120 - 640) -> 80 árboles
+    // Margen Izquierdo (x: 50 - 520, y: 120 - 640)
     for (let i = 0; i < 80; i++) {
       let attempts = 0;
       while (attempts < 80) {
@@ -115,7 +112,7 @@ class BeaverGame {
       }
     }
 
-    // Margen Derecho (x: 760 - 1230, y: 120 - 640) -> 80 árboles
+    // Margen Derecho (x: 760 - 1230, y: 120 - 640)
     for (let i = 0; i < 80; i++) {
       let attempts = 0;
       while (attempts < 80) {
@@ -129,7 +126,6 @@ class BeaverGame {
       }
     }
 
-    // Instanciar árboles con variantes y escalas aleatorias para solapamiento de copas
     treePositions.forEach((spot, idx) => {
       const tree = new Tree(spot.x, spot.y, idx % 9);
       tree.scale = 0.8 + Math.random() * 0.5;
@@ -137,7 +133,7 @@ class BeaverGame {
     });
   }
 
-  // ── Liberación de los 20 Castores ──
+  // ── Liberación de los 20 Castores (1965) ──
   releaseAll20BeaversAtOnce() {
     if (this.beaversReleased >= 20) return;
 
@@ -152,21 +148,20 @@ class BeaverGame {
     this.act = 2;
 
     this.ui.showEditorialNewsCard({
-      title: '🚨 INVASIÓN EN CURSO Y TALA MASIVA DE LA LENGA',
-      subtitle: 'Los castores avanzan en 2 equipos construyendo represas colaborativas.',
-      text: 'Los roedores cortan la madera nativa con sus incisivos y arrastran las ramas hacia el cauce central. La especie alteró más del 95% de las cuencas de la isla.',
-      fact: 'El castor no tiene oponentes naturales en la Patagonia.',
+      title: '🚨 EXPANSIÓN IMPARABLE Y ALTERACIÓN DEL 95% DE LAS CUENCAS',
+      subtitle: 'Los castores construyen represas alterando la red hidrográfica de Tierra del Fuego.',
+      text: 'Los roedores talan la madera nativa con sus potentes incisivos y arrastran los troncos hacia los ríos. Sus represas detienen el flujo natural de las aguas, cruzando el Canal Beagle hasta la Isla Navarino en Chile.',
+      fact: 'El castor no tiene oponentes naturales ni depredadores en toda la Patagonia austral.',
       theme: 'warning',
       year: '1965'
     });
   }
 
-  // ── Evento: Árbol Talado -> Caen Ramas (rama.png) y se convierte en Tocón (toconjoven.png) ──
+  // ── Evento: Árbol Talado -> Soltar Rama (rama.png) y Tocón (toconjoven.png) ──
   onTreeFelled(tree, beaver) {
     tree.setState('stump_fresh');
     this.particles.burst(tree.x, tree.y - 25, 'wood', 15);
 
-    // Soltar rama en el suelo
     const log = new LogEntity(tree.x + (Math.random() - 0.5) * 15, tree.y + 5);
     this.entities.push(log);
     beaver.targetLog = log;
@@ -177,22 +172,21 @@ class BeaverGame {
     if (!this._lengaWarnShown) {
       this._lengaWarnShown = true;
       this.ui.showEditorialNewsCard({
-        title: '⚠️ LA TRAGEDIA DE LA LENGA: 200 AÑOS EN CRECER',
-        subtitle: 'A diferencia de los árboles del hemisferio norte, la Lenga NO rebota del tocón.',
-        text: 'Nothofagus pumilio tardó dos siglos en alcanzar la madurez. Al ser talada por el castor, la Lenga muere definitivamente a escala humana.',
-        quote: 'Cada árbol caído en Tierra del Fuego representa una pérdida irrecuperable para la biodiversidad.',
-        fact: 'No hubo coevolución entre los árboles patagónicos y el castor.',
+        title: '⚠️ LA BIOLOGÍA DE LA LENGA: 200 AÑOS EN CRECER Y NO REBROTA DEL TOCÓN',
+        subtitle: 'A diferencia de los bosques del Hemisferio Norte, la flora fueguina no evolucionó con el castor.',
+        text: 'Cuando un bosque nativo de Canadá o Estados Unidos es talado, los árboles rebrotan de sus raíces. Nothofagus pumilio carece de esta propiedad biológica: cada Lenga caída muere definitivamente.',
+        quote: 'Un castor derriba en pocas horas un árbol centenario que tardó dos siglos en alcanzar la madurez.',
+        fact: 'Cada árbol perdido en Tierra del Fuego es irrecuperable a escala humana.',
         theme: 'warning',
         year: '1980'
       });
     }
   }
 
-  // ── Evento: Entrega de Madera al Río -> 2 Diques Colectivos (10 Castores por Dique) ──
+  // ── Evento: Entrega de Madera al Río -> 2 Diques Colectivos ──
   onBeaverDeliveredWood(beaver) {
     this.stats.woodDelivered++;
 
-    // Asignación de Dique según el equipo del castor (Par: Dique Norte, Impar: Dique Sur)
     const isUpper = (beaver.id % 2 === 0);
     const damX = 640;
     const damY = isUpper ? 260 : 440;
@@ -207,11 +201,10 @@ class BeaverGame {
     dam.woodCount = (dam.woodCount || 0) + 1;
     this.stats.dams = this.entities.filter(e => e instanceof Dam && e.active && !e.dead).length;
 
-    // Acumulación colectiva de madera por dique: 3 entregas = Chico (1), 7 = Mediano (2), 12 = Grande (3)
     if (dam.woodCount >= 12) {
       dam.level = 3;
       dam._refreshSprite();
-      this.triggerFloodedCrisis(); // El mapa cambia ÚNICAMENTE cuando el dique es GRANDE!
+      this.triggerFloodedCrisis(); // El mapa cambia ÚNICAMENTE con Dique Grande
     } else if (dam.woodCount >= 7) {
       dam.level = 2;
       dam._refreshSprite();
@@ -221,12 +214,11 @@ class BeaverGame {
     }
   }
 
-  // ── Inundación del Mapa y Transformación de Árboles en Árboles Fantasma ──
+  // ── Inundación y Transformación a Árboles Fantasma (2005) ──
   triggerFloodedCrisis() {
     this._transitionToMap(2);
     this.stats.hectaresFlooded = 350;
 
-    // Transformar árboles sanos restantes sin talar en Árboles Fantasma (arbolfantasma1..4.png)
     this.entities.forEach(e => {
       if (e instanceof Tree && e.isHealthy) {
         e.setState('flooded');
@@ -234,21 +226,21 @@ class BeaverGame {
     });
 
     this.ui.showEditorialNewsCard({
-      title: '🌊 BOSQUES FANTASMA Y USD $66.5 MILLONES EN DAÑOS ANUALES',
-      subtitle: 'Las represas inundan el suelo, ahogan las raíces y destruyen las turberas.',
-      text: 'Más de 30.000 hectáreas de bosque nativo se han convertido en cementerios de árboles de pie. Las pérdidas económicas superan los 66.5 millones de dólares al año.',
-      fact: 'El castor inundó cuencas enteras y cruzó el Canal Beagle colonizando Chile.',
+      title: '🌊 30.000 HECTÁREAS DE BOSQUES FANTASMA Y USD $66.5 MILLONES EN DAÑOS ANUALES',
+      subtitle: 'Las represas anegan el suelo, ahogan las raíces de los árboles en pie y destruyen las turberas.',
+      text: 'El agua estancada priva de oxígeno a las raíces de los árboles que quedan en pie, secándolos y convirtiéndolos en "bosques fantasma" grises e inertes. Además, destruye las turberas patagónicas, principales captadoras de carbono del planeta.',
+      quote: 'Las pérdidas económicas anuales superan los 66.5 millones de dólares en infraestructura, ganadería y conservación.',
+      fact: 'Las inundaciones anegan puentes, carreteras y sistemas de agua potable en toda la Isla Grande.',
       theme: 'danger',
       year: '2005'
     });
 
-    // Abrir ventana lateral de inventario ENEEI
     setTimeout(() => {
       this.ui.showCabinInventory();
     }, 2500);
   }
 
-  // ── Colocación de Cabaña y Cartel -> Requisito de Ambos para Iniciar Minijuego ──
+  // ── Colocación de Cabaña y Cartel -> Proyecto Binacional ENEEI (2016) ──
   placeCabin(x, y) {
     if (this.cabinPlaced) return;
     this.cabinPlaced = true;
@@ -287,24 +279,25 @@ class BeaverGame {
       this.entities.push(cage1);
       this.entities.push(cage2);
 
-      this.ui.showNews({
-        title: '📜 ACUERDO BINACIONAL ARGENTINA-CHILE (ENEEI 2016)',
-        text: 'Se instalaron la Cabaña de Control y el Cartel Informativo. Se inicia la estrategia de erradicación humanitaria con trampas jaula y restauración de cuencas.',
-        type: 'info'
+      this.ui.showEditorialNewsCard({
+        title: '📜 ESTRATEGIA BINACIONAL ENEEI: ARGENTINA Y CHILE UNIDOS POR LA BIODIVERSIDAD',
+        subtitle: 'Con apoyo del Fondo para el Medio Ambiente Mundial (FMAM) y la FAO, se activan áreas piloto.',
+        text: 'Técnicos y guardaparques especializados instalan puestos de monitoreo y trampas jaula para erradicar focos invasores y evitar que el castor cruce a la Patagonia continental.',
+        fact: 'Es una de las iniciativas binacionales de control de especies exóticas invasoras más ambiciosas del planeta.',
+        theme: 'info',
+        year: '2016'
       });
 
-      // Abrir Minijuego de Precisión tras 1.5 segundos
       setTimeout(() => {
         this.ui.openPrecisionMinigame();
       }, 1500);
     }
   }
 
-  // ── Éxito del Minijuego -> Simulación de Guardaparques Capturando Castores ──
+  // ── Simulación de Guardaparques y Restauración de Cuencas (2026) ──
   startRangerSimulation() {
     this.act = 3;
 
-    // Simulación progresiva de captura y remoción gradual de diques
     let captureInterval = setInterval(() => {
       const beavers = this.entities.filter(e => e instanceof Beaver && !e.dead);
       if (beavers.length > 0) {
@@ -313,7 +306,6 @@ class BeaverGame {
         this.particles.burst(b.x, b.y - 15, 'leaf', 16);
         this.stats.beavers = Math.max(0, this.stats.beavers - 1);
 
-        // Deterioro progresivo del dique
         const dam = this.entities.find(e => e instanceof Dam && e.active && !e.dead);
         if (dam) {
           if (dam.level > 1) {
@@ -335,15 +327,18 @@ class BeaverGame {
     this.stats.health = 85;
     this.stats.hectaresFlooded = 0;
 
-    // Desmantelar todos los diques restantes
     this.entities.forEach(e => {
       if (e instanceof Dam) e.remove();
     });
 
-    this.ui.showNews({
-      title: '🌱 CUENCA RESTAURADA Y RENUEVOS DE LENGA',
-      text: 'Con el desmantelamiento de los diques y el control de la especie invasora, el río vuelve a fluir y el bosque patagónico comienza su recuperación.',
-      type: 'success'
+    this.ui.showEditorialNewsCard({
+      title: '🌱 DESMANTELAMIENTO DE DIQUES Y REAPARICIÓN DE LOS PRIMEROS RENUEVOS NATIVOS',
+      subtitle: 'La remoción manual de represas permite que los ríos recuperen su escurrimiento natural.',
+      text: 'Al drenarse el agua estancada, los biólogos y guardaparques reforestan activamente con plantines de Lenga nativa, frenando la invasión de pastos exóticos y devolviendo el equilibrio a la cuenca fueguina.',
+      quote: 'La restauración de un ecosistema devastado por 80 años toma décadas, pero los primeros brotes verdes marcan el retorno del equilibrio.',
+      fact: 'La recuperación de las cuencas de agua dulce permite el retorno de la fauna nativa y la fijación de carbono.',
+      theme: 'success',
+      year: '2026'
     });
   }
 
