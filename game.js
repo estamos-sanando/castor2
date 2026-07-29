@@ -113,13 +113,15 @@ class BeaverGame {
       }
     }
 
-    // Margen Derecho (x: 750 - 1240, y: 110 - 650) -> 110 árboles
+    // Margen Derecho (x: 750 - 1240, y: 110 - 650) -> 110 árboles (con claro despejado en x: 820..980, y: 450..600)
     for (let i = 0; i < 110; i++) {
       let attempts = 0;
       while (attempts < 100) {
         attempts++;
         const x = 750 + Math.random() * 490;
         const y = 110 + Math.random() * 540;
+        // Excluir zona despejada inferior derecha
+        if (x >= 820 && x <= 980 && y >= 450 && y <= 600) continue;
         if (!treePositions.some(p => Math.hypot(p.x - x, p.y - y) < minDistance)) {
           treePositions.push({ x, y });
           break;
@@ -131,6 +133,15 @@ class BeaverGame {
       const tree = new Tree(spot.x, spot.y, idx % 9);
       tree.scale = 0.8 + Math.random() * 0.5;
       this.entities.push(tree);
+    });
+  }
+
+  prepareClearingForCabin() {
+    this.showPlacementArrow = true;
+    this.entities.forEach(e => {
+      if (e instanceof Tree && e.x >= 800 && e.x <= 1000 && e.y >= 440 && e.y <= 620) {
+        e.dead = true;
+      }
     });
   }
 
@@ -272,7 +283,8 @@ class BeaverGame {
       year: '2016',
       centered: true,
       onAccept: () => {
-        // AL DAR ACEPTAR SE ABRE EL INVENTARIO DE CABAÑA Y CARTEL PARA ARRASTRAR AL MAPA!
+        // AL DAR ACEPTAR SE DESPEJA LA ZONA INFERIOR DERECHA Y SE MUESTRA LA FLECHA Y EL INVENTARIO
+        this.prepareClearingForCabin();
         this.ui.showCabinInventory();
       }
     });
@@ -301,6 +313,7 @@ class BeaverGame {
 
   checkBothItemsInstalled() {
     if (this.cabinPlaced && this.signPlaced) {
+      this.showPlacementArrow = false;
       this.ui.closeSidebarPanel();
 
       const cx = 480, cy = 320;
@@ -451,6 +464,32 @@ class BeaverGame {
     }
 
     this.particles.draw(ctx);
+
+    // Flecha animada de señalización en el claro inferior derecho (x: 900, y: 500)
+    if (this.showPlacementArrow && (!this.cabinPlaced || !this.signPlaced)) {
+      const targetX = 900, targetY = 500;
+      const bounceY = targetY - 45 + Math.sin(Date.now() * 0.006) * 10;
+
+      ctx.save();
+      ctx.strokeStyle = '#22c55e';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([6, 6]);
+      ctx.beginPath();
+      ctx.ellipse(targetX, targetY, 85, 42, 0, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = '#22c55e';
+      ctx.shadowColor = 'rgba(34, 197, 94, 0.9)';
+      ctx.shadowBlur = 16;
+      ctx.font = 'bold 36px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('⬇️', targetX, bounceY);
+
+      ctx.font = 'bold 12px Cinzel, serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText('📍 INSTALAR CABAÑA Y CARTEL AQUÍ', targetX, bounceY - 35);
+      ctx.restore();
+    }
   }
 
   _startLoop() {
