@@ -281,39 +281,50 @@ class Entity {
     const imgW = this.sprite.naturalWidth || this.sprite.width || 32;
     const imgH = this.sprite.naturalHeight || this.sprite.height || 32;
 
-    let targetW = 32;
+    let w = 32;
+    let h = 32;
+
     if (this instanceof Tree) {
       if (this.state === 'stump_fresh' || this.state === 'stump_old') {
-        targetW = 24; // Tocón: base del tronco corta proporcional al suelo (~0.5m)
+        const targetH = 22; // Tocón: altura corta sobre la superficie
+        h = Math.round(targetH * (this.scale || 1.0));
+        w = Math.round(targetH * (imgW / imgH) * (this.scale || 1.0));
       } else if (this.state === 'dead' || this.state === 'flooded') {
-        targetW = 60; // Árbol muerto / fantasma
+        const targetH = 84; // Árbol muerto / fantasma: altura alineada a copa sana (~84px)
+        h = Math.round(targetH * (this.scale || 1.0));
+        w = Math.round(targetH * (imgW / imgH) * (this.scale || 1.0));
       } else {
-        targetW = 75; // Copa de árbol sano (~15m de alto)
+        const targetH = 92; // Árbol sano: altura estándar de copa nativa (~92px)
+        h = Math.round(targetH * (this.scale || 1.0));
+        w = Math.round(targetH * (imgW / imgH) * (this.scale || 1.0));
       }
-    } else if (this instanceof Beaver) {
-      targetW = this.isSmall ? 18 : 26; // Castor (~0.8m)
-    } else if (this instanceof Ranger) {
-      targetW = 24; // Guardaparque (~1.75m)
-    } else if (this instanceof Dam) {
-      const lvl = Math.max(1, Math.min(3, this.level));
-      targetW = lvl === 1 ? 140 : (lvl === 2 ? 165 : 195); // Dique extendido de orilla a orilla del río
-    } else if (this instanceof LogEntity) {
-      targetW = 28; // Rama en el suelo
-    } else if (this instanceof Rock) {
-      targetW = (this.variant === 1 || this.variant === 2) ? 64 : 36;
-    } else if (this instanceof Bush) {
-      targetW = 26;
-    } else if (this instanceof Cage) {
-      targetW = 30;
-    } else if (this instanceof Seedling) {
-      targetW = 16;
     } else {
-      targetW = (this.sprite.width && this.sprite.width !== imgW) ? this.sprite.width : 32;
-    }
+      let targetW = 32;
+      if (this instanceof Beaver) {
+        targetW = this.isSmall ? 18 : 26;
+      } else if (this instanceof Ranger) {
+        targetW = 24;
+      } else if (this instanceof Dam) {
+        const lvl = Math.max(1, Math.min(3, this.level));
+        targetW = lvl === 1 ? 140 : (lvl === 2 ? 165 : 195);
+      } else if (this instanceof LogEntity) {
+        targetW = 28;
+      } else if (this instanceof Rock) {
+        targetW = (this.variant === 1 || this.variant === 2) ? 64 : 36;
+      } else if (this instanceof Bush) {
+        targetW = 26;
+      } else if (this instanceof Cage) {
+        targetW = 30;
+      } else if (this instanceof Seedling) {
+        targetW = 16;
+      } else {
+        targetW = (this.sprite.width && this.sprite.width !== imgW) ? this.sprite.width : 32;
+      }
 
-    const scaleFactor = (this.scale || 1.0);
-    const w = Math.round(targetW * scaleFactor);
-    const h = Math.round(targetW * (imgH / imgW) * scaleFactor);
+      const scaleFactor = (this.scale || 1.0);
+      w = Math.round(targetW * scaleFactor);
+      h = Math.round(targetW * (imgH / imgW) * scaleFactor);
+    }
 
     // ── SOMBRAS ISOMÉTRICAS REALISTAS CON PROYECCIÓN SOLAR Y OCLUSIÓN DE RAÍZ ──
     const isTree = (this instanceof Tree);
@@ -326,20 +337,20 @@ class Entity {
       const isDead = this.state === 'dead' || this.state === 'flooded';
 
       if (!isStump) {
-        // 1. SOMBRA DE COPA EXTENDIDA (Proyección isométrica suave hacia abajo-derecha)
-        const cW = Math.max(24, Math.round(w * (isDead ? 0.65 : 1.15)));
-        const cH = Math.max(10, Math.round(h * (isDead ? 0.22 : 0.35)));
+        // 1. SOMBRA DE COPA EXTENDIDA
+        const canopyScale = isDead ? 0.75 : 1.10;
+        const cW = Math.max(16, Math.round(w * canopyScale));
+        const cH = Math.max(8, Math.round(h * (isDead ? 0.22 : 0.32)));
         
-        // Offset solar realista hacia la derecha-abajo (+X, +Y)
-        const projX = centerX + Math.round(w * 0.25);
+        const projX = centerX + Math.round(w * 0.30);
         const projY = shadowBaseY + Math.round(cH * 0.22);
 
         ctx.save();
         ctx.translate(projX, projY);
-        ctx.rotate(0.26); // Inclinación isométrica natural (~15 deg)
+        ctx.rotate(0.26);
         
         const grad = ctx.createRadialGradient(0, 0, cW * 0.05, 0, 0, cW * 0.5);
-        const maxOpacity = isDead ? 0.18 : 0.34;
+        const maxOpacity = isDead ? 0.16 : 0.32;
         grad.addColorStop(0, `rgba(8, 28, 10, ${maxOpacity})`);
         grad.addColorStop(0.5, `rgba(10, 32, 12, ${maxOpacity * 0.55})`);
         grad.addColorStop(0.85, `rgba(12, 38, 15, ${maxOpacity * 0.20})`);
@@ -352,13 +363,13 @@ class Entity {
         ctx.restore();
       }
 
-      // 2. OCLUSIÓN AMBIENTAL DE LA RAÍZ / TRONCO (Punto de contacto con la tierra)
-      const rootW = Math.max(8, Math.round(w * (isStump ? 0.85 : 0.32)));
+      // 2. OCLUSIÓN AMBIENTAL DE LA RAÍZ / TRONCO (Contacto con la tierra)
+      const rootW = Math.max(8, Math.round(w * (isStump ? 0.85 : 0.40)));
       const rootH = Math.max(4, Math.round(rootW * 0.38));
       
       const rootGrad = ctx.createRadialGradient(centerX, shadowBaseY - 1, rootW * 0.05, centerX, shadowBaseY - 1, rootW * 0.5);
-      rootGrad.addColorStop(0, 'rgba(2, 14, 4, 0.62)');
-      rootGrad.addColorStop(0.7, 'rgba(4, 18, 6, 0.30)');
+      rootGrad.addColorStop(0, 'rgba(2, 14, 4, 0.60)');
+      rootGrad.addColorStop(0.7, 'rgba(4, 18, 6, 0.25)');
       rootGrad.addColorStop(1, 'rgba(4, 18, 6, 0)');
 
       ctx.fillStyle = rootGrad;
