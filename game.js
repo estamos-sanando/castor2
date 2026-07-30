@@ -277,44 +277,59 @@ class BeaverGame {
       centered: true,
       bluish: true,
       onAccept: () => {
-        // AL DAR ACEPTAR SE CAMBIA EL MAPA PROGRESIVAMENTE Y DESAPARECEN LOS TOCONES!
+        // AL DAR ACEPTAR SE CAMBIA EL MAPA PROGRESIVAMENTE Y SE DISTRIBUYEN ÁRBOLES FANTASMAS POR TODO EL MAPA
         this._transitionToMap(2); // map_04_bosque_inundado.jpg
         this.stats.hectaresFlooded = 60000;
 
-        // Eliminar tocones jóvenes y viejos
+        // Eliminar tocones y árboles existentes para redistribuir un bosque fantasma completo
         this.entities.forEach(e => {
-          if (e instanceof Tree && (e.state === 'stump_fresh' || e.state === 'stump_old')) {
+          if (e instanceof Tree) {
             e.dead = true;
           }
         });
 
-        // Dejar SOLAMENTE 5 o 6 árboles fantasmas de cada lado (izquierdo y derecho)
-        // variando con todos los assets de árbol fantasma (arbolfantasma, 1, 2, 3, 4)
-        const leftTrees = this.entities.filter(e => e instanceof Tree && e.isHealthy && e.x < 640);
-        const rightTrees = this.entities.filter(e => e instanceof Tree && e.x >= 640);
+        // Crear una distribución amplia y pareja de Árboles Fantasmas a ambos lados del mapa
+        const ghostSpots = [];
+        const minDistance = 35;
 
-        leftTrees.sort(() => Math.random() - 0.5);
-        rightTrees.sort(() => Math.random() - 0.5);
-
-        const countLeft = Math.min(leftTrees.length, 10 + Math.floor(Math.random() * 3)); // 10 a 12 árboles fantasmas
-        const countRight = Math.min(rightTrees.length, 10 + Math.floor(Math.random() * 3)); // 10 a 12 árboles fantasmas
-
-        leftTrees.forEach((t, idx) => {
-          if (idx < countLeft) {
-            t.ghostVariant = idx % 5;
-            t.setState('flooded');
-          } else {
-            t.dead = true;
+        // Margen Izquierdo: 18-22 árboles fantasmas distribuidos (x: 50..520, y: 110..650)
+        const targetLeftCount = 18 + Math.floor(Math.random() * 5);
+        for (let i = 0; i < targetLeftCount; i++) {
+          let attempts = 0;
+          while (attempts < 100) {
+            attempts++;
+            const x = 50 + Math.random() * 470;
+            const y = 110 + Math.random() * 540;
+            if (!ghostSpots.some(p => Math.hypot(p.x - x, p.y - y) < minDistance)) {
+              ghostSpots.push({ x, y });
+              break;
+            }
           }
-        });
+        }
 
-        rightTrees.forEach((t, idx) => {
-          if (idx < countRight) {
-            t.ghostVariant = (idx + 2) % 5;
-            t.setState('flooded');
-          } else {
-            t.dead = true;
+        // Margen Derecho: 18-22 árboles fantasmas distribuidos (x: 750..1230, y: 110..650)
+        const targetRightCount = 18 + Math.floor(Math.random() * 5);
+        for (let i = 0; i < targetRightCount; i++) {
+          let attempts = 0;
+          while (attempts < 100) {
+            attempts++;
+            const x = 750 + Math.random() * 480;
+            const y = 110 + Math.random() * 540;
+            if (x >= 820 && x <= 980 && y >= 450 && y <= 600) continue; // Zona de la cabaña
+            if (!ghostSpots.some(p => Math.hypot(p.x - x, p.y - y) < minDistance)) {
+              ghostSpots.push({ x, y });
+              break;
+            }
           }
+        }
+
+        // Instanciar los Árboles Fantasmas distribuidos usando las 5 variantes
+        ghostSpots.forEach((spot, idx) => {
+          const ghostTree = new Tree(spot.x, spot.y, idx % 9);
+          ghostTree.ghostVariant = idx % 5;
+          ghostTree.scale = 0.8 + Math.random() * 0.45;
+          ghostTree.setState('flooded');
+          this.entities.push(ghostTree);
         });
 
         // Mostrar la ventana de la Estrategia Binacional ANTES de abrir el inventario
