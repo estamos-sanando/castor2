@@ -78,6 +78,7 @@ class BeaverGame {
       subtitle: 'La Marina de Guerra Argentina importó 10 parejas de Castor canadensis desde Canadá.',
       text: 'El plan oficial buscaba desarrollar el comercio de pieles en la Patagonia. La industria nunca fructificó y los roedores fueron abandonados. Sin depredadores naturales (osos pardos o lobos), la especie comenzó su multiplicación imparable.',
       quote: 'Lo que comenzó como un experimento económico se transformó en la mayor catástrofe biológica de los bosques subantárticos.',
+      fact: 'De 20 ejemplares en 1946 a una invasión de más de 100.000 a 150.000 castores.',
       theme: 'info',
       year: '1946'
     });
@@ -245,7 +246,6 @@ class BeaverGame {
         title: 'CONSTRUCCIÓN DEL DIQUE CHICO Y MULTIPLICACIÓN POBLACIONAL',
         subtitle: 'Los castores completan su primer dique alterando la red hidrográfica de Tierra del Fuego.',
         text: 'Los roedores talan la madera nativa con sus potentes incisivos y arrastran los troncos hacia los ríos. Sus represas detienen el flujo natural de las aguas, permitiendo una rápida expansión.',
-        fact: 'De 20 ejemplares en 1946 a una invasión de más de 100.000 a 150.000 castores.',
         theme: 'warning',
         year: '1965'
       });
