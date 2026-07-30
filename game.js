@@ -49,6 +49,8 @@ class BeaverGame {
     this.beaversReleased = 0;
     this.cabinPlaced = false;
     this.signPlaced = false;
+    this.cagePlaced = false;
+    this.playerCage = null;
     this.speedMultiplier = 1.0;
 
     this._lastTime = 0;
@@ -58,6 +60,44 @@ class BeaverGame {
     this._preloadMaps();
     this._populateInitialForest();
     this._startLoop();
+
+    setTimeout(() => {
+      const canvas = document.getElementById('game-canvas');
+      if (canvas) {
+        canvas.addEventListener('click', (e) => {
+          if (this.playerCage && this.playerCage.glowing) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = 1280 / rect.width;
+            const scaleY = 720 / rect.height;
+            const clickX = (e.clientX - rect.left) * scaleX;
+            const clickY = (e.clientY - rect.top) * scaleY;
+
+            if (Math.hypot(clickX - this.playerCage.x, clickY - (this.playerCage.y - 10)) < 55) {
+              this.playerCage.glowing = false;
+              this.onPlayerCageClicked();
+            }
+          }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+          if (this.playerCage && this.playerCage.glowing) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = 1280 / rect.width;
+            const scaleY = 720 / rect.height;
+            const mouseX = (e.clientX - rect.left) * scaleX;
+            const mouseY = (e.clientY - rect.top) * scaleY;
+
+            if (Math.hypot(mouseX - this.playerCage.x, mouseY - (this.playerCage.y - 10)) < 55) {
+              canvas.style.cursor = 'pointer';
+              return;
+            }
+          }
+          if (!window.ISO_ENGINE || !window.ISO_ENGINE.camera || !window.ISO_ENGINE.camera.isDragging) {
+            canvas.style.cursor = 'default';
+          }
+        });
+      }
+    }, 100);
   }
 
   _preloadMaps() {
@@ -355,7 +395,7 @@ class BeaverGame {
     });
   }
 
-  // ── Colocación de Cabaña y Cartel -> Proyecto Binacional ENEEI ──
+  // ── Colocación de Cabaña, Cartel y Trampa Jaula -> Proyecto Binacional ENEEI ──
   placeCabin(x, y) {
     if (this.cabinPlaced) return;
     this.cabinPlaced = true;
@@ -364,7 +404,7 @@ class BeaverGame {
     cabin.scale = 1.4;
     this.entities.push(cabin);
     this.particles.burst(x, y - 20, 'wood', 14);
-    this.checkBothItemsInstalled();
+    this.checkAllThreeItemsInstalled();
   }
 
   placeSign(x, y) {
@@ -374,38 +414,58 @@ class BeaverGame {
     sign.scale = 1.2;
     this.entities.push(sign);
     this.particles.burst(x, y - 15, 'wood', 10);
-    this.checkBothItemsInstalled();
+    this.checkAllThreeItemsInstalled();
   }
 
-  checkBothItemsInstalled() {
-    if (this.cabinPlaced && this.signPlaced) {
+  placeCage(x, y) {
+    if (this.cagePlaced) return;
+    this.cagePlaced = true;
+    const cage = new Cage(x, y);
+    cage.glowing = false;
+    this.playerCage = cage;
+    this.entities.push(cage);
+    this.particles.burst(x, y - 10, 'wood', 12);
+    this.checkAllThreeItemsInstalled();
+  }
+
+  checkAllThreeItemsInstalled() {
+    if (this.cabinPlaced && this.signPlaced && this.cagePlaced) {
       this.showPlacementArrow = false;
       this.ui.closeSidebarPanel();
 
-      // Los guardaparques emergen directamente desde la posición de la Cabaña
-      const cx = this.cabinPos ? this.cabinPos.x : 900;
-      const cy = this.cabinPos ? this.cabinPos.y : 500;
+      if (this.playerCage) {
+        this.playerCage.glowing = true;
+      }
 
-      // Ráfaga visual en la puerta de la cabaña
-      this.particles.burst(cx, cy - 10, 'leaf', 18);
-
-      const ranger1 = new Ranger(cx, cy);
-      ranger1.setPatrol([{ x: cx, y: cy }, { x: 620, y: 320 }, { x: 480, y: 300 }, { x: cx, y: cy }]);
-      this.entities.push(ranger1);
-
-      const ranger2 = new Ranger(cx, cy);
-      ranger2.setPatrol([{ x: cx, y: cy }, { x: 640, y: 440 }, { x: 520, y: 420 }, { x: cx, y: cy }]);
-      this.entities.push(ranger2);
-
-      const cage1 = new Cage(610, 300);
-      const cage2 = new Cage(650, 420);
-      this.entities.push(cage1);
-      this.entities.push(cage2);
-
-      // Iniciar simulación y abrir minijuego de captura a 60 FPS
-      this.startRangerSimulation();
-      this.ui.openBeaverCatcherMinigame();
+      this.ui.showEditorialNewsCard({
+        title: '¡PUESTO DE CONTROL ENEEI INSTALADO!',
+        subtitle: 'Cabaña, Cartel y Trampa Jaula desplegados en el área de monitoreo.',
+        text: 'Haz clic sobre la <strong>Trampa Jaula</strong> (que parpadea en verde/dorado en el terreno) para iniciar las labores de captura y monitoreo de castores.',
+        theme: 'info',
+        year: '2016'
+      });
     }
+  }
+
+  onPlayerCageClicked() {
+    const cx = this.cabinPos ? this.cabinPos.x : 900;
+    const cy = this.cabinPos ? this.cabinPos.y : 500;
+
+    this.particles.burst(cx, cy - 10, 'leaf', 18);
+    if (this.playerCage) {
+      this.particles.burst(this.playerCage.x, this.playerCage.y - 10, 'wood', 18);
+    }
+
+    const ranger1 = new Ranger(cx, cy);
+    ranger1.setPatrol([{ x: cx, y: cy }, { x: 620, y: 320 }, { x: 480, y: 300 }, { x: cx, y: cy }]);
+    this.entities.push(ranger1);
+
+    const ranger2 = new Ranger(cx, cy);
+    ranger2.setPatrol([{ x: cx, y: cy }, { x: 640, y: 440 }, { x: 520, y: 420 }, { x: cx, y: cy }]);
+    this.entities.push(ranger2);
+
+    this.startRangerSimulation();
+    this.ui.openBeaverCatcherMinigame();
   }
 
   // ── Simulación de Guardaparques y Captura Interactiva ──

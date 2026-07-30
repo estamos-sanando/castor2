@@ -239,7 +239,7 @@ class GameUI {
         <div class="sidebar-header">
           <h4>PUESTO DE CONTROL ENEEI</h4>
         </div>
-        <p class="sidebar-desc"><strong>ARRASTRA Y SUELTA</strong> la Cabaña y el Cartel en la zona del terreno donde quieras instalarlos:</p>
+        <p class="sidebar-desc"><strong>ARRASTRA Y SUELTA</strong> los 3 elementos en el terreno para instalarlos:</p>
         
         <div class="sidebar-items">
           <div class="sidebar-item draggable-item" id="item-cabin" draggable="true" data-type="cabin">
@@ -261,6 +261,16 @@ class GameUI {
               <span class="item-status" id="status-sign">Arrastrar o Clic</span>
             </div>
           </div>
+
+          <div class="sidebar-item draggable-item" id="item-cage" draggable="true" data-type="cage">
+            <div class="item-preview">
+              <img src="assets/Jaulacastor.png" alt="Trampa Jaula" class="sidebar-img" />
+            </div>
+            <div class="item-info">
+              <span class="item-title">3. Trampa Jaula</span>
+              <span class="item-status" id="status-cage">Arrastrar o Clic</span>
+            </div>
+          </div>
         </div>
       </div>
     `;
@@ -275,6 +285,7 @@ class GameUI {
 
     const cabinItem = document.getElementById('item-cabin');
     const signItem = document.getElementById('item-sign');
+    const cageItem = document.getElementById('item-cage');
 
     const getCanvasCoords = (clientX, clientY) => {
       const rect = canvas.getBoundingClientRect();
@@ -285,12 +296,14 @@ class GameUI {
       return { x: Math.max(60, Math.min(1220, x)), y: Math.max(100, Math.min(670, y)) };
     };
 
-    [cabinItem, signItem].forEach(item => {
+    [cabinItem, signItem, cageItem].forEach(item => {
       if (!item) return;
 
       item.addEventListener('dragstart', (e) => {
         const type = item.getAttribute('data-type');
-        if ((type === 'cabin' && this.game.cabinPlaced) || (type === 'sign' && this.game.signPlaced)) {
+        if ((type === 'cabin' && this.game.cabinPlaced) ||
+            (type === 'sign' && this.game.signPlaced) ||
+            (type === 'cage' && this.game.cagePlaced)) {
           e.preventDefault();
           return;
         }
@@ -324,17 +337,27 @@ class GameUI {
           statusSign.style.color = '#22c55e';
         }
         signItem?.classList.add('installed');
+      } else if (type === 'cage' && !this.game.cagePlaced) {
+        this.game.placeCage(coords.x, coords.y);
+        const statusCage = document.getElementById('status-cage');
+        if (statusCage) {
+          statusCage.textContent = 'Instalado';
+          statusCage.style.color = '#22c55e';
+        }
+        cageItem?.classList.add('installed');
       }
     });
 
     let activeType = null;
 
-    [cabinItem, signItem].forEach(item => {
+    [cabinItem, signItem, cageItem].forEach(item => {
       if (!item) return;
 
       item.addEventListener('click', () => {
         const type = item.getAttribute('data-type');
-        if ((type === 'cabin' && this.game.cabinPlaced) || (type === 'sign' && this.game.signPlaced)) return;
+        if ((type === 'cabin' && this.game.cabinPlaced) ||
+            (type === 'sign' && this.game.signPlaced) ||
+            (type === 'cage' && this.game.cagePlaced)) return;
 
         if (activeType === type) {
           activeType = null;
@@ -342,10 +365,12 @@ class GameUI {
           item.style.background = 'rgba(255, 255, 255, 0.06)';
         } else {
           activeType = type;
-          cabinItem.style.borderColor = 'rgba(212, 175, 55, 0.6)';
-          signItem.style.borderColor = 'rgba(212, 175, 55, 0.6)';
-          cabinItem.style.background = 'rgba(255, 255, 255, 0.06)';
-          signItem.style.background = 'rgba(255, 255, 255, 0.06)';
+          [cabinItem, signItem, cageItem].forEach(i => {
+            if (i) {
+              i.style.borderColor = 'rgba(212, 175, 55, 0.6)';
+              i.style.background = 'rgba(255, 255, 255, 0.06)';
+            }
+          });
 
           item.style.borderColor = '#22c55e';
           item.style.background = 'rgba(34, 197, 94, 0.2)';
@@ -374,6 +399,15 @@ class GameUI {
           statusSign.style.color = '#22c55e';
         }
         signItem?.classList.add('installed');
+        activeType = null;
+      } else if (activeType === 'cage' && !this.game.cagePlaced) {
+        this.game.placeCage(coords.x, coords.y);
+        const statusCage = document.getElementById('status-cage');
+        if (statusCage) {
+          statusCage.textContent = 'Instalado';
+          statusCage.style.color = '#22c55e';
+        }
+        cageItem?.classList.add('installed');
         activeType = null;
       }
     });
@@ -593,6 +627,8 @@ class GameUI {
     `;
     document.getElementById('game-container').appendChild(overlay);
 
+    const API_URL = 'https://jsonblob.com/api/jsonBlob/019fb1cb-2a65-7ffe-853b-000ca0154f88';
+
     const defaultList = [
       { name: 'ENE', score: 1400 },
       { name: 'FAO', score: 1100 },
@@ -600,16 +636,29 @@ class GameUI {
       { name: 'TDF', score: 600 }
     ];
 
-    const loadAndRenderLeaderboard = () => {
-      let saved = localStorage.getItem('castor_arcade_highscores_v2');
-      let scores = saved ? JSON.parse(saved) : defaultList;
+    const loadAndRenderLeaderboard = async () => {
+      const tableEl = document.getElementById('leaderboard-table-content');
+      let scores = defaultList;
+
+      try {
+        const res = await fetch(API_URL);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            scores = data;
+          }
+        }
+      } catch (err) {
+        console.warn('Usando respaldo local para tabla global:', err);
+        let saved = localStorage.getItem('castor_arcade_highscores_v2');
+        if (saved) scores = JSON.parse(saved);
+      }
 
       scores.sort((a, b) => b.score - a.score);
-      const top5 = scores.slice(0, 5);
+      const top8 = scores.slice(0, 8);
 
-      const tableEl = document.getElementById('leaderboard-table-content');
       if (tableEl) {
-        tableEl.innerHTML = top5.map((entry, idx) => {
+        tableEl.innerHTML = top8.map((entry, idx) => {
           const isPlayer = entry.score === finalScore;
           return `
             <div class="leaderboard-row ${isPlayer ? 'player-row' : ''}">
@@ -624,25 +673,43 @@ class GameUI {
 
     loadAndRenderLeaderboard();
 
-    document.getElementById('btn-save-score')?.addEventListener('click', () => {
+    document.getElementById('btn-save-score')?.addEventListener('click', async () => {
       const inputEl = document.getElementById('arcade-initials-input');
       const initials = (inputEl?.value || 'AAA').toUpperCase().slice(0, 3);
+      const btn = document.getElementById('btn-save-score');
+      if (btn) btn.disabled = true;
 
-      let saved = localStorage.getItem('castor_arcade_highscores_v2');
-      let scores = saved ? JSON.parse(saved) : defaultList;
+      let scores = defaultList;
+      try {
+        const res = await fetch(API_URL);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data)) scores = data;
+        }
+      } catch (e) {}
 
       scores.push({ name: initials, score: finalScore });
       scores.sort((a, b) => b.score - a.score);
 
       try {
+        await fetch(API_URL, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(scores)
+        });
+      } catch (e) {
+        console.warn('Error publicando en la nube:', e);
+      }
+
+      try {
         localStorage.setItem('castor_arcade_highscores_v2', JSON.stringify(scores));
       } catch(e) {}
 
-      loadAndRenderLeaderboard();
+      await loadAndRenderLeaderboard();
 
       const entryBox = document.querySelector('.arcade-name-entry-box');
       if (entryBox) {
-        entryBox.innerHTML = `<div class="score-saved-badge">¡HIGH SCORE REGISTRADO COMO <strong>${initials}</strong>!</div>`;
+        entryBox.innerHTML = `<div class="score-saved-badge">¡HIGH SCORE PUBLICADO GLOBALMENTE COMO <strong>${initials}</strong>!</div>`;
       }
 
       const closeBtn = document.getElementById('btn-close-leaderboard');

@@ -63,6 +63,7 @@ const ASSET_MANIFEST = {
   ranger_idle: 'assets/guardaparque.png',
   ranger_walk: 'assets/guardaparque.png',
   ranger_trap: 'assets/guardaparquejaula.png',
+  cage_trap:   'assets/Jaulacastor.png',
 
   scientist_idle:      'assets/guardaparque.png',
   scientist_walk:      'assets/guardaparque.png',
@@ -233,7 +234,7 @@ class SpritePainter {
   }
 
   static cage_sprite() {
-    const realImg = getLoadedImg('ranger_trap') || getLoadedImg('ranger_idle');
+    const realImg = getLoadedImg('cage_trap') || getLoadedImg('ranger_trap') || getLoadedImg('ranger_idle');
     return realImg || this._emptyCanvas(32, 24);
   }
 
@@ -588,6 +589,7 @@ class Cage extends Entity {
     this.captureRadius = 45;
     this.captured = false;
     this.captureFlash = 0;
+    this.glowing = false;
     this.baseY = y;
   }
 
@@ -609,6 +611,29 @@ class Cage extends Entity {
   }
 
   draw(ctx) {
+    if (this.glowing) {
+      const pulse = 0.5 + 0.5 * Math.sin(Date.now() * 0.006);
+      ctx.save();
+      
+      const grad = ctx.createRadialGradient(this.x, this.y - 10, 2, this.x, this.y - 10, 32 + pulse * 12);
+      grad.addColorStop(0, `rgba(34, 197, 94, ${0.75 + pulse * 0.25})`);
+      grad.addColorStop(0.5, `rgba(34, 197, 94, ${0.35 + pulse * 0.2})`);
+      grad.addColorStop(1, 'rgba(34, 197, 94, 0)');
+      
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y - 10, 34 + pulse * 12, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = `rgba(255, 215, 0, ${0.7 + pulse * 0.3})`;
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = '#22c55e';
+      ctx.shadowBlur = 12 + pulse * 10;
+      ctx.beginPath();
+      ctx.ellipse(this.x, this.y - 10, 24 + pulse * 4, 15 + pulse * 3, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
     super.draw(ctx);
   }
 }

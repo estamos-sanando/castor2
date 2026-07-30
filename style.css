@@ -565,12 +565,13 @@ html, body {
   transition: all 0.2s ease;
 }
 
-/* ── MINIJUEGO DE CAPTURA DE 30 SEGUNDOS (LADO IZQUIERDO) ── */
+/* ── MINIJUEGO DE CAPTURA DE 30 SEGUNDOS (LADO IZQUIERDO CENTRALIZADO) ── */
 #beaver-catcher-panel {
   position: absolute;
-  top: 30px;
-  left: 24px;
-  width: 290px;
+  top: 50%;
+  left: 45px;
+  transform: translateY(-50%);
+  width: 320px;
   z-index: 180;
   animation: slideInLeft 0.4s cubic-bezier(0.17, 0.67, 0.36, 1.2);
 }
