@@ -2033,7 +2033,7 @@ class EntitySystem {
       ctx.translate(ent.x, ent.y + bob);
 
       if (ent.type === 'beaver') {
-        const inWater = (ent.x >= 580 && ent.x <= 700 && ent.y >= 80 && ent.y <= 680);
+        const inWater = (ent.x >= 612 && ent.x <= 668 && ent.y >= 70 && ent.y <= 680);
         const key = inWater ? 'beaver_swim' : (ent.action === 'cut' ? 'beaver_cut' : (ent.action === 'carry' ? 'beaver_carry' : 'beaver_idle'));
         const sp = sprites[key] || sprites['beaver_idle'];
         if (sp) {
