@@ -2219,7 +2219,7 @@ class BeaverGame {
   _buildSprites() {
     // Pre-render all sprites into cached canvases (GPU-blittable)
     this.sprites['beaver_idle']      = SpritePainter.beaver(80, 'idle');
-    this.sprites['beaver_swim']      = SpritePainter.beaver(80, 'swim');
+    this.sprites['beaver_swim']      = SpritePainter.beaver(120, 'swim');
     this.sprites['beaver_cut']       = SpritePainter.beaver(80, 'cut');
     this.sprites['beaver_carry']     = SpritePainter.beaver(80, 'carry');
     this.sprites['beaver_celebrate'] = SpritePainter.beaver_celebrate(60);
