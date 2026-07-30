@@ -78,7 +78,6 @@ class BeaverGame {
       subtitle: 'La Marina de Guerra Argentina importó 10 parejas de Castor canadensis desde Canadá.',
       text: 'El plan oficial buscaba desarrollar el comercio de pieles en la Patagonia. La industria nunca fructificó y los roedores fueron abandonados. Sin depredadores naturales (osos pardos o lobos), la especie comenzó su multiplicación imparable.',
       quote: 'Lo que comenzó como un experimento económico se transformó en la mayor catástrofe biológica de los bosques subantárticos.',
-      fact: 'De 20 ejemplares en 1946 a una invasión de más de 100.000 a 150.000 castores.',
       theme: 'info',
       year: '1946'
     });
@@ -238,9 +237,28 @@ class BeaverGame {
     const activeDams = this.entities.filter(e => e instanceof Dam && e.active && !e.dead);
     const damsLevel3 = activeDams.filter(e => e.level === 3);
 
-    // Cambio progresivo de mapa al avanzar la construcción de diques
-    if (activeDams.some(d => d.level >= 2) && this.currentMap === 0) {
-      this._transitionToMap(1); // Transición suave a map_02_primer_deterioro.jpg
+    // Al completar el primer Dique Chico (nivel 1), mostrar DATO DESTACADO y multiplicar x1 castores (solo recorren)
+    if (activeDams.some(d => d.level >= 1) && !this.diqueChicoTriggered) {
+      this.diqueChicoTriggered = true;
+
+      this.ui.showEditorialNewsCard({
+        title: 'CONSTRUCCIÓN DEL DIQUE CHICO Y MULTIPLICACIÓN POBLACIONAL',
+        subtitle: 'Los castores completan su primer dique alterando la red hidrográfica de Tierra del Fuego.',
+        text: 'Los roedores talan la madera nativa con sus potentes incisivos y arrastran los troncos hacia los ríos. Sus represas detienen el flujo natural de las aguas, permitiendo una rápida expansión.',
+        fact: 'De 20 ejemplares en 1946 a una invasión de más de 100.000 a 150.000 castores.',
+        theme: 'warning',
+        year: '1965'
+      });
+
+      // Multiplicar x1 todos los castores actuales (los nuevos solo recorren el mapa)
+      const currentBeavers = this.entities.filter(e => e instanceof Beaver && !e.dead && !e.captured);
+      currentBeavers.forEach(b => {
+        const bNew = new Beaver(b.x + (Math.random() - 0.5) * 40, b.y + (Math.random() - 0.5) * 40, b.isSmall);
+        bNew.wanderOnly = true; // No talan árboles, solo recorren el mapa
+        this.entities.push(bNew);
+      });
+
+      this.stats.beavers = this.entities.filter(e => e instanceof Beaver && !e.dead && !e.captured).length;
     }
 
     if (activeDams.length >= 2 && damsLevel3.length >= 2 && !this.floodedTriggered) {
@@ -266,14 +284,39 @@ class BeaverGame {
         this._transitionToMap(2); // map_04_bosque_inundado.jpg
         this.stats.hectaresFlooded = 60000;
 
-        // Eliminar tocones jóvenes y viejos y convertir árboles en Árboles Fantasma
+        // Eliminar tocones jóvenes y viejos
         this.entities.forEach(e => {
-          if (e instanceof Tree) {
-            if (e.state === 'stump_fresh' || e.state === 'stump_old') {
-              e.dead = true;
-            } else if (e.isHealthy) {
-              e.setState('flooded');
-            }
+          if (e instanceof Tree && (e.state === 'stump_fresh' || e.state === 'stump_old')) {
+            e.dead = true;
+          }
+        });
+
+        // Dejar SOLAMENTE 5 o 6 árboles fantasmas de cada lado (izquierdo y derecho)
+        // variando con todos los assets de árbol fantasma (arbolfantasma, 1, 2, 3, 4)
+        const leftTrees = this.entities.filter(e => e instanceof Tree && e.isHealthy && e.x < 640);
+        const rightTrees = this.entities.filter(e => e instanceof Tree && e.x >= 640);
+
+        leftTrees.sort(() => Math.random() - 0.5);
+        rightTrees.sort(() => Math.random() - 0.5);
+
+        const countLeft = Math.min(leftTrees.length, 5 + Math.floor(Math.random() * 2)); // 5 o 6
+        const countRight = Math.min(rightTrees.length, 5 + Math.floor(Math.random() * 2)); // 5 o 6
+
+        leftTrees.forEach((t, idx) => {
+          if (idx < countLeft) {
+            t.ghostVariant = idx % 5;
+            t.setState('flooded');
+          } else {
+            t.dead = true;
+          }
+        });
+
+        rightTrees.forEach((t, idx) => {
+          if (idx < countRight) {
+            t.ghostVariant = (idx + 2) % 5;
+            t.setState('flooded');
+          } else {
+            t.dead = true;
           }
         });
 

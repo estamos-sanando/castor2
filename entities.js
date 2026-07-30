@@ -191,14 +191,15 @@ class SpritePainter {
     return realImg || this.tree_healthy(variant);
   }
 
-  static tree_dead() {
-    const realImg = getLoadedImg('tree_dead_1') || getLoadedImg('tree_dead_2') || getLoadedImg('tree_dead_3');
+  static tree_dead(variant = 0) {
+    const keys = ['tree_dead_1', 'tree_dead_2', 'tree_dead_3', 'tree_flooded_1', 'tree_flooded_2'];
+    const key = keys[variant % keys.length];
+    const realImg = getLoadedImg(key) || getLoadedImg('tree_dead_1');
     return realImg || this._emptyCanvas(60, 75);
   }
 
-  static tree_flooded() {
-    const realImg = getLoadedImg('tree_flooded_1') || getLoadedImg('tree_flooded_2');
-    return realImg || this._emptyCanvas(64, 78);
+  static tree_flooded(variant = 0) {
+    return this.tree_dead(variant);
   }
 
   static stump(age = 'fresh') {
@@ -445,8 +446,8 @@ class Tree extends Entity {
         this.sprite = this.being_cut ? SpritePainter.tree_chewed(this.variant) : SpritePainter.tree_healthy(this.variant);
         break;
       case 'chewed':      this.sprite = SpritePainter.tree_chewed(this.variant); break;
-      case 'dead':        this.sprite = SpritePainter.tree_dead(); break;
-      case 'flooded':     this.sprite = SpritePainter.tree_flooded(); break;
+      case 'dead':        this.sprite = SpritePainter.tree_dead(this.ghostVariant !== undefined ? this.ghostVariant : this.variant); break;
+      case 'flooded':     this.sprite = SpritePainter.tree_flooded(this.ghostVariant !== undefined ? this.ghostVariant : this.variant); break;
       case 'stump_fresh': this.sprite = SpritePainter.stump('fresh'); break;
       case 'stump_old':   this.sprite = SpritePainter.stump('old'); break;
     }
@@ -676,6 +677,7 @@ class Beaver extends Entity {
     super(x, y);
     this.isSmall = isSmall;
     this.captured = false;
+    this.wanderOnly = false;
     this.state = 'idle';
     this.action = 'idle';
     this.speed = isSmall ? 16 : 22;
@@ -716,7 +718,7 @@ class Beaver extends Entity {
       }
     }
 
-    // El cauce de agua azul del río se ubica estrictamente entre x = 612 y x = 668
+    // El cauce de agua azul del río se ubica strictly entre x = 612 y x = 668
     return (this.x >= 612 && this.x <= 668 && this.y >= 70 && this.y <= 680);
   }
 
@@ -731,15 +733,19 @@ class Beaver extends Entity {
     }
 
     if (game && game.act >= 2) {
-      switch (this.state) {
-        case 'idle':       this._doIdle(dt, game); break;
-        case 'search':     this._doSearch(dt, game); break;
-        case 'walk_tree':  this._doWalkTo(dt, this.targetX, this.targetY, 'cut'); break;
-        case 'cut':        this._doCut(dt, game); break;
-        case 'walk_log':   this._doWalkTo(dt, this.targetX, this.targetY, 'carry_log'); break;
-        case 'carry_log':  this._doCarryLog(dt, game); break;
-        case 'walk_river': this._doWalkTo(dt, this.targetX, this.targetY, 'build'); break;
-        case 'build':      this._doBuild(dt, game); break;
+      if (this.wanderOnly) {
+        this._doIdle(dt, game);
+      } else {
+        switch (this.state) {
+          case 'idle':       this._doIdle(dt, game); break;
+          case 'search':     this._doSearch(dt, game); break;
+          case 'walk_tree':  this._doWalkTo(dt, this.targetX, this.targetY, 'cut'); break;
+          case 'cut':        this._doCut(dt, game); break;
+          case 'walk_log':   this._doWalkTo(dt, this.targetX, this.targetY, 'carry_log'); break;
+          case 'carry_log':  this._doCarryLog(dt, game); break;
+          case 'walk_river': this._doWalkTo(dt, this.targetX, this.targetY, 'build'); break;
+          case 'build':      this._doBuild(dt, game); break;
+        }
       }
     }
 
@@ -756,15 +762,20 @@ class Beaver extends Entity {
     this.idleTimer -= dt;
     this.wanderTimer -= dt;
     if (this.wanderTimer <= 0) {
-      this.targetX = this.x + (Math.random() - 0.5) * 80;
-      this.targetY = this.y + (Math.random() - 0.5) * 50;
+      this.targetX = Math.max(50, Math.min(1230, this.x + (Math.random() - 0.5) * 120));
+      this.targetY = Math.max(100, Math.min(660, this.y + (Math.random() - 0.5) * 80));
       this.wanderTimer = 2 + Math.random() * 2;
       this.action = 'walk';
     }
     this._moveTo(this.targetX, this.targetY, dt, 18);
     if (this.idleTimer <= 0) {
-      this.state = 'search';
-      this.idleTimer = 2 + Math.random() * 2;
+      if (this.wanderOnly) {
+        this.idleTimer = 1 + Math.random() * 2;
+        this.state = 'idle';
+      } else {
+        this.state = 'search';
+        this.idleTimer = 2 + Math.random() * 2;
+      }
     }
   }
 
