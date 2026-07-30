@@ -100,7 +100,7 @@ class SpritePainter {
   }
 
   // Beaver: 0.35x Tile Height (~28x20px)
-  static beaver(size = 42, action = 'idle') {
+  static beaver(size = 28, action = 'idle') {
     const key = `beaver_${action}`;
     const realImg = getLoadedImg(key) || getLoadedImg('beaver_idle');
     if (realImg) {
@@ -112,7 +112,7 @@ class SpritePainter {
     return this._emptyCanvas(size, size);
   }
 
-  static beaver_small(size = 24, action = 'idle') {
+  static beaver_small(size = 18, action = 'idle') {
     const key = action === 'swim' ? 'beaver_small_swim' : `beaver_small_${action}`;
     const realImg = getLoadedImg(key) || getLoadedImg('beaver_small_idle');
     if (realImg) {
@@ -151,13 +151,13 @@ class SpritePainter {
 
   // Trees: 2.2x - 2.8x Tile Height (~75x85px)
   // Beaver: 0.35x Tile Height (~28x20px)
-  static beaver(size = 42, action = 'idle') {
+  static beaver(size = 28, action = 'idle') {
     const key = `beaver_${action}`;
     const realImg = getLoadedImg(key) || getLoadedImg('beaver_idle');
     return realImg || this._emptyCanvas(size, size);
   }
 
-  static beaver_small(size = 24, action = 'idle') {
+  static beaver_small(size = 18, action = 'idle') {
     const key = action === 'swim' ? 'beaver_small_swim' : `beaver_small_${action}`;
     const realImg = getLoadedImg(key) || getLoadedImg('beaver_small_idle');
     return realImg || this._emptyCanvas(size, size);
@@ -307,9 +307,9 @@ class Entity {
       let targetW = 32;
       if (this instanceof Beaver) {
         if (this.action === 'swim' || (this.sprite && this.sprite.src && this.sprite.src.includes('castornadando'))) {
-          targetW = this.isSmall ? 38 : 62;
+          targetW = this.isSmall ? 26 : 41;
         } else {
-          targetW = this.isSmall ? 24 : 42;
+          targetW = this.isSmall ? 18 : 28;
         }
       } else if (this instanceof Ranger) {
         targetW = 24;
@@ -698,9 +698,9 @@ class Beaver extends Entity {
 
   _refreshSprite() {
     if (this.isSmall) {
-      this.sprite = SpritePainter.beaver_small(24, this.action);
+      this.sprite = SpritePainter.beaver_small(18, this.action);
     } else {
-      this.sprite = SpritePainter.beaver(42, this.action);
+      this.sprite = SpritePainter.beaver(28, this.action);
     }
   }
 
