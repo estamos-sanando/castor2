@@ -743,7 +743,7 @@ class Beaver extends Entity {
       }
     }
 
-    if (this.isInWater(game)) {
+    if (this.action !== 'build' && this.isInWater(game)) {
       this.action = 'swim';
     }
 
