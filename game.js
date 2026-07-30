@@ -304,8 +304,8 @@ class BeaverGame {
         leftTrees.sort(() => Math.random() - 0.5);
         rightTrees.sort(() => Math.random() - 0.5);
 
-        const countLeft = Math.min(leftTrees.length, 5 + Math.floor(Math.random() * 2)); // 5 o 6
-        const countRight = Math.min(rightTrees.length, 5 + Math.floor(Math.random() * 2)); // 5 o 6
+        const countLeft = Math.min(leftTrees.length, 10 + Math.floor(Math.random() * 3)); // 10 a 12 árboles fantasmas
+        const countRight = Math.min(rightTrees.length, 10 + Math.floor(Math.random() * 3)); // 10 a 12 árboles fantasmas
 
         leftTrees.forEach((t, idx) => {
           if (idx < countLeft) {
