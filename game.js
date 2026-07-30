@@ -238,7 +238,7 @@ class BeaverGame {
     const activeDams = this.entities.filter(e => e instanceof Dam && e.active && !e.dead);
     const damsLevel3 = activeDams.filter(e => e.level === 3);
 
-    // Al completar el primer Dique Chico (nivel 1), mostrar DATO DESTACADO y multiplicar x1 castores (solo recorren)
+    // Al completar el primer Dique Chico (nivel 1), mostrar noticia y multiplicar x1 castores (solo recorren)
     if (activeDams.some(d => d.level >= 1) && !this.diqueChicoTriggered) {
       this.diqueChicoTriggered = true;
 
@@ -259,6 +259,11 @@ class BeaverGame {
       });
 
       this.stats.beavers = this.entities.filter(e => e instanceof Beaver && !e.dead && !e.captured).length;
+    }
+
+    // Cambio progresivo de mapa al formar el Dique Mediano (nivel >= 2)
+    if (activeDams.some(d => d.level >= 2) && this.currentMap === 0) {
+      this._transitionToMap(1); // Transición suave a map_02_primer_deterioro.jpg
     }
 
     if (activeDams.length >= 2 && damsLevel3.length >= 2 && !this.floodedTriggered) {
