@@ -53,10 +53,12 @@ const ASSET_MANIFEST = {
   beaver_carry:     'assets/castormadera.png',
   beaver_build:     'assets/castordique.png',
   beaver_celebrate: 'assets/castor4.png',
+  beaver_swim:      'assets/castornadando.png',
 
   beaver_small_idle:  'assets/castor1.png',
   beaver_small_walk:  'assets/castor2.png',
   beaver_small_carry: 'assets/castormadera.png',
+  beaver_small_swim:  'assets/castornadando.png',
 
   ranger_idle: 'assets/guardaparque.png',
   ranger_walk: 'assets/guardaparque.png',
@@ -110,8 +112,9 @@ class SpritePainter {
     return this._emptyCanvas(size, size);
   }
 
-  static beaver_small(size = 20) {
-    const realImg = getLoadedImg('beaver_small_idle');
+  static beaver_small(size = 20, action = 'idle') {
+    const key = action === 'swim' ? 'beaver_small_swim' : `beaver_small_${action}`;
+    const realImg = getLoadedImg(key) || getLoadedImg('beaver_small_idle');
     if (realImg) {
       const W = size, H = Math.round(size * (realImg.height / realImg.width));
       const c = this._oc(W, H), ctx = c.getContext('2d');
@@ -154,8 +157,9 @@ class SpritePainter {
     return realImg || this._emptyCanvas(size, size);
   }
 
-  static beaver_small(size = 20) {
-    const realImg = getLoadedImg('beaver_small_idle');
+  static beaver_small(size = 20, action = 'idle') {
+    const key = action === 'swim' ? 'beaver_small_swim' : `beaver_small_${action}`;
+    const realImg = getLoadedImg(key) || getLoadedImg('beaver_small_idle');
     return realImg || this._emptyCanvas(size, size);
   }
 
@@ -690,10 +694,40 @@ class Beaver extends Entity {
 
   _refreshSprite() {
     if (this.isSmall) {
-      this.sprite = SpritePainter.beaver_small(20);
+      this.sprite = SpritePainter.beaver_small(20, this.action);
     } else {
       this.sprite = SpritePainter.beaver(28, this.action);
     }
+  }
+
+  isInWater(game) {
+    // 1. Check tile map if available
+    const map = (game && game.map) || (window.ISO_ENGINE && window.ISO_ENGINE.map);
+    if (map && map.engine && map.getTile) {
+      const originX = map.originX !== undefined ? map.originX : 640;
+      const originY = map.originY !== undefined ? map.originY : 100;
+      const gridPos = map.engine.isoToGrid(this.x, this.y, originX, originY);
+      const tile = map.getTile(gridPos.col, gridPos.row);
+      if (tile && (tile.isWater || tile.water || tile.state === 'AGUA_RIO' || tile.state === 'INUNDADO_BARRO' || tile.type === 'WATER_RIVER' || tile.type === 'WATER_SWAMP')) {
+        return true;
+      }
+    }
+
+    // 2. Check 2D canvas river channel (runs down center between x=580 and x=700)
+    if (this.x >= 580 && this.x <= 700 && this.y >= 80 && this.y <= 680) {
+      return true;
+    }
+
+    // 3. Proximity to river dam points if building or walking to river
+    if (this.state === 'build' || this.state === 'walk_river') {
+      const distUpper = Math.hypot(this.x - 640, this.y - 260);
+      const distLower = Math.hypot(this.x - 645, this.y - 440);
+      if (distUpper < 60 || distLower < 60) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   update(dt, game) {
@@ -706,7 +740,7 @@ class Beaver extends Entity {
       return;
     }
 
-    if (game.act >= 2) {
+    if (game && game.act >= 2) {
       switch (this.state) {
         case 'idle':       this._doIdle(dt, game); break;
         case 'search':     this._doSearch(dt, game); break;
@@ -717,6 +751,10 @@ class Beaver extends Entity {
         case 'walk_river': this._doWalkTo(dt, this.targetX, this.targetY, 'build'); break;
         case 'build':      this._doBuild(dt, game); break;
       }
+    }
+
+    if (this.isInWater(game)) {
+      this.action = 'swim';
     }
 
     this._refreshSprite();

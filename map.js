@@ -21,7 +21,11 @@ class Tile {
   }
 
   get isWater() {
-    return this.state === TileState.AGUA_RIO || this.state === TileState.INUNDADO_BARRO;
+    return this.water === true ||
+           this.state === TileState.AGUA_RIO ||
+           this.state === TileState.INUNDADO_BARRO ||
+           this.type === 'WATER_RIVER' ||
+           this.type === 'WATER_SWAMP';
   }
 
   get isWalkable() {

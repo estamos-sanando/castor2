@@ -2033,7 +2033,8 @@ class EntitySystem {
       ctx.translate(ent.x, ent.y + bob);
 
       if (ent.type === 'beaver') {
-        const key = ent.action === 'cut' ? 'beaver_cut' : (ent.action === 'carry' ? 'beaver_carry' : 'beaver_idle');
+        const inWater = (ent.x >= 580 && ent.x <= 700 && ent.y >= 80 && ent.y <= 680);
+        const key = inWater ? 'beaver_swim' : (ent.action === 'cut' ? 'beaver_cut' : (ent.action === 'carry' ? 'beaver_carry' : 'beaver_idle'));
         const sp = sprites[key] || sprites['beaver_idle'];
         if (sp) {
           ctx.scale(ent.facing || 1, 1);
@@ -2218,6 +2219,7 @@ class BeaverGame {
   _buildSprites() {
     // Pre-render all sprites into cached canvases (GPU-blittable)
     this.sprites['beaver_idle']      = SpritePainter.beaver(80, 'idle');
+    this.sprites['beaver_swim']      = SpritePainter.beaver(80, 'swim');
     this.sprites['beaver_cut']       = SpritePainter.beaver(80, 'cut');
     this.sprites['beaver_carry']     = SpritePainter.beaver(80, 'carry');
     this.sprites['beaver_celebrate'] = SpritePainter.beaver_celebrate(60);
