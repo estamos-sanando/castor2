@@ -238,17 +238,9 @@ class BeaverGame {
     const activeDams = this.entities.filter(e => e instanceof Dam && e.active && !e.dead);
     const damsLevel3 = activeDams.filter(e => e.level === 3);
 
-    // Al completar el primer Dique Chico (nivel 1), mostrar noticia y multiplicar x1 castores (solo recorren)
+    // Al completar el primer Dique Chico (nivel 1), multiplicar x1 castores (solo recorren)
     if (activeDams.some(d => d.level >= 1) && !this.diqueChicoTriggered) {
       this.diqueChicoTriggered = true;
-
-      this.ui.showEditorialNewsCard({
-        title: 'CONSTRUCCIÓN DEL DIQUE CHICO Y MULTIPLICACIÓN POBLACIONAL',
-        subtitle: 'Los castores completan su primer dique alterando la red hidrográfica de Tierra del Fuego.',
-        text: 'Los roedores talan la madera nativa con sus potentes incisivos y arrastran los troncos hacia los ríos. Sus represas detienen el flujo natural de las aguas, permitiendo una rápida expansión.',
-        theme: 'warning',
-        year: '1965'
-      });
 
       // Multiplicar x1 todos los castores actuales (los nuevos solo recorren el mapa)
       const currentBeavers = this.entities.filter(e => e instanceof Beaver && !e.dead && !e.captured);
