@@ -1570,48 +1570,104 @@ html, body {
   color: #fff;
 }
 
-/* ── Responsivo Adaptable para Móviles y Tablets ──────────── */
+/* ============================================================
+   RESPONSIVO ADAPTABLE (MÓVILES, TABLETS Y ESCRITORIO)
+   ============================================================ */
 @media (max-width: 1024px) {
   #hud-right-sidebar {
-    width: 250px;
-    padding: 16px 12px;
-  }
-  .sidebar-game-title {
-    font-size: 11.5px;
+    width: 240px;
+    padding: 14px 12px;
   }
   .bottom-left-news-popup {
-    width: 380px;
+    width: 360px;
   }
 }
 
 @media (max-width: 768px) {
   #hud-right-sidebar {
-    width: 210px;
-    padding: 12px 10px;
-    gap: 10px;
+    width: 200px;
+    padding: 10px 8px;
+    gap: 8px;
   }
-  .pill-label {
-    font-size: 9.5px;
-  }
-  .pill-val {
-    font-size: 12px;
-  }
-  .bottom-left-news-popup {
+  .pill-label { font-size: 9px; }
+  .pill-val { font-size: 11px; }
+
+  #eneei-sidebar-panel {
     left: 10px;
     bottom: 10px;
+    top: auto;
+    transform: none;
     width: calc(100vw - 230px);
+    max-width: 280px;
   }
-  .journal-headline {
-    font-size: 15px;
+
+  #reforestation-minigame-panel {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 92vw;
+    max-width: 380px;
+    max-height: 92vh;
+    overflow-y: auto;
   }
-  .journal-lead {
-    font-size: 11px;
+
+  .editorial-card {
+    width: 92vw !important;
+    max-height: 88vh !important;
+    overflow-y: auto;
+    padding: 16px !important;
   }
-}
 }
 
-@media (max-width: 480px) {
-  .brand-titles .game-title { font-size: 11px; }
-  .flag-icon { font-size: 18px; }
-  #timeline-labels { font-size: 7.5px; }
+@media (max-width: 600px) {
+  #hud-right-sidebar {
+    top: 8px;
+    right: 8px;
+    width: calc(100vw - 16px);
+    max-width: 220px;
+  }
+
+  #eneei-sidebar-panel {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    width: auto;
+    max-width: 100%;
+  }
+
+  .journal-headline { font-size: 15px !important; }
+  .journal-lead { font-size: 11px !important; }
+  .popup-action-btn { padding: 10px 18px !important; font-size: 12px !important; }
+}
+
+@media (max-height: 550px) {
+  #hud-right-sidebar {
+    top: 6px;
+    right: 6px;
+    padding: 6px 8px;
+    gap: 4px;
+  }
+
+  #reforestation-minigame-panel {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 92vw;
+    max-width: 440px;
+    max-height: 96vh;
+    overflow-y: auto;
+  }
+
+  .reforest-card { padding: 10px !important; }
+  .reforest-canvas-container { height: 125px !important; }
+  .editorial-card { max-height: 94vh !important; overflow-y: auto; padding: 12px !important; }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .popup-action-btn,
+  .sidebar-item,
+  .malla-equip-box {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
 }

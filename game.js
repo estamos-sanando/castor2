@@ -64,12 +64,12 @@ class BeaverGame {
     setTimeout(() => {
       const canvas = document.getElementById('game-canvas');
       if (canvas) {
-        canvas.addEventListener('click', (e) => {
+        const handleCanvasPointer = (clientX, clientY) => {
           const rect = canvas.getBoundingClientRect();
           const scaleX = 1280 / rect.width;
           const scaleY = 720 / rect.height;
-          const clickX = (e.clientX - rect.left) * scaleX;
-          const clickY = (e.clientY - rect.top) * scaleY;
+          const clickX = (clientX - rect.left) * scaleX;
+          const clickY = (clientY - rect.top) * scaleY;
 
           if (this.playerCage && this.playerCage.glowing) {
             if (Math.hypot(clickX - this.playerCage.x, clickY - (this.playerCage.y - 10)) < 55) {
@@ -115,7 +115,18 @@ class BeaverGame {
               this.ui.openReforestationMinigame(targetSeedling);
             }
           }
+        };
+
+        canvas.addEventListener('click', (e) => {
+          handleCanvasPointer(e.clientX, e.clientY);
         });
+
+        canvas.addEventListener('touchstart', (e) => {
+          if (e.touches && e.touches.length > 0) {
+            const touch = e.touches[0];
+            handleCanvasPointer(touch.clientX, touch.clientY);
+          }
+        }, { passive: true });
 
         canvas.addEventListener('mousemove', (e) => {
           const rect = canvas.getBoundingClientRect();
