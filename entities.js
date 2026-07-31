@@ -766,8 +766,8 @@ class Seedling extends Entity {
       this.reforested = true;
       this.needReforest = false;
       this.protectedMesh = protectedMesh;
-      this.glowing = true;
-      this.canGrowToTree = true;
+      this.glowing = false;
+      this.canGrowToTree = false;
       this._refreshSprite();
     } else {
       this.reforested = false;
@@ -789,19 +789,6 @@ class Seedling extends Entity {
       ctx.beginPath();
       ctx.ellipse(this.x, this.y - 4, 20 + pulse * 5, 12 + pulse * 3, 0, 0, Math.PI * 2);
       ctx.stroke();
-
-      // Tooltip flotante al pasar el mouse
-      if (this.canGrowToTree || (this.reforested && this.glowing)) {
-        ctx.font = '700 11px Inter, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
-        ctx.fillRect(this.x - 90, this.y - 46, 180, 24);
-        ctx.strokeStyle = '#d4af37';
-        ctx.lineWidth = 1.5;
-        ctx.strokeRect(this.x - 90, this.y - 46, 180, 24);
-        ctx.fillStyle = '#f5d77f';
-        ctx.fillText('🌱 CLIC PARA MADURAR EL BOSQUE', this.x, this.y - 30);
-      }
       ctx.restore();
     }
 

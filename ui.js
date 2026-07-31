@@ -1394,14 +1394,21 @@ class GameUI {
     }
     this.game.minigameActive = false;
 
-    // Notificar al jugador que los brotes están brillando en dorado y listos para madurar progresivamente
+    // Notificar al jugador que los brotes cambiarán a dorado y se podrán interactuar tras presionar ACEPTAR
     this.showEditorialNewsCard({
       title: '🌱 REFORESTACIÓN EXITOSA EN LA CUENCA',
       subtitle: 'Plantines de Lenga nativa sembrados y protegidos.',
-      text: 'Los brotes nativos están parpadeando en dorado en la cuenca. Haz <strong>clic sobre cualquier brote</strong> para desencadenar la maduración simultánea de todos los árboles del bosque.',
+      text: 'Presiona <strong>ACEPTAR</strong> para activar el resplandor dorado en los brotes. Luego haz clic sobre cualquier brote para madurar el bosque.',
       fact: 'La Lenga (Nothofagus pumilio) es la especie arbórea clave para la regeneración del suelo subantártico.',
       year: '2026',
-      onAccept: () => {}
+      onAccept: () => {
+        this.game.entities.forEach(s => {
+          if (s instanceof Seedling && !s.dead) {
+            s.glowing = true;
+            s.canGrowToTree = true;
+          }
+        });
+      }
     });
   }
 }
