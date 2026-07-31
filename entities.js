@@ -341,7 +341,7 @@ class Entity {
           targetW = this.isSmall ? 18 : 28;
         }
       } else if (this instanceof Ranger) {
-        targetW = 46; // Tamaño acorde a la cabaña
+        targetW = 34; // Guardaparques proporcionado al mapa
       } else if (this instanceof Dam) {
         const lvl = Math.max(1, Math.min(3, this.level));
         const isLowerDam = (this.y > 350);
@@ -351,11 +351,11 @@ class Entity {
       } else if (this instanceof LogEntity) {
         targetW = 28;
       } else if (this instanceof Rock) {
-        targetW = (this.variant === 1 || this.variant === 2) ? 140 : 36; // Cabaña más grande
+        targetW = (this.variant === 1 || this.variant === 2) ? 85 : 36; // Cabaña tamaño realista
       } else if (this instanceof Bush) {
         targetW = 26;
       } else if (this instanceof Cage) {
-        targetW = 75; // Jaula de castor más grande
+        targetW = 42; // Jaula proporcionada
       } else if (this instanceof Seedling) {
         targetW = this.protectedMesh ? 34 : 28;
       } else {

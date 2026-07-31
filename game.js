@@ -457,12 +457,12 @@ class BeaverGame {
     this.cabinPlaced = true;
     this.cabinPos = { x, y };
     const cabin = new Rock(x, y, 1); // cabana.png
-    cabin.scale = 1.4;
+    cabin.scale = 1.0;
     this.entities.push(cabin);
     this.particles.burst(x, y - 20, 'wood', 14);
 
     // Colocar SOLAMENTE UN guardabosques estático al lado de la cabaña
-    const ranger = new Ranger(x - 55, y + 10);
+    const ranger = new Ranger(x - 38, y + 6);
     ranger.stationary = true;
     this.entities.push(ranger);
 
