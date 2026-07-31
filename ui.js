@@ -983,32 +983,94 @@ class GameUI {
       `;
 
       let needlePos = 0, needleDir = 1, speed = 2.4;
+      this.isDiggingAnim = false;
+      this.digProgress = 0;
+      this.digHoyoScale = 0;
+
       const innerCanvas = document.getElementById('reforest-inner-canvas');
       const ctx = innerCanvas?.getContext('2d');
 
       const loopStep1 = () => {
         if (!this.reforestActive || this.reforestStep !== 1) return;
-        needlePos += speed * needleDir;
-        if (needlePos >= 100) { needlePos = 100; needleDir = -1; }
-        else if (needlePos <= 0) { needlePos = 0; needleDir = 1; }
-        this.step1NeedlePos = needlePos;
+
+        if (!this.isDiggingAnim) {
+          needlePos += speed * needleDir;
+          if (needlePos >= 100) { needlePos = 100; needleDir = -1; }
+          else if (needlePos <= 0) { needlePos = 0; needleDir = 1; }
+          this.step1NeedlePos = needlePos;
+        } else {
+          this.digProgress += 0.032;
+          if (this.digProgress >= 1.0) {
+            this.digProgress = 1.0;
+            this.isDiggingAnim = false;
+            this._setupReforestStep(2);
+            return;
+          }
+        }
 
         if (ctx) {
           drawBackgroundAndHoyo(ctx, 1);
 
-          // Animación de inclinación ligera de la pala al oscilar
-          const palaTilt = Math.sin(Date.now() * 0.008) * 0.15;
-          ctx.save();
-          ctx.translate(172, 55);
-          ctx.rotate(palaTilt);
-          if (imgPala) {
-            ctx.drawImage(imgPala, -30, -30, 60, 60);
-          } else {
-            ctx.fillStyle = '#d4af37'; ctx.fillRect(-7, -25, 14, 50);
-          }
-          ctx.restore();
+          if (this.isDiggingAnim) {
+            const p = this.digProgress;
+            let palaX = 172, palaY = 55, palaAngle = 0;
 
-          // Barra de medidor
+            if (p < 0.25) {
+              const t = p / 0.25;
+              palaY = 55 - t * 25;
+              palaAngle = -t * 0.4;
+            } else if (p < 0.5) {
+              const t = (p - 0.25) / 0.25;
+              palaY = 30 + t * 52;
+              palaAngle = -0.4 + t * 0.85;
+              this.digHoyoScale = Math.min(1.0, t * 1.25);
+              if (t > 0.5 && !this._digBurstDone) {
+                this._digBurstDone = true;
+                addBurst(172, 95, '#5d4037', 22);
+                addBurst(172, 95, '#21130d', 14);
+              }
+            } else if (p < 0.8) {
+              const t = (p - 0.5) / 0.3;
+              palaY = 82 - t * 45;
+              palaX = 172 + t * 20;
+              palaAngle = 0.45 - t * 0.35;
+              this.digHoyoScale = 1.0;
+            } else {
+              const t = (p - 0.8) / 0.2;
+              palaY = 37 + t * 18;
+              palaX = 192 - t * 20;
+              this.digHoyoScale = 1.0;
+            }
+
+            if (this.digHoyoScale > 0) {
+              ctx.save();
+              ctx.translate(172, 110);
+              ctx.scale(this.digHoyoScale, this.digHoyoScale);
+              if (imgHoyo && imgHoyo.width > 0) {
+                ctx.drawImage(imgHoyo, -80, -50, 160, 100);
+              }
+              ctx.restore();
+            }
+
+            ctx.save();
+            ctx.translate(palaX, palaY);
+            ctx.rotate(palaAngle);
+            if (imgPala) {
+              ctx.drawImage(imgPala, -30, -30, 60, 60);
+            }
+            ctx.restore();
+
+          } else {
+            const palaTilt = Math.sin(Date.now() * 0.008) * 0.18;
+            ctx.save();
+            ctx.translate(172, 55);
+            ctx.rotate(palaTilt);
+            if (imgPala) {
+              ctx.drawImage(imgPala, -30, -30, 60, 60);
+            }
+            ctx.restore();
+          }
+
           const imgMedidor = getLoadedImg('medidor_potencia_sprite');
           if (imgMedidor) {
             ctx.drawImage(imgMedidor, 28, 124, 288, 28);
@@ -1018,7 +1080,6 @@ class GameUI {
             ctx.strokeStyle = '#d4af37'; ctx.strokeRect(30, 130, 284, 20);
           }
 
-          // Aguja brillante
           const nx = 30 + (needlePos / 100) * 284;
           ctx.fillStyle = '#ffffff';
           ctx.shadowColor = '#00C853'; ctx.shadowBlur = 10;
@@ -1207,13 +1268,16 @@ class GameUI {
 
   _triggerReforestAction() {
     if (this.reforestStep === 1) {
+      if (this.isDiggingAnim) return;
       const pos = this.step1NeedlePos || 50;
       if (pos >= 40 && pos <= 60) {
       } else {
         this.survivalProbability -= 15;
         this._updateReforestSurvivalUI();
       }
-      this._setupReforestStep(2);
+      this.isDiggingAnim = true;
+      this.digProgress = 0;
+      this._digBurstDone = false;
     } else if (this.reforestStep === 2) {
       const off = this.step2Offset || { dx: 0, dy: 0 };
       const dist = Math.hypot(off.dx, off.dy);
