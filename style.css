@@ -1101,8 +1101,12 @@ html, body {
   width: 480px;
   max-width: 90vw;
   z-index: 220;
-  pointer-events: auto;
+  pointer-events: none;
   animation: slideInLeftCenter 0.45s cubic-bezier(0.17, 0.67, 0.36, 1.2);
+}
+
+.left-center-news-popup .left-center-card {
+  pointer-events: auto;
 }
 
 .left-center-news-popup.slide-out-left {

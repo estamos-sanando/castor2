@@ -678,9 +678,21 @@ class GameUI {
       if (e instanceof Beaver) e.dead = true;
     });
 
-    setTimeout(() => {
-      this.showArcadeLeaderboard(this.arcadeScore);
-    }, 500);
+    this.game.beaversCaptured = true;
+    this.game.damsCanBeDismantled = true;
+
+    // Activar resplandor dorado en los diques
+    this.game.entities.forEach(e => {
+      if (e instanceof Dam) e.glowing = true;
+    });
+
+    // Tarjeta periodística puramente informativa en el lateral izquierdo que NO frena la interacción
+    this.showEditorialNewsCard({
+      title: '⚡ DESMANTELAMIENTO DE REPRESAS',
+      subtitle: 'Haz clic o toca 5 veces sobre cada dique para desarmarlo.',
+      text: 'Los diques de castores están parpadeando en la cuenca. Toca o haz clic reiteradamente sobre cada represa para desarmar los troncos acumulados y liberar el agua estancada.',
+      year: '2026'
+    });
   }
 
   // ── Tabla de Clasificación Retro Arcade (Ingreso de Iniciales + High Scores Globales) ──

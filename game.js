@@ -107,30 +107,25 @@ class BeaverGame {
             }
           }
 
-          // Clics para desmantelar diques brillantes en el mapa inundado
-          const targetDam = this.entities.find(el => el instanceof Dam && el.active && !el.dead && Math.hypot(clickX - el.x, clickY - el.y) < 75);
-          if (targetDam && (targetDam.glowing || this.damsCanBeDismantled)) {
+          // Clics/Toques para desmantelar diques brillantes en el mapa inundado
+          const isDamClicked = (dam) => {
+            if (!dam.active || dam.dead) return false;
+            const dx = Math.abs(clickX - dam.x);
+            const dy = Math.abs(clickY - dam.y);
+            return (dx < 145 && dy < 90) || Math.hypot(clickX - dam.x, clickY - dam.y) < 145;
+          };
+
+          const targetDam = this.entities.find(el => el instanceof Dam && isDamClicked(el));
+          if (targetDam && (targetDam.glowing || this.damsCanBeDismantled || this.beaversCaptured || this.currentMap >= 2)) {
             targetDam.hp = (targetDam.hp !== undefined ? targetDam.hp : 5) - 1;
-            this.particles.burst(targetDam.x, targetDam.y - 10, 'wood', 14);
+            this.particles.burst(targetDam.x, targetDam.y - 10, 'wood', 18);
 
             if (targetDam.hp <= 0) {
               targetDam.remove();
               const remainingDams = this.entities.filter(el => el instanceof Dam && el.active && !el.dead && el !== targetDam).length;
 
-              if (remainingDams > 0) {
-                // Transición progresiva al mapa de drenado parcial mientras se muestra la ventana emergente
-                this._transitionToMap(2); // map_05_drenado_parcial.jpg
-
-                this.ui.showEditorialNewsCard({
-                  title: '🌊 DRENADO PARCIAL DE LA CUENCA',
-                  subtitle: `Quedan ${remainingDams} diques en la cuenca por desarmar.`,
-                  text: 'Al remover los troncos estancados, el flujo del agua vuelve a circular libremente y el nivel de inundación desciende progresivamente.',
-                  fact: 'La desobstrucción manual de represas permite la recuperación gradual del suelo.',
-                  year: '2026',
-                  onAccept: () => {}
-                });
-              } else {
-                // Se removieron TODOS los diques: Transición progresiva al mapa final de Restauración mientras se muestra la ventana emergente
+              if (remainingDams === 0) {
+                // El mapa cambia ÚNICAMENTE cuando el jugador termina de desmoronar TODOS los diques
                 this._transitionToMap(3); // map_06_restauracion_parcial.jpg
 
                 this.ui.showEditorialNewsCard({
