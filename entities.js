@@ -71,6 +71,12 @@ const ASSET_MANIFEST = {
   brote_3: 'assets/brote3.png',
   brote_4: 'assets/brote4.png',
 
+  pala_sprite:            'assets/pala.png',
+  maceta_brote_sprite:    'assets/maceta_brote.png',
+  malla_sprite:           'assets/malla.png',
+  suelo_degradado_sprite: 'assets/suelo_degradado.png',
+  hoyo_tierra_sprite:     'assets/hoyo_tierra.png',
+
   scientist_idle:      'assets/guardaparque.png',
   scientist_walk:      'assets/guardaparque.png',
 
