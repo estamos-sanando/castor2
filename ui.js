@@ -940,7 +940,7 @@ class GameUI {
       particles = particles.filter(p => p.alpha > 0);
     };
 
-    const drawBackgroundAndHoyo = (ctx, stepNum) => {
+    const drawBackgroundAndHoyo = (ctx, stepNum, fillPct = 0) => {
       ctx.clearRect(0, 0, 344, 170);
 
       // 1. Tiled Soil Background
@@ -964,13 +964,41 @@ class GameUI {
 
       // 2. Hoyo excavado (Pit Hole) for steps >= 2
       if (stepNum >= 2) {
-        if (imgHoyo && imgHoyo.width > 0) {
-          ctx.drawImage(imgHoyo, 92, 60, 160, 100);
-        } else {
-          ctx.fillStyle = '#0a0504';
+        const holeAlpha = Math.max(0, 1.0 - fillPct * 1.15);
+        if (holeAlpha > 0) {
+          ctx.save();
+          ctx.globalAlpha = holeAlpha;
+          if (imgHoyo && imgHoyo.width > 0) {
+            ctx.drawImage(imgHoyo, 92, 60, 160, 100);
+          } else {
+            ctx.fillStyle = '#0a0504';
+            ctx.beginPath();
+            ctx.ellipse(172, 110, 50, 25, 0, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+
+        // 3. Tierra apisonada que va rellenando el agujero progresivamente
+        if (fillPct > 0) {
+          ctx.save();
+          ctx.translate(172, 110);
+          ctx.globalAlpha = Math.min(1.0, fillPct * 1.25);
+
+          const moundGrad = ctx.createRadialGradient(0, 0, 4, 0, 0, 48 * fillPct);
+          moundGrad.addColorStop(0, '#5d4037');
+          moundGrad.addColorStop(0.7, '#3e2723');
+          moundGrad.addColorStop(1, 'rgba(33, 19, 13, 0)');
+
+          ctx.fillStyle = moundGrad;
           ctx.beginPath();
-          ctx.ellipse(172, 110, 50, 25, 0, 0, Math.PI * 2);
+          ctx.ellipse(0, 0, 52 * fillPct, 26 * fillPct, 0, 0, Math.PI * 2);
           ctx.fill();
+
+          ctx.strokeStyle = 'rgba(212, 175, 55, 0.3)';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          ctx.restore();
         }
       }
     };
@@ -1140,12 +1168,13 @@ class GameUI {
     } else if (step === 3) {
       if (tagEl) tagEl.textContent = 'PASO 3 DE 4';
       controlsEl.innerHTML = `
-        <p class="reforest-instruction-text">Paso 3: Presiona en el ritmo justo a medida que los anillos se cierran alrededor del brote.</p>
-        <button class="popup-action-btn arcade-action-btn green-btn" id="btn-reforest-action">APISONAR ( ESPACIO )</button>
+        <p class="reforest-instruction-text">Paso 3: Presiona <strong>ESPACIO</strong> o haz clic para <strong>RELLENAR Y APISONAR TIERRA</strong> en el agujero.</p>
+        <button class="popup-action-btn arcade-action-btn green-btn" id="btn-reforest-action">APISONAR TIERRA ( ESPACIO )</button>
       `;
 
       this.step3RingCycle = 1;
       this.step3RingRadius = 60;
+      this.step3FillProgress = 0;
       let radius = 60;
       const innerCanvas = document.getElementById('reforest-inner-canvas');
       const ctx = innerCanvas?.getContext('2d');
@@ -1159,6 +1188,7 @@ class GameUI {
           this._updateReforestSurvivalUI();
           this.step3RingCycle++;
           if (this.step3RingCycle > 3) {
+            this.step3FillProgress = 1.0;
             this._setupReforestStep(4);
             return;
           }
@@ -1166,7 +1196,7 @@ class GameUI {
         this.step3RingRadius = radius;
 
         if (ctx) {
-          drawBackgroundAndHoyo(ctx, 3);
+          drawBackgroundAndHoyo(ctx, 3, this.step3FillProgress || 0);
 
           // Planta de Lenga directamente plantada en el hoyo (SIN MACETA)
           if (imgPlanta) ctx.drawImage(imgPlanta, 142, 35, 60, 80);
@@ -1215,7 +1245,7 @@ class GameUI {
         }
 
         if (ctx) {
-          drawBackgroundAndHoyo(ctx, 4);
+          drawBackgroundAndHoyo(ctx, 4, 1.0);
 
           if (imgPlanta) ctx.drawImage(imgPlanta, 142, 35, 60, 80);
 
@@ -1300,8 +1330,10 @@ class GameUI {
         this.survivalProbability -= 10;
         this._updateReforestSurvivalUI();
       }
+      this.step3FillProgress = Math.min(1.0, (this.step3FillProgress || 0) + 0.34);
       this.step3RingCycle = (this.step3RingCycle || 1) + 1;
       if (this.step3RingCycle > 3) {
+        this.step3FillProgress = 1.0;
         this._setupReforestStep(4);
       }
     } else if (this.reforestStep === 4) {
