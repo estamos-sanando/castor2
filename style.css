@@ -911,41 +911,48 @@ html, body {
   animation: fade-in 0.4s ease;
 }
 
-/* Tono Azulado para la Inundación de 60.000 Hectáreas */
-.centered-news-overlay.bluish-theme {
-  background: radial-gradient(circle at center, rgba(12, 45, 95, 0.90), rgba(4, 16, 42, 0.96));
+/* Tono Rojo/Carmesí para la Inundación y Catástrofe de 60.000 Hectáreas */
+.centered-news-overlay.bluish-theme,
+.centered-news-overlay.reddish-theme {
+  background: radial-gradient(circle at center, rgba(110, 15, 20, 0.92), rgba(35, 5, 8, 0.98));
   backdrop-filter: blur(14px);
 }
 
-.centered-news-overlay.bluish-theme .game-popup-modal {
-  background: linear-gradient(135deg, rgba(14, 38, 72, 0.98), rgba(6, 20, 46, 0.98));
-  border: 2px solid #38bdf8;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(56, 189, 248, 0.35) inset;
+.centered-news-overlay.bluish-theme .game-popup-modal,
+.centered-news-overlay.reddish-theme .game-popup-modal {
+  background: linear-gradient(135deg, rgba(55, 10, 15, 0.98), rgba(28, 4, 7, 0.98));
+  border: 2px solid #ef4444;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(239, 68, 68, 0.4) inset;
 }
 
-.centered-news-overlay.bluish-theme .popup-year-badge {
-  background: #0288d1;
+.centered-news-overlay.bluish-theme .popup-year-badge,
+.centered-news-overlay.reddish-theme .popup-year-badge {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
   color: #ffffff;
-  border: 1px solid #7dd3fc;
-  box-shadow: 0 0 12px rgba(2, 136, 209, 0.5);
+  border: 1px solid #fca5a5;
+  box-shadow: 0 0 14px rgba(220, 38, 38, 0.6);
 }
 
-.centered-news-overlay.bluish-theme .popup-headline {
-  color: #f0f9ff;
-  text-shadow: 0 2px 12px rgba(56, 189, 248, 0.4);
+.centered-news-overlay.bluish-theme .popup-headline,
+.centered-news-overlay.reddish-theme .popup-headline {
+  color: #fff1f2;
+  text-shadow: 0 2px 14px rgba(239, 68, 68, 0.5);
 }
 
-.centered-news-overlay.bluish-theme .popup-fact-box {
-  background: rgba(2, 136, 209, 0.20);
-  border-left: 4px solid #38bdf8;
-  color: #bae6fd;
+.centered-news-overlay.bluish-theme .popup-fact-box,
+.centered-news-overlay.reddish-theme .popup-fact-box {
+  background: rgba(185, 28, 28, 0.25);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-left: 4px solid #ef4444;
+  color: #fecdd3;
 }
 
-.centered-news-overlay.bluish-theme .popup-action-btn {
-  background: linear-gradient(135deg, #0288d1, #0369a1);
-  border: 1px solid #7dd3fc;
+.centered-news-overlay.bluish-theme .popup-action-btn,
+.centered-news-overlay.reddish-theme .popup-action-btn {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+  border: 1px solid #fca5a5;
   color: #ffffff;
-  box-shadow: 0 4px 15px rgba(2, 136, 209, 0.5);
+  box-shadow: 0 4px 18px rgba(220, 38, 38, 0.6);
 }
 
 .centered-news-overlay.fade-out {
