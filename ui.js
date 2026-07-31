@@ -831,7 +831,7 @@ class GameUI {
 
   // ── MINIJUEGO "REFORESTACIÓN DE LENGA" (4 PASOS INTERACTIVOS) ──
   openReforestationMinigame(targetSeedling) {
-    if (document.getElementById('reforestation-minigame-panel')) return;
+    if (this.game.reforestMinigamePlayed || document.getElementById('reforestation-minigame-panel')) return;
 
     this.reforestSeedling = targetSeedling;
     this.survivalProbability = 100;
@@ -903,7 +903,7 @@ class GameUI {
     const imgSuelo = getLoadedImg('suelo_degradado_sprite');
     const imgHoyo = getLoadedImg('hoyo_tierra_sprite');
     const imgPala = getLoadedImg('pala_sprite');
-    const imgPlanta = getLoadedImg('lenga_planta_sprite') || getLoadedImg('maceta_brote_sprite');
+    const imgPlanta = getLoadedImg('brotelenga_sprite') || getLoadedImg('lenga_planta_sprite') || getLoadedImg('maceta_brote_sprite');
     const imgMalla = getLoadedImg('malla_sprite');
     const imgMallaBrote = getLoadedImg('brote_4') || getLoadedImg('malla_sprite');
 
@@ -1253,11 +1253,17 @@ class GameUI {
         <button class="popup-action-btn arcade-action-btn green-btn" id="btn-reforest-action">CONTINUAR ( ESPACIO )</button>
       `;
 
-      if (this.reforestSeedling) {
-        this.reforestSeedling.setReforested(isSuccess, this.mallaInstalled);
-        if (isSuccess) {
-          this.game.stats.health = Math.min(100, this.game.stats.health + 2);
-        }
+      if (isSuccess) {
+        this.game.stats.health = Math.min(100, this.game.stats.health + 2);
+        this.game.reforestMinigamePlayed = true;
+        // Transformar todos los brotes del terreno en broteplanta.png
+        this.game.entities.forEach(e => {
+          if (e instanceof Seedling) {
+            e.setReforested(true, this.mallaInstalled);
+          }
+        });
+      } else if (this.reforestSeedling) {
+        this.reforestSeedling.setReforested(false);
       }
     }
 

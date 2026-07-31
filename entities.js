@@ -74,6 +74,8 @@ const ASSET_MANIFEST = {
   pala_sprite:            'assets/pala.png',
   maceta_brote_sprite:    'assets/maceta_brote.png',
   lenga_planta_sprite:    'assets/lenga_planta.png',
+  brotelenga_sprite:      'assets/brotelenga.png',
+  broteplanta_sprite:     'assets/broteplanta.png',
   malla_sprite:           'assets/malla.png',
   suelo_degradado_sprite: 'assets/suelo_degradado.png',
   hoyo_tierra_sprite:     'assets/hoyo_tierra.png',
@@ -255,12 +257,17 @@ class SpritePainter {
 
   static seedling_sprite(variant = 0, protectedMesh = false) {
     if (protectedMesh) {
-      const img = getLoadedImg('brote_4') || getLoadedImg('brote_0');
+      const img = getLoadedImg('broteplanta_sprite') || getLoadedImg('brote_4') || getLoadedImg('brote_0');
       return img || this._emptyCanvas(24, 30);
     }
     const key = `brote_${variant % 4}`;
     const img = getLoadedImg(key) || getLoadedImg('brote_0') || getLoadedImg('tree_healthy_1');
     return img || this._emptyCanvas(22, 24);
+  }
+
+  static broteplanta_sprite() {
+    const img = getLoadedImg('broteplanta_sprite') || getLoadedImg('brote_4');
+    return img || this._emptyCanvas(30, 40);
   }
 
   static leaf_particle() {
@@ -674,7 +681,11 @@ class Seedling extends Entity {
   }
 
   _refreshSprite() {
-    this.sprite = SpritePainter.seedling_sprite(this.variant, this.protectedMesh);
+    if (this.reforested) {
+      this.sprite = SpritePainter.broteplanta_sprite();
+    } else {
+      this.sprite = SpritePainter.seedling_sprite(this.variant, this.protectedMesh);
+    }
   }
 
   setReforested(success, protectedMesh = false) {

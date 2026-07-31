@@ -79,9 +79,11 @@ class BeaverGame {
             }
           }
 
-          const targetSeedling = this.entities.find(el => el instanceof Seedling && !el.dead && !el.reforested && Math.hypot(clickX - el.x, clickY - (el.y - 6)) < 32);
-          if (targetSeedling) {
-            this.ui.openReforestationMinigame(targetSeedling);
+          if (!this.reforestMinigamePlayed) {
+            const targetSeedling = this.entities.find(el => el instanceof Seedling && !el.dead && !el.reforested && Math.hypot(clickX - el.x, clickY - (el.y - 6)) < 32);
+            if (targetSeedling) {
+              this.ui.openReforestationMinigame(targetSeedling);
+            }
           }
         });
 
