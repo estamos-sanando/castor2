@@ -802,22 +802,56 @@ class GameUI {
 
     if (this._reforestRaf) cancelAnimationFrame(this._reforestRaf);
 
+    const imgSuelo = getLoadedImg('suelo_degradado_sprite');
+    const imgHoyo = getLoadedImg('hoyo_tierra_sprite');
+    const imgPala = getLoadedImg('pala_sprite');
+    const imgPlanta = getLoadedImg('lenga_planta_sprite') || getLoadedImg('maceta_brote_sprite');
+    const imgMalla = getLoadedImg('malla_sprite');
+    const imgMallaBrote = getLoadedImg('brote_4') || getLoadedImg('malla_sprite');
+
+    // Partículas internas del minijuego
+    let particles = [];
+    const addBurst = (x, y, color = '#8d6e63', count = 12) => {
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const spd = 1.5 + Math.random() * 3.5;
+        particles.push({
+          x, y,
+          vx: Math.cos(angle) * spd,
+          vy: Math.sin(angle) * spd - 1,
+          size: 2 + Math.random() * 4,
+          alpha: 1.0,
+          color
+        });
+      }
+    };
+
+    const updateParticles = (ctx) => {
+      particles.forEach((p, idx) => {
+        p.x += p.vx; p.y += p.vy;
+        p.vy += 0.15; // Gravedad
+        p.alpha -= 0.03;
+        if (p.alpha > 0) {
+          ctx.save();
+          ctx.globalAlpha = p.alpha;
+          ctx.fillStyle = p.color;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+          ctx.restore();
+        }
+      });
+      particles = particles.filter(p => p.alpha > 0);
+    };
+
     if (step === 1) {
       if (tagEl) tagEl.textContent = 'PASO 1 DE 4';
       controlsEl.innerHTML = `
-        <p class="reforest-instruction-text">Paso 1: Presiona <strong>ESPACIO</strong> o haz clic para cavar a la profundidad correcta en la <strong>ZONA VERDE</strong>.</p>
+        <p class="reforest-instruction-text">Paso 1: Presiona <strong>ESPACIO</strong> o haz clic para cavar en la <strong>ZONA VERDE</strong>.</p>
         <button class="popup-action-btn arcade-action-btn green-btn" id="btn-reforest-action">CAVAR ( ESPACIO )</button>
       `;
 
-      let needlePos = 0, needleDir = 1, speed = 2.2;
+      let needlePos = 0, needleDir = 1, speed = 2.4;
       const innerCanvas = document.getElementById('reforest-inner-canvas');
       const ctx = innerCanvas?.getContext('2d');
-
-      const imgSuelo = getLoadedImg('suelo_degradado_sprite');
-      const imgHoyo = getLoadedImg('hoyo_tierra_sprite');
-      const imgPala = getLoadedImg('pala_sprite');
-      const imgMaceta = getLoadedImg('maceta_brote_sprite');
-      const imgMalla = getLoadedImg('malla_sprite');
 
       const loopStep1 = () => {
         if (!this.reforestActive || this.reforestStep !== 1) return;
@@ -831,13 +865,19 @@ class GameUI {
           if (imgSuelo) ctx.drawImage(imgSuelo, 0, 0, 344, 170);
           else { ctx.fillStyle = '#3e2723'; ctx.fillRect(0, 0, 344, 170); }
 
+          // Animación de inclinación ligera de la pala al oscilar
+          const palaTilt = Math.sin(Date.now() * 0.008) * 0.15;
+          ctx.save();
+          ctx.translate(172, 55);
+          ctx.rotate(palaTilt);
           if (imgPala) {
-            ctx.drawImage(imgPala, 142, 25, 60, 60);
+            ctx.drawImage(imgPala, -30, -30, 60, 60);
           } else {
-            ctx.fillStyle = '#d4af37'; ctx.fillRect(165, 30, 14, 50);
-            ctx.fillStyle = '#9e9e9e'; ctx.beginPath(); ctx.moveTo(160, 80); ctx.lineTo(184, 80); ctx.lineTo(172, 105); ctx.fill();
+            ctx.fillStyle = '#d4af37'; ctx.fillRect(-7, -25, 14, 50);
           }
+          ctx.restore();
 
+          // Barra de medidor
           const imgMedidor = getLoadedImg('medidor_potencia_sprite');
           if (imgMedidor) {
             ctx.drawImage(imgMedidor, 28, 124, 288, 28);
@@ -847,9 +887,14 @@ class GameUI {
             ctx.strokeStyle = '#d4af37'; ctx.strokeRect(30, 130, 284, 20);
           }
 
+          // Aguja brillante
           const nx = 30 + (needlePos / 100) * 284;
-          ctx.fillStyle = '#ffffff'; ctx.fillRect(nx - 2, 120, 4, 36);
-          ctx.shadowColor = '#fff'; ctx.shadowBlur = 6;
+          ctx.fillStyle = '#ffffff';
+          ctx.shadowColor = '#00C853'; ctx.shadowBlur = 10;
+          ctx.fillRect(nx - 2, 120, 4, 36);
+          ctx.shadowBlur = 0;
+
+          updateParticles(ctx);
         }
 
         this._reforestRaf = requestAnimationFrame(loopStep1);
@@ -859,16 +904,13 @@ class GameUI {
     } else if (step === 2) {
       if (tagEl) tagEl.textContent = 'PASO 2 DE 4';
       controlsEl.innerHTML = `
-        <p class="reforest-instruction-text">Paso 2: Presiona <strong>ESPACIO</strong> o haz clic cuando la retícula esté bien centrada sobre el agujero.</p>
+        <p class="reforest-instruction-text">Paso 2: Presiona <strong>ESPACIO</strong> o haz clic cuando la retícula esté centrada sobre el agujero.</p>
         <button class="popup-action-btn arcade-action-btn green-btn" id="btn-reforest-action">COLOCAR BROTE ( ESPACIO )</button>
       `;
 
       let t = 0;
       const innerCanvas = document.getElementById('reforest-inner-canvas');
       const ctx = innerCanvas?.getContext('2d');
-      const imgSuelo = getLoadedImg('suelo_degradado_sprite');
-      const imgHoyo = getLoadedImg('hoyo_tierra_sprite');
-      const imgMaceta = getLoadedImg('maceta_brote_sprite');
       const imgMirilla = getLoadedImg('mirilla_sprite');
 
       const loopStep2 = () => {
@@ -883,20 +925,26 @@ class GameUI {
           if (imgSuelo) ctx.drawImage(imgSuelo, 0, 0, 344, 170);
           else { ctx.fillStyle = '#3e2723'; ctx.fillRect(0, 0, 344, 170); }
 
+          // Hoyo excavado
           if (imgHoyo) ctx.drawImage(imgHoyo, 136, 75, 72, 72);
           else { ctx.fillStyle = '#1b0000'; ctx.beginPath(); ctx.ellipse(172, 110, 35, 18, 0, 0, Math.PI * 2); ctx.fill(); }
 
-          if (imgMaceta) ctx.drawImage(imgMaceta, 154, 20, 36, 45);
+          // Planta flotando suavemente sobre el hoyo (SIN MACETA)
+          const floatY = 22 + Math.sin(t * 4) * 4;
+          if (imgPlanta) {
+            ctx.drawImage(imgPlanta, 142, floatY, 60, 75);
+          }
 
+          // Mirilla orbitando
           const cx = 172 + dx, cy = 110 + dy;
           if (imgMirilla) {
             ctx.drawImage(imgMirilla, cx - 22, cy - 22, 44, 44);
           } else {
             ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2;
             ctx.beginPath(); ctx.arc(cx, cy, 14, 0, Math.PI * 2); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx - 20, cy); ctx.lineTo(cx + 20, cy); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx, cy - 20); ctx.lineTo(cx, cy + 20); ctx.stroke();
           }
+
+          updateParticles(ctx);
         }
 
         this._reforestRaf = requestAnimationFrame(loopStep2);
@@ -915,13 +963,10 @@ class GameUI {
       let radius = 60;
       const innerCanvas = document.getElementById('reforest-inner-canvas');
       const ctx = innerCanvas?.getContext('2d');
-      const imgSuelo = getLoadedImg('suelo_degradado_sprite');
-      const imgHoyo = getLoadedImg('hoyo_tierra_sprite');
-      const imgMaceta = getLoadedImg('maceta_brote_sprite');
 
       const loopStep3 = () => {
         if (!this.reforestActive || this.reforestStep !== 3) return;
-        radius -= 0.8;
+        radius -= 0.85;
         if (radius <= 5) {
           radius = 60;
           this.survivalProbability -= 10;
@@ -940,11 +985,21 @@ class GameUI {
           else { ctx.fillStyle = '#3e2723'; ctx.fillRect(0, 0, 344, 170); }
 
           if (imgHoyo) ctx.drawImage(imgHoyo, 136, 75, 72, 72);
-          if (imgMaceta) ctx.drawImage(imgMaceta, 154, 65, 36, 45);
 
-          ctx.strokeStyle = this.step3RingCycle === 1 ? '#00C853' : (this.step3RingCycle === 2 ? '#eab308' : '#ff9800');
+          // Planta de Lenga directamente plantada en el suelo (SIN MACETA)
+          if (imgPlanta) ctx.drawImage(imgPlanta, 142, 40, 60, 75);
+
+          // Anillos concéntricos de ritmo con pulso y sombra brillante
+          const color = this.step3RingCycle === 1 ? '#00C853' : (this.step3RingCycle === 2 ? '#eab308' : '#ff9800');
+          ctx.save();
+          ctx.strokeStyle = color;
+          ctx.shadowColor = color;
+          ctx.shadowBlur = 12;
           ctx.lineWidth = 3;
           ctx.beginPath(); ctx.ellipse(172, 110, radius, radius * 0.5, 0, 0, Math.PI * 2); ctx.stroke();
+          ctx.restore();
+
+          updateParticles(ctx);
         }
 
         this._reforestRaf = requestAnimationFrame(loopStep3);
@@ -955,7 +1010,7 @@ class GameUI {
       if (tagEl) tagEl.textContent = 'PASO 4 DE 4';
       controlsEl.innerHTML = `
         <p class="reforest-instruction-text">Paso 4: <strong>¡ALERTA!</strong> Haz clic para instalar la <strong>Malla Protectora</strong> sobre el brote.</p>
-        <div class="malla-equip-box" id="btn-equip-malla" style="background: rgba(212, 175, 55, 0.15); border: 1.5px dashed var(--gold); border-radius: 10px; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; margin-bottom: 12px;">
+        <div class="malla-equip-box" id="btn-equip-malla" style="background: rgba(212, 175, 55, 0.15); border: 1.5px dashed var(--gold); border-radius: 10px; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; margin-bottom: 12px; animation: pulseGlow 1.5s infinite alternate;">
           <img src="assets/malla.png" style="height: 38px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.8));" />
           <span style="font-weight: 700; font-size: 12px; color: var(--gold-light);">${this.mallaInstalled ? '✓ MALLA DE PROTECCIÓN INSTALADA' : 'EQUIPAR MALLA PROTECTORA'}</span>
         </div>
@@ -964,32 +1019,43 @@ class GameUI {
 
       const innerCanvas = document.getElementById('reforest-inner-canvas');
       const ctx = innerCanvas?.getContext('2d');
-      const imgSuelo = getLoadedImg('suelo_degradado_sprite');
-      const imgHoyo = getLoadedImg('hoyo_tierra_sprite');
-      const imgMaceta = getLoadedImg('maceta_brote_sprite');
-      const imgMalla = getLoadedImg('malla_sprite');
 
-      const drawStep4 = () => {
-        if (!ctx) return;
-        ctx.clearRect(0, 0, 344, 170);
-        if (imgSuelo) ctx.drawImage(imgSuelo, 0, 0, 344, 170);
-        else { ctx.fillStyle = '#3e2723'; ctx.fillRect(0, 0, 344, 170); }
+      let animMallaY = -60;
 
-        if (imgHoyo) ctx.drawImage(imgHoyo, 136, 75, 72, 72);
-        if (imgMaceta) ctx.drawImage(imgMaceta, 154, 65, 36, 45);
-
-        if (this.mallaInstalled) {
-          if (imgMalla) ctx.drawImage(imgMalla, 147, 50, 50, 70);
-          else { ctx.strokeStyle = '#9e9e9e'; ctx.lineWidth = 2; ctx.strokeRect(158, 55, 28, 55); }
+      const loopStep4 = () => {
+        if (!this.reforestActive || this.reforestStep !== 4) return;
+        if (this.mallaInstalled && animMallaY < 40) {
+          animMallaY += (40 - animMallaY) * 0.18;
+          if (Math.abs(40 - animMallaY) < 1) {
+            animMallaY = 40;
+            addBurst(172, 100, '#00C853', 15);
+          }
         }
+
+        if (ctx) {
+          ctx.clearRect(0, 0, 344, 170);
+          if (imgSuelo) ctx.drawImage(imgSuelo, 0, 0, 344, 170);
+          else { ctx.fillStyle = '#3e2723'; ctx.fillRect(0, 0, 344, 170); }
+
+          if (imgHoyo) ctx.drawImage(imgHoyo, 136, 75, 72, 72);
+          if (imgPlanta) ctx.drawImage(imgPlanta, 142, 40, 60, 75);
+
+          if (this.mallaInstalled) {
+            if (imgMalla) ctx.drawImage(imgMalla, 136, animMallaY, 72, 85);
+            else { ctx.strokeStyle = '#9e9e9e'; ctx.lineWidth = 2; ctx.strokeRect(158, 55, 28, 55); }
+          }
+
+          updateParticles(ctx);
+        }
+
+        this._reforestRaf = requestAnimationFrame(loopStep4);
       };
-      drawStep4();
+      loopStep4();
 
       document.getElementById('btn-equip-malla')?.addEventListener('click', () => {
         this.mallaInstalled = true;
         const box = document.getElementById('btn-equip-malla');
         if (box) box.innerHTML = '<img src="assets/malla.png" style="height: 38px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.8));" /> <span style="font-weight: 700; font-size: 12px; color: #00C853;">✓ MALLA DE PROTECCIÓN INSTALADA</span>';
-        drawStep4();
       });
 
     } else if (step === 5) {

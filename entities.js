@@ -350,7 +350,7 @@ class Entity {
       } else if (this instanceof Cage) {
         targetW = 30;
       } else if (this instanceof Seedling) {
-        targetW = 16;
+        targetW = this.protectedMesh ? 32 : 28;
       } else {
         targetW = (this.sprite.width && this.sprite.width !== imgW) ? this.sprite.width : 32;
       }
@@ -693,19 +693,43 @@ class Seedling extends Entity {
 
   draw(ctx) {
     if (this.glowing || this.needReforest) {
-      const pulse = 0.5 + 0.5 * Math.sin(Date.now() * 0.006);
+      const pulse = 0.5 + 0.5 * Math.sin(Date.now() * 0.008);
       ctx.save();
       const color = this.needReforest ? '#ef4444' : '#00C853';
       ctx.shadowColor = color;
-      ctx.shadowBlur = 10 + pulse * 8;
+      ctx.shadowBlur = 12 + pulse * 10;
       ctx.strokeStyle = color;
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.5;
       ctx.beginPath();
-      ctx.ellipse(this.x, this.y - 6, 14 + pulse * 3, 9 + pulse * 2, 0, 0, Math.PI * 2);
+      ctx.ellipse(this.x, this.y - 4, 16 + pulse * 4, 10 + pulse * 3, 0, 0, Math.PI * 2);
       ctx.stroke();
+
+      // Tooltip flotante al pasar el mouse
+      if (this.glowing && !this.reforested) {
+        ctx.font = '700 11px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+        ctx.fillRect(this.x - 65, this.y - 42, 130, 22);
+        ctx.strokeStyle = '#d4af37';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(this.x - 65, this.y - 42, 130, 22);
+        ctx.fillStyle = '#69f0ae';
+        ctx.fillText('🌱 REFORESTAR LENGA', this.x, this.y - 27);
+      }
       ctx.restore();
     }
-    super.draw(ctx);
+
+    if (this.reforested) {
+      // Brillo continuo tenue para brote reforestado con éxito
+      const pulse = 0.5 + 0.5 * Math.sin(Date.now() * 0.004);
+      ctx.save();
+      ctx.shadowColor = '#00C853';
+      ctx.shadowBlur = 8 + pulse * 6;
+      super.draw(ctx);
+      ctx.restore();
+    } else {
+      super.draw(ctx);
+    }
   }
 }
 
