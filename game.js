@@ -697,8 +697,14 @@ class BeaverGame {
   }
 
   toggleSpeed() {
-    this.speedMultiplier = (this.speedMultiplier === 2.0) ? 1.0 : 2.0;
-    return this.speedMultiplier === 2.0;
+    if (!this.speedMultiplier || this.speedMultiplier === 1.0) {
+      this.speedMultiplier = 2.0;
+    } else if (this.speedMultiplier === 2.0) {
+      this.speedMultiplier = 4.0;
+    } else {
+      this.speedMultiplier = 1.0;
+    }
+    return this.speedMultiplier;
   }
 
   _update(dt) {

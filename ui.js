@@ -113,13 +113,14 @@ class GameUI {
 
     document.getElementById('btn-speed-toggle')?.addEventListener('click', (e) => {
       const btn = e.currentTarget;
-      const is2x = this.game.toggleSpeed();
+      const speed = this.game.toggleSpeed();
       const txt = document.getElementById('speed-val');
-      if (txt) txt.textContent = is2x ? '2x' : '1x';
-      if (is2x) {
+      if (txt) txt.textContent = `${speed}x`;
+      btn.classList.remove('active-2x', 'active-4x');
+      if (speed === 2.0) {
         btn.classList.add('active-2x');
-      } else {
-        btn.classList.remove('active-2x');
+      } else if (speed === 4.0) {
+        btn.classList.add('active-4x');
       }
     });
 
