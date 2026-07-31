@@ -65,10 +65,10 @@ const ASSET_MANIFEST = {
   ranger_trap: 'assets/guardaparquejaula.png',
   cage_trap:   'assets/Jaulacastor.png',
 
-  brote_0: 'assets/maceta_brote.png',
-  brote_1: 'assets/lenga_planta.png',
-  brote_2: 'assets/maceta_brote.png',
-  brote_3: 'assets/lenga_planta.png',
+  brote_0: 'assets/brote.png',
+  brote_1: 'assets/brote1.png',
+  brote_2: 'assets/brote2.png',
+  brote_3: 'assets/brote3.png',
   brote_4: 'assets/brote4.png',
 
   pala_sprite:            'assets/pala.png',
