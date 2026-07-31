@@ -355,7 +355,7 @@ class Entity {
       } else if (this instanceof Bush) {
         targetW = 26;
       } else if (this instanceof Cage) {
-        targetW = 42; // Jaula proporcionada
+        targetW = 56; // Jaula de castor un poco más grande
       } else if (this instanceof Seedling) {
         targetW = this.protectedMesh ? 34 : 28;
       } else {

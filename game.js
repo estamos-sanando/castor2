@@ -76,8 +76,8 @@ class BeaverGame {
             if (Math.hypot(clickX - this.placedCabinEntity.x, clickY - (this.placedCabinEntity.y - 15)) < 60) {
               this.placedCabinEntity.glowing = false;
 
-              // Aparece el guardaparques parado al lado de la puerta de la cabaña
-              const ranger = new Ranger(this.placedCabinEntity.x - 28, this.placedCabinEntity.y + 4);
+              // Aparece el guardaparques parado del lado derecho de la casa y un poco más alejado
+              const ranger = new Ranger(this.placedCabinEntity.x + 56, this.placedCabinEntity.y + 12);
               ranger.stationary = true;
               this.entities.push(ranger);
               this.particles.burst(ranger.x, ranger.y - 10, 'leaf', 16);
