@@ -279,6 +279,104 @@ class GameUI {
     this._setupDragAndDrop();
   }
 
+  showReforestSeedlingInventory() {
+    this.closeSidebarPanel();
+
+    const sidebar = document.createElement('div');
+    sidebar.id = 'eneei-sidebar-panel';
+    sidebar.innerHTML = `
+      <div class="sidebar-card">
+        <div class="sidebar-header">
+          <h4>REFORESTACIÓN NATIVA</h4>
+        </div>
+        <p class="sidebar-desc"><strong>ARRASTRA Y SUELTA</strong> los 10 plantines de Lenga en el terreno para iniciar la reforestación:</p>
+
+        <div class="sidebar-items">
+          <div class="sidebar-item draggable-item" id="item-seedling-brote" draggable="true" data-type="seedling">
+            <div class="item-preview">
+              <img src="assets/brote1.png" alt="Brote de Lenga" class="sidebar-img" style="max-height: 48px;" />
+            </div>
+            <div class="item-info">
+              <span class="item-title">Plantín de Lenga Nativa</span>
+              <span class="item-status" id="status-seedling-count" style="color: #69f0ae; font-weight: 700;">0 / 10 Colocados</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('game-container').appendChild(sidebar);
+
+    this._setupReforestSeedlingDragAndDrop();
+  }
+
+  onSeedlingPlacedFromInventory(placedCount) {
+    const statusEl = document.getElementById('status-seedling-count');
+    if (statusEl) {
+      statusEl.textContent = `${placedCount} / 10 Colocados`;
+      statusEl.style.color = placedCount >= 10 ? '#22c55e' : '#69f0ae';
+    }
+  }
+
+  _setupReforestSeedlingDragAndDrop() {
+    const canvas = document.getElementById('game-canvas');
+    const seedlingItem = document.getElementById('item-seedling-brote');
+    if (!canvas || !seedlingItem) return;
+
+    const getCanvasCoords = (clientX, clientY) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = 1280 / rect.width;
+      const scaleY = 720 / rect.height;
+      const x = Math.round((clientX - rect.left) * scaleX);
+      const y = Math.round((clientY - rect.top) * scaleY);
+      return { x: Math.max(60, Math.min(1220, x)), y: Math.max(100, Math.min(670, y)) };
+    };
+
+    seedlingItem.addEventListener('dragstart', (e) => {
+      if ((this.game.placedSeedlingsCount || 0) >= 10) {
+        e.preventDefault();
+        return;
+      }
+      e.dataTransfer.setData('text/plain', 'seedling');
+    });
+
+    const onDragOver = (e) => {
+      if ((this.game.placedSeedlingsCount || 0) < 10) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+      }
+    };
+    canvas.addEventListener('dragover', onDragOver);
+
+    const onDrop = (e) => {
+      const type = e.dataTransfer.getData('text/plain');
+      if (type === 'seedling' && (this.game.placedSeedlingsCount || 0) < 10) {
+        e.preventDefault();
+        const coords = getCanvasCoords(e.clientX, e.clientY);
+        this.game.placeSeedlingFromInventory(coords.x, coords.y);
+      }
+    };
+    canvas.addEventListener('drop', onDrop);
+
+    let activePlacement = false;
+    seedlingItem.addEventListener('click', () => {
+      if ((this.game.placedSeedlingsCount || 0) >= 10) return;
+      activePlacement = true;
+      canvas.style.cursor = 'crosshair';
+    });
+
+    const onClickCanvas = (e) => {
+      if (activePlacement && (this.game.placedSeedlingsCount || 0) < 10) {
+        const coords = getCanvasCoords(e.clientX, e.clientY);
+        this.game.placeSeedlingFromInventory(coords.x, coords.y);
+        if ((this.game.placedSeedlingsCount || 0) >= 10) {
+          activePlacement = false;
+          canvas.style.cursor = 'default';
+        }
+      }
+    };
+    canvas.addEventListener('click', onClickCanvas);
+  }
+
   _setupDragAndDrop() {
     const canvas = document.getElementById('game-canvas');
     if (!canvas) return;

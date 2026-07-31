@@ -542,64 +542,56 @@ class BeaverGame {
       year: '2026',
       centered: true, // VENTANA CENTRAL DE CAMBIO DE ESCENA
       onAccept: () => {
-        // AL DAR ACEPTAR SE CAMBIA LA ESCENA AL MAPA DE RESTAURACIÓN Y SE REMUEVEN ÁRBOLES FANTASMAS!
+        // AL DAR ACEPTAR SE CAMBIA LA ESCENA AL MAPA DE RESTAURACIÓN Y SE ABRE EL INVENTARIO DE REFORESTACIÓN!
         this._transitionToMap(3); // map_06_restauracion_parcial.jpg
-        this.spawnReforestationSeedlings();
+        this.prepareReforestationStage();
       }
     });
   }
 
-  spawnReforestationSeedlings() {
-    // 1. Quitar todos los árboles fantasmas
+  prepareReforestationStage() {
+    // 1. Quitar del mapa todas las lengas y árboles fantasmas preexistentes
     this.entities.forEach(e => {
-      if (e instanceof Tree && (e.state === 'flooded' || e.state === 'dead' || e.dead)) {
+      if (e instanceof Tree || e instanceof Seedling) {
         e.dead = true;
       }
     });
 
-    // 2. Eliminar tocones o brotes viejos si los hubiera
-    this.entities.forEach(e => {
-      if (e instanceof Seedling) e.dead = true;
-    });
+    // 2. Reiniciar contador y abrir el inventario con el plantín brote1.png
+    this.placedSeedlingsCount = 0;
+    this.ui.showReforestSeedlingInventory();
+  }
 
-    // 3. Colocar 20 brotes distribuidos en el margen izquierdo y 20 en el derecho (total 40)
-    const spots = [];
-    const minDist = 38;
+  placeSeedlingFromInventory(x, y) {
+    if ((this.placedSeedlingsCount || 0) >= 10) return;
 
-    // Izquierda (20 brotes)
-    for (let i = 0; i < 20; i++) {
-      let attempts = 0;
-      while (attempts < 100) {
-        attempts++;
-        const x = 60 + Math.random() * 460;
-        const y = 110 + Math.random() * 540;
-        if (!spots.some(p => Math.hypot(p.x - x, p.y - y) < minDist)) {
-          spots.push({ x, y });
-          break;
-        }
-      }
+    // Plantar brote en el terreno usando el asset assets/brote.png (variant 0)
+    const seedling = new Seedling(x, y, 0);
+    this.entities.push(seedling);
+    this.particles.burst(x, y - 10, 'leaf', 16);
+    this.particles.burst(x, y - 5, 'wood', 10);
+
+    this.placedSeedlingsCount = (this.placedSeedlingsCount || 0) + 1;
+    this.ui.onSeedlingPlacedFromInventory(this.placedSeedlingsCount);
+
+    if (this.placedSeedlingsCount >= 10) {
+      setTimeout(() => {
+        this.ui.closeSidebarPanel();
+        this.ui.showEditorialNewsCard({
+          title: '🌱 PLANTACIÓN DE 10 BROTES COMPLETADA',
+          subtitle: 'Los 10 plantines de Lenga nativa han sido distribuidos en la cuenca.',
+          text: 'Haz clic en cualquiera de los brotes colocados en el terreno para iniciar el minijuego de <strong>Reforestación de Lenga</strong> y asegurar su crecimiento.',
+          theme: 'info',
+          year: '2026',
+          onAccept: () => {
+            const firstSeedling = this.entities.find(e => e instanceof Seedling && !e.dead && !e.reforested);
+            if (firstSeedling) {
+              this.ui.openReforestationMinigame(firstSeedling);
+            }
+          }
+        });
+      }, 500);
     }
-
-    // Derecha (20 brotes)
-    for (let i = 0; i < 20; i++) {
-      let attempts = 0;
-      while (attempts < 100) {
-        attempts++;
-        const x = 760 + Math.random() * 450;
-        const y = 110 + Math.random() * 540;
-        if (x >= 820 && x <= 980 && y >= 450 && y <= 600) continue; // zona cabaña
-        if (!spots.some(p => Math.hypot(p.x - x, p.y - y) < minDist)) {
-          spots.push({ x, y });
-          break;
-        }
-      }
-    }
-
-    // Instanciar los 40 brotes usando los assets brote.png, brote1.png, brote2.png, brote3.png
-    spots.forEach((spot, idx) => {
-      const seedling = new Seedling(spot.x, spot.y, idx % 4);
-      this.entities.push(seedling);
-    });
   }
 
   _transitionToMap(targetIdx) {
