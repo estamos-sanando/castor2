@@ -838,12 +838,18 @@ class GameUI {
             ctx.fillStyle = '#9e9e9e'; ctx.beginPath(); ctx.moveTo(160, 80); ctx.lineTo(184, 80); ctx.lineTo(172, 105); ctx.fill();
           }
 
-          ctx.fillStyle = '#ef4444'; ctx.fillRect(30, 130, 284, 20);
-          ctx.fillStyle = '#00C853'; ctx.fillRect(115, 130, 114, 20);
-          ctx.strokeStyle = '#d4af37'; ctx.strokeRect(30, 130, 284, 20);
+          const imgMedidor = getLoadedImg('medidor_potencia_sprite');
+          if (imgMedidor) {
+            ctx.drawImage(imgMedidor, 28, 124, 288, 28);
+          } else {
+            ctx.fillStyle = '#ef4444'; ctx.fillRect(30, 130, 284, 20);
+            ctx.fillStyle = '#00C853'; ctx.fillRect(115, 130, 114, 20);
+            ctx.strokeStyle = '#d4af37'; ctx.strokeRect(30, 130, 284, 20);
+          }
 
           const nx = 30 + (needlePos / 100) * 284;
-          ctx.fillStyle = '#ffffff'; ctx.fillRect(nx - 2, 124, 4, 32);
+          ctx.fillStyle = '#ffffff'; ctx.fillRect(nx - 2, 120, 4, 36);
+          ctx.shadowColor = '#fff'; ctx.shadowBlur = 6;
         }
 
         this._reforestRaf = requestAnimationFrame(loopStep1);
@@ -863,6 +869,7 @@ class GameUI {
       const imgSuelo = getLoadedImg('suelo_degradado_sprite');
       const imgHoyo = getLoadedImg('hoyo_tierra_sprite');
       const imgMaceta = getLoadedImg('maceta_brote_sprite');
+      const imgMirilla = getLoadedImg('mirilla_sprite');
 
       const loopStep2 = () => {
         if (!this.reforestActive || this.reforestStep !== 2) return;
@@ -882,10 +889,14 @@ class GameUI {
           if (imgMaceta) ctx.drawImage(imgMaceta, 154, 20, 36, 45);
 
           const cx = 172 + dx, cy = 110 + dy;
-          ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2;
-          ctx.beginPath(); ctx.arc(cx, cy, 14, 0, Math.PI * 2); ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(cx - 20, cy); ctx.lineTo(cx + 20, cy); ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(cx, cy - 20); ctx.lineTo(cx, cy + 20); ctx.stroke();
+          if (imgMirilla) {
+            ctx.drawImage(imgMirilla, cx - 22, cy - 22, 44, 44);
+          } else {
+            ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(cx, cy, 14, 0, Math.PI * 2); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 20, cy); ctx.lineTo(cx + 20, cy); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx, cy - 20); ctx.lineTo(cx, cy + 20); ctx.stroke();
+          }
         }
 
         this._reforestRaf = requestAnimationFrame(loopStep2);
