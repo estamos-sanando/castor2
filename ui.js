@@ -879,7 +879,7 @@ class GameUI {
     if (this.game.reforestMinigamePlayed || document.getElementById('reforestation-minigame-panel')) return;
 
     this.reforestSeedling = targetSeedling;
-    this.survivalProbability = 100;
+    this.reforestProgress = 0;
     this.reforestStep = 1;
     this.mallaInstalled = false;
     this.reforestActive = true;
@@ -895,11 +895,11 @@ class GameUI {
 
         <div class="survival-status-box">
           <div class="survival-info">
-            <span class="stat-lbl">ESTADO DE SUPERVIVENCIA</span>
-            <span class="stat-val survival-pct" id="reforest-survival-val">100%</span>
+            <span class="stat-lbl">PROGRESO DE REFORESTACIÓN</span>
+            <span class="stat-val survival-pct" id="reforest-survival-val">0%</span>
           </div>
           <div class="survival-bar-track">
-            <div class="survival-bar-fill" id="reforest-survival-bar" style="width: 100%;"></div>
+            <div class="survival-bar-fill" id="reforest-survival-bar" style="width: 0%;"></div>
           </div>
         </div>
 
@@ -924,16 +924,16 @@ class GameUI {
     window.addEventListener('keydown', this._reforestKeyHandler);
   }
 
-  _updateReforestSurvivalUI() {
-    this.survivalProbability = Math.max(0, Math.min(100, Math.round(this.survivalProbability)));
+  _updateReforestProgressUI() {
+    this.reforestProgress = Math.max(0, Math.min(100, Math.round(this.reforestProgress || 0)));
     const valEl = document.getElementById('reforest-survival-val');
     const barEl = document.getElementById('reforest-survival-bar');
-    if (valEl) valEl.textContent = `${this.survivalProbability}%`;
+    if (valEl) valEl.textContent = `${this.reforestProgress}%`;
     if (barEl) {
-      barEl.style.width = `${this.survivalProbability}%`;
-      if (this.survivalProbability >= 80) barEl.style.background = '#00C853';
-      else if (this.survivalProbability >= 50) barEl.style.background = '#eab308';
-      else barEl.style.background = '#ef4444';
+      barEl.style.width = `${this.reforestProgress}%`;
+      if (this.reforestProgress >= 100) barEl.style.background = '#00C853';
+      else if (this.reforestProgress >= 50) barEl.style.background = '#22c55e';
+      else barEl.style.background = '#eab308';
     }
   }
 
@@ -1314,32 +1314,27 @@ class GameUI {
 
     } else if (step === 5) {
       if (tagEl) tagEl.textContent = 'RESULTADO';
-      const isSuccess = this.survivalProbability >= 80;
+      this.reforestProgress = 100;
+      this._updateReforestProgressUI();
 
       controlsEl.innerHTML = `
-        <div class="${isSuccess ? 'reforest-success-badge' : 'reforest-fail-badge'}">
-          ${isSuccess ? `¡REFORESTACIÓN EXITOSA! (+100 PTS)` : `REFORESTACIÓN INSUFICIENTE (${this.survivalProbability}%)`}
+        <div class="reforest-success-badge">
+          ¡REFORESTACIÓN AL 100% COMPLETADA!
         </div>
         <p class="reforest-instruction-text">
-          ${isSuccess 
-            ? 'El brote de Lenga nativa ha sido plantado con éxito y protegido contra herbívoros.' 
-            : 'La probabilidad de supervivencia fue menor al 80%. La casilla requiere replantación.'}
+          El brote de Lenga nativa ha sido plantado con éxito y protegido adecuadamente. Todos los brotes del mapa han prosperado.
         </p>
         <button class="popup-action-btn arcade-action-btn green-btn" id="btn-reforest-action">CONTINUAR ( ESPACIO )</button>
       `;
 
-      if (isSuccess) {
-        this.game.stats.health = Math.min(100, this.game.stats.health + 2);
-        this.game.reforestMinigamePlayed = true;
-        // Transformar todos los brotes del terreno en broteplanta.png
-        this.game.entities.forEach(e => {
-          if (e instanceof Seedling) {
-            e.setReforested(true, this.mallaInstalled);
-          }
-        });
-      } else if (this.reforestSeedling) {
-        this.reforestSeedling.setReforested(false);
-      }
+      this.game.stats.health = Math.min(100, this.game.stats.health + 2);
+      this.game.reforestMinigamePlayed = true;
+      // Transformar todos los brotes del terreno en broteplanta.png
+      this.game.entities.forEach(e => {
+        if (e instanceof Seedling) {
+          e.setReforested(true, this.mallaInstalled);
+        }
+      });
     }
 
     document.getElementById('btn-reforest-action')?.addEventListener('click', () => {
@@ -1350,42 +1345,22 @@ class GameUI {
   _triggerReforestAction() {
     if (this.reforestStep === 1) {
       if (this.isDiggingAnim) return;
-      const pos = this.step1NeedlePos || 50;
-      if (pos >= 40 && pos <= 60) {
-      } else {
-        this.survivalProbability -= 15;
-        this._updateReforestSurvivalUI();
-      }
       this.isDiggingAnim = true;
       this.digProgress = 0;
       this._digBurstDone = false;
     } else if (this.reforestStep === 2) {
-      const off = this.step2Offset || { dx: 0, dy: 0 };
-      const dist = Math.hypot(off.dx, off.dy);
-      if (dist <= 18) {
-      } else {
-        this.survivalProbability -= 15;
-        this._updateReforestSurvivalUI();
-      }
       this._setupReforestStep(3);
     } else if (this.reforestStep === 3) {
-      const radius = this.step3RingRadius || 60;
-      if (radius <= 25 && radius >= 10) {
-      } else {
-        this.survivalProbability -= 10;
-        this._updateReforestSurvivalUI();
-      }
       this.step3FillProgress = Math.min(1.0, (this.step3FillProgress || 0) + 0.34);
+      this.reforestProgress = 50 + Math.round(this.step3FillProgress * 25);
+      this._updateReforestProgressUI();
+
       this.step3RingCycle = (this.step3RingCycle || 1) + 1;
       if (this.step3RingCycle > 3) {
         this.step3FillProgress = 1.0;
         this._setupReforestStep(4);
       }
     } else if (this.reforestStep === 4) {
-      if (!this.mallaInstalled) {
-        this.survivalProbability = Math.round(this.survivalProbability * 0.2);
-        this._updateReforestSurvivalUI();
-      }
       this._setupReforestStep(5);
     } else if (this.reforestStep === 5) {
       this.closeReforestationMinigame();
