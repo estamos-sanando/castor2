@@ -940,6 +940,41 @@ class GameUI {
       particles = particles.filter(p => p.alpha > 0);
     };
 
+    const drawBackgroundAndHoyo = (ctx, stepNum) => {
+      ctx.clearRect(0, 0, 344, 170);
+
+      // 1. Tiled Soil Background
+      if (imgSuelo && imgSuelo.width > 0) {
+        for (let x = 0; x < 344; x += imgSuelo.width) {
+          for (let y = 0; y < 170; y += imgSuelo.height) {
+            ctx.drawImage(imgSuelo, x, y);
+          }
+        }
+      } else {
+        ctx.fillStyle = '#21130d';
+        ctx.fillRect(0, 0, 344, 170);
+      }
+
+      // Vignette effect around edges
+      const grad = ctx.createRadialGradient(172, 85, 80, 172, 85, 180);
+      grad.addColorStop(0, 'rgba(0,0,0,0)');
+      grad.addColorStop(1, 'rgba(0,0,0,0.65)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 344, 170);
+
+      // 2. Hoyo excavado (Pit Hole) for steps >= 2
+      if (stepNum >= 2) {
+        if (imgHoyo && imgHoyo.width > 0) {
+          ctx.drawImage(imgHoyo, 92, 60, 160, 100);
+        } else {
+          ctx.fillStyle = '#0a0504';
+          ctx.beginPath();
+          ctx.ellipse(172, 110, 50, 25, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    };
+
     if (step === 1) {
       if (tagEl) tagEl.textContent = 'PASO 1 DE 4';
       controlsEl.innerHTML = `
@@ -959,9 +994,7 @@ class GameUI {
         this.step1NeedlePos = needlePos;
 
         if (ctx) {
-          ctx.clearRect(0, 0, 344, 170);
-          if (imgSuelo) ctx.drawImage(imgSuelo, 0, 0, 344, 170);
-          else { ctx.fillStyle = '#3e2723'; ctx.fillRect(0, 0, 344, 170); }
+          drawBackgroundAndHoyo(ctx, 1);
 
           // Animación de inclinación ligera de la pala al oscilar
           const palaTilt = Math.sin(Date.now() * 0.008) * 0.15;
@@ -1019,18 +1052,12 @@ class GameUI {
         this.step2Offset = { dx, dy };
 
         if (ctx) {
-          ctx.clearRect(0, 0, 344, 170);
-          if (imgSuelo) ctx.drawImage(imgSuelo, 0, 0, 344, 170);
-          else { ctx.fillStyle = '#3e2723'; ctx.fillRect(0, 0, 344, 170); }
+          drawBackgroundAndHoyo(ctx, 2);
 
-          // Hoyo excavado
-          if (imgHoyo) ctx.drawImage(imgHoyo, 136, 75, 72, 72);
-          else { ctx.fillStyle = '#1b0000'; ctx.beginPath(); ctx.ellipse(172, 110, 35, 18, 0, 0, Math.PI * 2); ctx.fill(); }
-
-          // Planta flotando suavemente sobre el hoyo (SIN MACETA)
-          const floatY = 22 + Math.sin(t * 4) * 4;
+          // Planta de Lenga flotando suavemente sobre el hoyo (SIN MACETA)
+          const floatY = 25 + Math.sin(t * 4) * 4;
           if (imgPlanta) {
-            ctx.drawImage(imgPlanta, 142, floatY, 60, 75);
+            ctx.drawImage(imgPlanta, 142, floatY, 60, 80);
           }
 
           // Mirilla orbitando
@@ -1078,14 +1105,10 @@ class GameUI {
         this.step3RingRadius = radius;
 
         if (ctx) {
-          ctx.clearRect(0, 0, 344, 170);
-          if (imgSuelo) ctx.drawImage(imgSuelo, 0, 0, 344, 170);
-          else { ctx.fillStyle = '#3e2723'; ctx.fillRect(0, 0, 344, 170); }
+          drawBackgroundAndHoyo(ctx, 3);
 
-          if (imgHoyo) ctx.drawImage(imgHoyo, 136, 75, 72, 72);
-
-          // Planta de Lenga directamente plantada en el suelo (SIN MACETA)
-          if (imgPlanta) ctx.drawImage(imgPlanta, 142, 40, 60, 75);
+          // Planta de Lenga directamente plantada en el hoyo (SIN MACETA)
+          if (imgPlanta) ctx.drawImage(imgPlanta, 142, 35, 60, 80);
 
           // Anillos concéntricos de ritmo con pulso y sombra brillante
           const color = this.step3RingCycle === 1 ? '#00C853' : (this.step3RingCycle === 2 ? '#eab308' : '#ff9800');
@@ -1122,21 +1145,18 @@ class GameUI {
 
       const loopStep4 = () => {
         if (!this.reforestActive || this.reforestStep !== 4) return;
-        if (this.mallaInstalled && animMallaY < 40) {
-          animMallaY += (40 - animMallaY) * 0.18;
-          if (Math.abs(40 - animMallaY) < 1) {
-            animMallaY = 40;
+        if (this.mallaInstalled && animMallaY < 35) {
+          animMallaY += (35 - animMallaY) * 0.18;
+          if (Math.abs(35 - animMallaY) < 1) {
+            animMallaY = 35;
             addBurst(172, 100, '#00C853', 15);
           }
         }
 
         if (ctx) {
-          ctx.clearRect(0, 0, 344, 170);
-          if (imgSuelo) ctx.drawImage(imgSuelo, 0, 0, 344, 170);
-          else { ctx.fillStyle = '#3e2723'; ctx.fillRect(0, 0, 344, 170); }
+          drawBackgroundAndHoyo(ctx, 4);
 
-          if (imgHoyo) ctx.drawImage(imgHoyo, 136, 75, 72, 72);
-          if (imgPlanta) ctx.drawImage(imgPlanta, 142, 40, 60, 75);
+          if (imgPlanta) ctx.drawImage(imgPlanta, 142, 35, 60, 80);
 
           if (this.mallaInstalled) {
             if (imgMalla) ctx.drawImage(imgMalla, 136, animMallaY, 72, 85);
