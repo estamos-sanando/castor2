@@ -827,16 +827,7 @@ class GameUI {
             }
           });
 
-          this.showEditorialNewsCard({
-            title: '🦫 CONTROL POBLACIONAL Y CAPTURA DE CASTORES',
-            subtitle: 'Remoción humanitaria mediante trampas de jaula y reubicación.',
-            text: 'Tras el operativo de control, se han capturado los castores de la cuenca principal. Permanecen únicamente 4 ejemplares bajo constante monitoreo.',
-            fact: 'El control poblacional sostenido evita el desmonte continuo de los bosques de Lenga.',
-            year: '2026',
-            onAccept: () => {
-              this.game.restoreEcosystem();
-            }
-          });
+          this.game.restoreEcosystem();
         });
       }, 400);
     });
