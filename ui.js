@@ -72,7 +72,10 @@ class GameUI {
     this.tutorialEl = document.createElement('div');
     this.tutorialEl.id = 'tutorial-overlay';
     this.tutorialEl.innerHTML = `
-      <div class="game-popup-modal centered-welcome-window">
+      <div class="game-popup-modal centered-welcome-window initial-start-modal">
+        <div class="initial-start-logo-wrapper">
+          <img src="assets/LOGO.png" class="welcome-start-logo-large" alt="Logo Proyecto Castor" />
+        </div>
         <div class="popup-modal-header">
           <span class="popup-year-badge">1946 — TIERRA DEL FUEGO</span>
         </div>
@@ -85,8 +88,8 @@ class GameUI {
             <p class="popup-lead">La Marina de Guerra Argentina introdujo 10 parejas de <em>Castor canadensis</em> importadas de Canadá. La industria peletera nunca se concretó y los ejemplares fueron abandonados. Sin depredadores naturales en la Patagonia, la especie colonizó la isla alterando el 95% de las cuencas hídricas.</p>
           </div>
 
-          <div class="popup-footer">
-            <button class="popup-start-btn" id="btn-start-game">ACEPTAR ➔</button>
+          <div class="popup-footer center-footer">
+            <button class="popup-start-btn start-game-btn-large" id="btn-start-game">COMENZAR A JUGAR ➔</button>
           </div>
         </div>
       </div>
