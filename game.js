@@ -223,9 +223,9 @@ class BeaverGame {
     this.ui.showEditorialNewsCard({
       title: 'EN 1946, ARGENTINA INTRODUJO 20 CASTORES PARA CREAR UNA INDUSTRIA PELETERA',
       subtitle: 'La Marina de Guerra Argentina importó 10 parejas de Castor canadensis desde Canadá.',
-      text: 'El plan oficial buscaba desarrollar el comercio de pieles en la Patagonia. La industria nunca fructificó y los roedores fueron abandonados. Sin depredadores naturales (osos pardos o lobos), la especie comenzó su multiplicación imparable.',
-      quote: 'Lo que comenzó como un experimento económico se transformó en la mayor catástrofe biológica de los bosques subantárticos.',
-      fact: 'De 20 ejemplares en 1946 a una invasión de más de 100.000 a 150.000 castores.',
+      text: 'En 1946, el gobierno introdujo <strong>20 castores provenientes de Canadá (10 parejas)</strong> en la Isla Grande de Tierra del Fuego con el objetivo de fomentar la industria de pieles en un territorio con baja presencia humana.',
+      quote: 'Lo que comenzó como un experimento económico se transformó 80 años después en la mayor catástrofe biológica de los bosques subantárticos.',
+      fact: 'Al no existir depredadores naturales (como lobos u osos en la Patagonia), la población explotó exponencialmente a más de 100.000 ejemplares.',
       theme: 'info',
       year: '1946'
     });
@@ -415,11 +415,11 @@ class BeaverGame {
   triggerFloodedCrisis() {
     // Ventana central con overlay azulado que resalta el impacto ecológico
     this.ui.showEditorialNewsCard({
-      title: '60.000 HECTÁREAS DE BOSQUES FANTASMA Y USD $66.5 MILLONES EN DAÑOS ANUALES',
-      subtitle: 'Las represas anegan el suelo, ahogan las raíces de las lengas y destruyen las turberas.',
-      text: 'El agua estancada priva de oxígeno a las raíces de los árboles en pie, secándolos y convirtiéndolos en "bosques fantasma" grises e inertes. Además, destruye las turberas patagónicas, principales captadoras de carbono del planeta.',
-      quote: 'Las pérdidas económicas anuales superan los 66.5 millones de dólares en infraestructura, ganadería y conservación.',
-      fact: 'Las inundaciones anegan puentes, carreteras y sistemas de agua potable en toda la Isla Grande.',
+      title: 'DEVASTACIÓN DEL BOSQUE NATIVO DE LENGA Y GUINDO',
+      subtitle: 'Las represas de madera sofocan las raíces de los árboles ancestrales.',
+      text: 'El agua estancada priva de oxígeno a las raíces de los árboles en pie. A diferencia de las especies del hemisferio norte, <strong>la Lenga y el Guindo patagónico NO rebrotan del tocón</strong> ni toleran raíces sumergidas, convirtiéndose en "bosques fantasma" grises e inertes.',
+      quote: 'Los castores alteran la cuenca hidrográfica modificando los ríos y facilitando la invasión de plantas exóticas.',
+      fact: 'Se estima que más de 60.000 hectáreas de bosque nativo han sido severamente destruidas en toda la Isla Grande.',
       year: '2005',
       centered: true,
       bluish: true,
@@ -490,9 +490,9 @@ class BeaverGame {
   showBinationalStrategyNews() {
     this.ui.showEditorialNewsCard({
       title: 'ESTRATEGIA BINACIONAL ENEEI: ARGENTINA Y CHILE UNIDOS POR LA BIODIVERSIDAD',
-      subtitle: 'Con apoyo del Fondo para el Medio Ambiente Mundial (FMAM) y la FAO, se activan áreas piloto.',
-      text: 'Técnicos y guardaparques especializados instalan puestos de monitoreo y trampas jaula para erradicar focos invasores y evitar que el castor cruce a la Patagonia continental.',
-      fact: 'Es una de las iniciativas binacionales de control de especies exóticas invasoras más ambiciosas del planeta.',
+      subtitle: 'Iniciativa internacional respaldada por la FAO y el Fondo para el Medio Ambiente Mundial (FMAM).',
+      text: 'Argentina y Chile activaron la <strong>Estrategia Binacional de Manejo y Erradicación del Castor (ENEEI)</strong> con apoyo internacional para monitorear áreas piloto, colocar trampas de jaula y evitar que la especie invasora cruce a la Patagonia continental.',
+      fact: 'Es uno de los proyectos binacionales de control de especies exóticas invasoras más complejos del planeta.',
       year: '2016',
       onAccept: () => {
         // AL DAR ACEPTAR SE DESPEJA LA ZONA INFERIOR DERECHA Y SE MUESTRA LA FLECHA Y EL INVENTARIO
