@@ -341,23 +341,23 @@ class Entity {
           targetW = this.isSmall ? 18 : 28;
         }
       } else if (this instanceof Ranger) {
-        targetW = 24;
+        targetW = 46; // Tamaño acorde a la cabaña
       } else if (this instanceof Dam) {
         const lvl = Math.max(1, Math.min(3, this.level));
         const isLowerDam = (this.y > 350);
         targetW = isLowerDam 
-          ? (lvl === 1 ? 160 : (lvl === 2 ? 190 : 230)) // Dique inferior extendido al meandro ancho del río
-          : (lvl === 1 ? 140 : (lvl === 2 ? 165 : 190)); // Dique superior
+          ? (lvl === 1 ? 170 : (lvl === 2 ? 200 : 240))
+          : (lvl === 1 ? 150 : (lvl === 2 ? 175 : 200));
       } else if (this instanceof LogEntity) {
         targetW = 28;
       } else if (this instanceof Rock) {
-        targetW = (this.variant === 1 || this.variant === 2) ? 64 : 36;
+        targetW = (this.variant === 1 || this.variant === 2) ? 140 : 36; // Cabaña más grande
       } else if (this instanceof Bush) {
         targetW = 26;
       } else if (this instanceof Cage) {
-        targetW = 30;
+        targetW = 75; // Jaula de castor más grande
       } else if (this instanceof Seedling) {
-        targetW = this.protectedMesh ? 32 : 28;
+        targetW = this.protectedMesh ? 34 : 28;
       } else {
         targetW = (this.sprite.width && this.sprite.width !== imgW) ? this.sprite.width : 32;
       }
@@ -546,8 +546,10 @@ class Dam extends Entity {
     super(x, y);
     this.col = col; this.row = row;
     this.level = 1;
+    this.hp = 5;
     this.state = 'active';
     this.active = true;
+    this.hovered = false;
     this._refreshSprite();
   }
 
@@ -585,12 +587,32 @@ class Dam extends Entity {
     const lvl = Math.max(1, Math.min(3, this.level));
     const isLowerDam = (this.y > 350);
 
-    // Dimensiones de orilla a orilla según la anchura de la cuenca (inferior más ancha)
     const targetW = isLowerDam 
-      ? (lvl === 1 ? 160 : (lvl === 2 ? 190 : 230))
-      : (lvl === 1 ? 140 : (lvl === 2 ? 165 : 190));
+      ? (lvl === 1 ? 170 : (lvl === 2 ? 200 : 240))
+      : (lvl === 1 ? 150 : (lvl === 2 ? 175 : 200));
     const w = Math.round(targetW * (this.scale || 1.0));
     const h = Math.round(targetW * (imgH / imgW) * (this.scale || 1.0));
+
+    // Resplandor pulsante en diques en mapa inundado para guiar al jugador
+    const isFlooded = window.GAME && (window.GAME.currentMap >= 2 || window.GAME.isFlooded);
+    if (isFlooded && this.active) {
+      const pulse = 0.5 + 0.5 * Math.sin(Date.now() * 0.008);
+      const glowGrad = ctx.createRadialGradient(Math.round(this.x), Math.round(this.y), w * 0.1, Math.round(this.x), Math.round(this.y), w * 0.55 + pulse * 15);
+      glowGrad.addColorStop(0, `rgba(234, 179, 8, ${0.7 + pulse * 0.25})`);
+      glowGrad.addColorStop(0.5, `rgba(234, 179, 8, ${0.3 + pulse * 0.2})`);
+      glowGrad.addColorStop(1, 'rgba(234, 179, 8, 0)');
+
+      ctx.fillStyle = glowGrad;
+      ctx.beginPath();
+      ctx.ellipse(Math.round(this.x), Math.round(this.y), w * 0.55, h * 0.45, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = '#eab308';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.ellipse(Math.round(this.x), Math.round(this.y), w * 0.5, h * 0.38, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
 
     const grad = ctx.createRadialGradient(Math.round(this.x), Math.round(this.y), w * 0.05, Math.round(this.x), Math.round(this.y), w * 0.45);
     grad.addColorStop(0, 'rgba(0, 0, 0, 0.40)');
@@ -602,6 +624,17 @@ class Dam extends Entity {
     ctx.fill();
 
     ctx.drawImage(this.sprite, Math.round(this.x - w * 0.5), Math.round(this.y - h * 0.45), w, h);
+
+    if (isFlooded && this.hovered && this.active) {
+      ctx.font = '700 12px sans-serif';
+      ctx.fillStyle = '#fef08a';
+      ctx.textAlign = 'center';
+      ctx.shadowColor = '#000000';
+      ctx.shadowBlur = 8;
+      ctx.fillText(`⚡ CLIC PARA DESMANTELAR (${this.hp || 5}/5)`, Math.round(this.x), Math.round(this.y - h * 0.5 - 8));
+      ctx.shadowBlur = 0;
+    }
+
     ctx.restore();
   }
 }
@@ -830,7 +863,10 @@ class Beaver extends Entity {
       return;
     }
 
-    if (game && game.act >= 2) {
+    // En el mapa inundado (stage >= 2) los castores dejan de talar árboles y armar diques
+    if (game && (game.currentMap >= 2 || game.isFlooded)) {
+      this._doIdle(dt, game);
+    } else if (game && game.act >= 2) {
       if (this.wanderOnly) {
         this._doIdle(dt, game);
       } else {
@@ -1019,8 +1055,17 @@ class Ranger extends Entity {
     const dx = tx - this.x, dy = ty - this.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
     if (dist < 6) return true;
-    this.x += (dx / dist) * this.speed * dt;
-    this.y += (dy / dist) * this.speed * dt;
+    let nextX = this.x + (dx / dist) * this.speed * dt;
+    let nextY = this.y + (dy / dist) * this.speed * dt;
+
+    // Evitar que los guardaparques caminen sobre el río (solo caminan en zonas verdes)
+    if (nextX >= 480 && nextX <= 760) {
+      if (this.x < 480) nextX = 475;
+      else if (this.x > 760) nextX = 765;
+    }
+
+    this.x = nextX;
+    this.y = nextY;
     this.facingLeft = dx < 0;
     return false;
   }

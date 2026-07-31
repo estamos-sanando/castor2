@@ -818,9 +818,73 @@ class GameUI {
       overlay.classList.add('fade-out');
       setTimeout(() => {
         overlay.remove();
-        this.game.restoreEcosystem();
+        this.playCapturaVideoOverlay(() => {
+          // Dejar únicamente 4 castores en el mapa
+          const activeBeavers = this.game.entities.filter(e => e instanceof Beaver && !e.dead);
+          activeBeavers.forEach((b, idx) => {
+            if (idx >= 4) {
+              b.dead = true;
+            }
+          });
+
+          this.showEditorialNewsCard({
+            title: '🦫 CONTROL POBLACIONAL Y CAPTURA DE CASTORES',
+            subtitle: 'Remoción humanitaria mediante trampas de jaula y reubicación.',
+            text: 'Tras el operativo de control, se han capturado los castores de la cuenca principal. Permanecen únicamente 4 ejemplares bajo constante monitoreo.',
+            fact: 'El control poblacional sostenido evita el desmonte continuo de los bosques de Lenga.',
+            year: '2026',
+            onAccept: () => {
+              this.game.restoreEcosystem();
+            }
+          });
+        });
       }, 400);
     });
+  }
+
+  playCapturaVideoOverlay(onComplete) {
+    const existing = document.getElementById('captura-video-overlay');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'captura-video-overlay';
+    overlay.style.cssText = `
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: rgba(0, 0, 0, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.4s ease;
+      backdrop-filter: blur(10px);
+    `;
+
+    overlay.innerHTML = `
+      <div style="position: relative; width: 90%; max-width: 820px; border: 2.5px solid var(--gold); border-radius: 16px; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.9), 0 0 25px rgba(212,175,55,0.4); background: #000;">
+        <video id="captura-mp4-video" src="assets/captura.mp4" autoplay playsinline style="width: 100%; height: auto; max-height: 75vh; object-fit: contain; display: block;"></video>
+        <button id="btn-skip-captura-video" class="popup-action-btn arcade-action-btn green-btn" style="position: absolute; bottom: 20px; right: 20px; z-index: 10; padding: 10px 24px; font-weight: 700; box-shadow: 0 4px 15px rgba(0,0,0,0.8);">CONTINUAR ➔</button>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const video = document.getElementById('captura-mp4-video');
+    const closeOverlay = () => {
+      overlay.style.transition = 'opacity 0.4s ease';
+      overlay.style.opacity = '0';
+      setTimeout(() => {
+        overlay.remove();
+        if (typeof onComplete === 'function') onComplete();
+      }, 400);
+    };
+
+    if (video) {
+      video.addEventListener('ended', closeOverlay);
+    }
+
+    document.getElementById('btn-skip-captura-video')?.addEventListener('click', closeOverlay);
   }
 
   update(stats, year, timelinePct) {}

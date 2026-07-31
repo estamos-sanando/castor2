@@ -79,6 +79,36 @@ class BeaverGame {
             }
           }
 
+          // Clics para desmantelar diques en el mapa inundado
+          const targetDam = this.entities.find(el => el instanceof Dam && el.active && !el.dead && Math.hypot(clickX - el.x, clickY - el.y) < 70);
+          if (targetDam) {
+            targetDam.hp = (targetDam.hp !== undefined ? targetDam.hp : 5) - 1;
+            this.particles.burst(targetDam.x, targetDam.y - 10, 'wood', 14);
+
+            if (targetDam.hp <= 0) {
+              targetDam.remove();
+              const remainingDams = this.entities.filter(el => el instanceof Dam && el.active && !el.dead && el !== targetDam).length;
+
+              if (remainingDams <= 1 && this.currentMap === 1) {
+                this._transitionToMap(2); // Transición progresiva a drenado parcial
+              }
+
+              if (remainingDams <= 0) {
+                this.restoreEcosystem();
+              } else {
+                this.ui.showEditorialNewsCard({
+                  title: '🪵 DIQUE DESMANTELADO',
+                  subtitle: `Quedan ${remainingDams} diques en la cuenca por desarmar.`,
+                  text: 'Al remover los troncos estancados, el flujo del agua vuelve a circular libremente y el nivel de inundación desciende.',
+                  fact: 'La desobstrucción manual de represas permite la recuperación de la cuenca.',
+                  year: '2026',
+                  onAccept: () => {}
+                });
+              }
+            }
+            return;
+          }
+
           if (!this.reforestMinigamePlayed) {
             const targetSeedling = this.entities.find(el => el instanceof Seedling && !el.dead && !el.reforested && Math.hypot(clickX - el.x, clickY - (el.y - 6)) < 32);
             if (targetSeedling) {
@@ -102,7 +132,10 @@ class BeaverGame {
           }
 
           this.entities.forEach(el => {
-            if (el instanceof Seedling && !el.dead && !el.reforested) {
+            if (el instanceof Dam) {
+              el.hovered = el.active && !el.dead && Math.hypot(mouseX - el.x, mouseY - el.y) < 70;
+              if (el.hovered) isHovered = true;
+            } else if (el instanceof Seedling && !el.dead && !el.reforested) {
               const d = Math.hypot(mouseX - el.x, mouseY - (el.y - 6));
               if (d < 32) {
                 el.glowing = true;
@@ -494,31 +527,10 @@ class BeaverGame {
   // ── Simulación de Guardaparques y Captura Interactiva ──
   startRangerSimulation() {
     this.act = 3;
-
-    if (this._rangerCaptureInterval) clearInterval(this._rangerCaptureInterval);
-
-    this._rangerCaptureInterval = setInterval(() => {
-      if (!this.running) return;
-
-      const beavers = this.entities.filter(e => e instanceof Beaver && !e.dead);
-      if (beavers.length > 0) {
-        const b = beavers.pop();
-        b.dead = true;
-        this.particles.burst(b.x, b.y - 15, 'leaf', 16);
-        this.stats.beavers = Math.max(0, this.stats.beavers - 1);
-        this.ui.onBeaverCapturedByPlayer();
-
-        const dam = this.entities.find(e => e instanceof Dam && e.active && !e.dead);
-        if (dam) {
-          if (dam.level > 1) {
-            dam.level--;
-            dam._refreshSprite();
-          } else {
-            dam.remove();
-          }
-        }
-      }
-    }, 1200);
+    if (this._rangerCaptureInterval) {
+      clearInterval(this._rangerCaptureInterval);
+      this._rangerCaptureInterval = null;
+    }
   }
 
   restoreEcosystem() {
