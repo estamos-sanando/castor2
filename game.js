@@ -460,6 +460,12 @@ class BeaverGame {
     cabin.scale = 1.4;
     this.entities.push(cabin);
     this.particles.burst(x, y - 20, 'wood', 14);
+
+    // Colocar SOLAMENTE UN guardabosques estático al lado de la cabaña
+    const ranger = new Ranger(x - 55, y + 10);
+    ranger.stationary = true;
+    this.entities.push(ranger);
+
     this.checkAllThreeItemsInstalled();
   }
 
@@ -511,14 +517,6 @@ class BeaverGame {
     if (this.playerCage) {
       this.particles.burst(this.playerCage.x, this.playerCage.y - 10, 'wood', 18);
     }
-
-    const ranger1 = new Ranger(cx, cy);
-    ranger1.setPatrol([{ x: cx, y: cy }, { x: 620, y: 320 }, { x: 480, y: 300 }, { x: cx, y: cy }]);
-    this.entities.push(ranger1);
-
-    const ranger2 = new Ranger(cx, cy);
-    ranger2.setPatrol([{ x: cx, y: cy }, { x: 640, y: 440 }, { x: 520, y: 420 }, { x: cx, y: cy }]);
-    this.entities.push(ranger2);
 
     this.startRangerSimulation();
     this.ui.openBeaverCatcherMinigame();

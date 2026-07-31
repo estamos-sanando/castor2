@@ -1036,7 +1036,8 @@ class Ranger extends Entity {
 
   update(dt, game) {
     this.bobPhase += dt * 2.5;
-    if (this.patrolPoints.length > 0) {
+    this.action = 'idle';
+    if (!this.stationary && this.patrolPoints.length > 0) {
       const arrived = this._moveTo(this.targetX, this.targetY, dt);
       this.action = arrived ? 'idle' : 'walk';
       if (arrived) {
@@ -1044,8 +1045,6 @@ class Ranger extends Entity {
         this.targetX = this.patrolPoints[this.patrolIdx].x;
         this.targetY = this.patrolPoints[this.patrolIdx].y;
       }
-    } else {
-      this.action = 'idle';
     }
     this._refreshSprite();
     this.baseY = this.y;
