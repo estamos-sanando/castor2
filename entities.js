@@ -270,6 +270,16 @@ class SpritePainter {
     return img || this._emptyCanvas(30, 40);
   }
 
+  static brote2_sprite() {
+    const img = getLoadedImg('brote_2') || getLoadedImg('brote_1');
+    return img || this._emptyCanvas(34, 44);
+  }
+
+  static brote3_sprite() {
+    const img = getLoadedImg('brote_3') || getLoadedImg('brote_2');
+    return img || this._emptyCanvas(40, 52);
+  }
+
   static leaf_particle() {
     const c = this._oc(8, 8), x = c.getContext('2d');
     x.fillStyle = '#4a8c2a'; x.beginPath(); x.arc(4, 4, 3, 0, Math.PI * 2); x.fill();
@@ -733,12 +743,18 @@ class Seedling extends Entity {
     this.protectedMesh = false;
     this.needReforest = false;
     this.glowing = false;
+    this.canGrowToTree = false;
+    this.growthStage = 0; // 0: broteplanta, 1: brote2, 2: brote3
     this.baseY = y;
     this._refreshSprite();
   }
 
   _refreshSprite() {
-    if (this.reforested) {
+    if (this.growthStage === 1) {
+      this.sprite = SpritePainter.brote2_sprite();
+    } else if (this.growthStage === 2) {
+      this.sprite = SpritePainter.brote3_sprite();
+    } else if (this.reforested) {
       this.sprite = SpritePainter.broteplanta_sprite();
     } else {
       this.sprite = SpritePainter.seedling_sprite(this.variant, this.protectedMesh);
@@ -750,6 +766,8 @@ class Seedling extends Entity {
       this.reforested = true;
       this.needReforest = false;
       this.protectedMesh = protectedMesh;
+      this.glowing = true;
+      this.canGrowToTree = true;
       this._refreshSprite();
     } else {
       this.reforested = false;
@@ -760,29 +778,29 @@ class Seedling extends Entity {
   update(dt, game) {}
 
   draw(ctx) {
-    if (this.glowing || this.needReforest) {
+    if (this.glowing || this.canGrowToTree || this.needReforest) {
       const pulse = 0.5 + 0.5 * Math.sin(Date.now() * 0.008);
       ctx.save();
-      const color = this.needReforest ? '#ef4444' : '#00C853';
+      const color = this.needReforest ? '#ef4444' : '#eab308';
       ctx.shadowColor = color;
-      ctx.shadowBlur = 12 + pulse * 10;
+      ctx.shadowBlur = 14 + pulse * 10;
       ctx.strokeStyle = color;
       ctx.lineWidth = 2.5;
       ctx.beginPath();
-      ctx.ellipse(this.x, this.y - 4, 16 + pulse * 4, 10 + pulse * 3, 0, 0, Math.PI * 2);
+      ctx.ellipse(this.x, this.y - 4, 20 + pulse * 5, 12 + pulse * 3, 0, 0, Math.PI * 2);
       ctx.stroke();
 
       // Tooltip flotante al pasar el mouse
-      if (this.glowing && !this.reforested) {
+      if (this.canGrowToTree || (this.reforested && this.glowing)) {
         ctx.font = '700 11px Inter, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
-        ctx.fillRect(this.x - 65, this.y - 42, 130, 22);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+        ctx.fillRect(this.x - 90, this.y - 46, 180, 24);
         ctx.strokeStyle = '#d4af37';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(this.x - 65, this.y - 42, 130, 22);
-        ctx.fillStyle = '#69f0ae';
-        ctx.fillText('🌱 REFORESTAR LENGA', this.x, this.y - 27);
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(this.x - 90, this.y - 46, 180, 24);
+        ctx.fillStyle = '#f5d77f';
+        ctx.fillText('🌱 CLIC PARA MADURAR EL BOSQUE', this.x, this.y - 30);
       }
       ctx.restore();
     }

@@ -149,8 +149,19 @@ class BeaverGame {
             return;
           }
 
+          // Clic en brotes florecidos (broteplanta.png) tras el minijuego para madurar progresivamente todos los árboles
+          const targetGlowingSeedling = this.entities.find(el => el instanceof Seedling && !el.dead && (el.canGrowToTree || (el.reforested && el.glowing)));
+          if (targetGlowingSeedling) {
+            const dx = Math.abs(clickX - targetGlowingSeedling.x);
+            const dy = Math.abs(clickY - targetGlowingSeedling.y);
+            if (Math.hypot(clickX - targetGlowingSeedling.x, clickY - (targetGlowingSeedling.y - 8)) < 80 || (dx < 80 && dy < 80)) {
+              this.growAllSeedlingsToFullTrees();
+              return;
+            }
+          }
+
           if (!this.reforestMinigamePlayed) {
-            const targetSeedling = this.entities.find(el => el instanceof Seedling && !el.dead && !el.reforested && Math.hypot(clickX - el.x, clickY - (el.y - 6)) < 32);
+            const targetSeedling = this.entities.find(el => el instanceof Seedling && !el.dead && !el.reforested && Math.hypot(clickX - el.x, clickY - (el.y - 6)) < 55);
             if (targetSeedling) {
               this.ui.openReforestationMinigame(targetSeedling);
             }
@@ -715,6 +726,77 @@ class BeaverGame {
 
     this.entities.sort((a, b) => a.baseY - b.baseY);
     this.ui.update(this.stats, this.year, this.timelinePct);
+  }
+
+  growAllSeedlingsToFullTrees() {
+    const seedlings = this.entities.filter(el => el instanceof Seedling && !el.dead);
+    if (seedlings.length === 0) return;
+
+    seedlings.forEach(s => {
+      s.glowing = false;
+      s.canGrowToTree = false;
+    });
+
+    // Fase 1 (0s): Todos cambian a brote2.png simultáneamente con ráfaga de hojas
+    seedlings.forEach(s => {
+      s.growthStage = 1;
+      s._refreshSprite();
+      this.particles.burst(s.x, s.y - 12, 'leaf', 18);
+    });
+
+    // Fase 2 (0.8s): Todos cambian a brote3.png simultáneamente
+    setTimeout(() => {
+      seedlings.forEach(s => {
+        s.growthStage = 2;
+        s._refreshSprite();
+        this.particles.burst(s.x, s.y - 18, 'leaf', 24);
+      });
+    }, 800);
+
+    // Fase 3 (1.6s): Todos se transforman en Árboles Nativos maduros completos (Tree)
+    setTimeout(() => {
+      seedlings.forEach((s, idx) => {
+        s.dead = true;
+        const fullTree = new Tree(s.x, s.y, idx % 9);
+        fullTree.scale = 0.85 + Math.random() * 0.35;
+        this.entities.push(fullTree);
+        this.particles.burst(s.x, s.y - 25, 'leaf', 30);
+      });
+
+      // Transición final: Mostrar las 2 ventanas emergentes del Final del Juego
+      setTimeout(() => {
+        this.showFinalGameEndingPopups();
+      }, 1000);
+    }, 1600);
+  }
+
+  showFinalGameEndingPopups() {
+    // Popup 1: El retorno del bosque nativo
+    this.ui.showEditorialNewsCard({
+      title: '🌱 EL RETORNO DEL BOSQUE NATIVO DE LENGA',
+      subtitle: 'La cuenca fueguina recupera su esplendor boscoso ancestral.',
+      text: 'Gracias a la remoción de las represas y a la reforestación activa con plantines protegidos, los brotes de Lenga han madurado en árboles autóctonos. El caudal del río se ha estabilizado y la fauna autóctona (pumas, guanacos, zorros colorados y pájaros carpinteros) retorna a su hábitat natural.',
+      quote: 'Un bosque de Lenga maduro tarda siglos en consolidarse, pero la interrupción de la destrucción por castores permite su regeneración continua.',
+      fact: 'La vegetación nativa restaurada fija miles de toneladas de carbono y previene la erosión del suelo.',
+      year: '2026',
+      centered: true,
+      onAccept: () => {
+        // Popup 2: 80 AÑOS DESPUÉS: LA LECCIÓN ECOLÓGICA DE TIERRA DEL FUEGO (FINAL)
+        this.ui.showEditorialNewsCard({
+          title: '🏆 80 AÑOS DESPUÉS: LA LECCIÓN ECOLÓGICA DE TIERRA DEL FUEGO',
+          subtitle: '1946 - 2026: De la especie exótica invasora a la restauración del bosque subantártico.',
+          text: 'La historia de los 20 castores introducidos en 1946 demuestra las consecuencias irreversibles que provoca la alteración humana de los ecosistemas australes. Este newsgame celebra el esfuerzo conjunto de biólogos, guardaparques y la comunidad fueguina por devolver la vida a la Patagonia.',
+          quote: 'La conservación del medio ambiente exige ciencia, rigor y compromiso permanente. El futuro de nuestros bosques está en nuestras manos.',
+          fact: 'Reportaje elaborado con datos oficiales de la Estrategia Binacional ENEEI, FAO, FMAM y Vistazo.',
+          year: '2026',
+          centered: true,
+          onAccept: () => {
+            // Mostrar la Tabla de Posiciones Final / Arcade High Scores
+            this.ui.showArcadeLeaderboard(this.stats.health * 25 + 500);
+          }
+        });
+      }
+    });
   }
 
   _draw() {
