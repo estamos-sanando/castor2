@@ -65,6 +65,12 @@ const ASSET_MANIFEST = {
   ranger_trap: 'assets/guardaparquejaula.png',
   cage_trap:   'assets/Jaulacastor.png',
 
+  brote_0: 'assets/brote.png',
+  brote_1: 'assets/brote1.png',
+  brote_2: 'assets/brote2.png',
+  brote_3: 'assets/brote3.png',
+  brote_4: 'assets/brote4.png',
+
   scientist_idle:      'assets/guardaparque.png',
   scientist_walk:      'assets/guardaparque.png',
 
@@ -238,9 +244,14 @@ class SpritePainter {
     return realImg || this._emptyCanvas(32, 24);
   }
 
-  static seedling_sprite() {
-    const realImg = getLoadedImg('tree_healthy_1');
-    return realImg || this._emptyCanvas(22, 24);
+  static seedling_sprite(variant = 0, protectedMesh = false) {
+    if (protectedMesh) {
+      const img = getLoadedImg('brote_4') || getLoadedImg('brote_0');
+      return img || this._emptyCanvas(24, 30);
+    }
+    const key = `brote_${variant % 4}`;
+    const img = getLoadedImg(key) || getLoadedImg('brote_0') || getLoadedImg('tree_healthy_1');
+    return img || this._emptyCanvas(22, 24);
   }
 
   static leaf_particle() {
@@ -642,31 +653,49 @@ class Cage extends Entity {
 // SEEDLING (LENGA REFORESTATION)
 // ──────────────────────────────────────────────────────────────
 class Seedling extends Entity {
-  constructor(x, y, col = 0, row = 0) {
+  constructor(x, y, variant = 0) {
     super(x, y);
-    this.col = col; this.row = row;
-    this.sprite = SpritePainter.seedling_sprite();
-    this.growTimer = 15;
-    this.grown = false;
+    this.variant = variant;
+    this.reforested = false;
+    this.protectedMesh = false;
+    this.needReforest = false;
+    this.glowing = false;
     this.baseY = y;
-    this.growProgress = 0;
+    this._refreshSprite();
   }
 
-  update(dt, game) {
-    if (this.grown) return;
-    this.growTimer -= dt;
-    this.growProgress = 1 - Math.max(0, this.growTimer / 15);
-    this.scale = 0.7 + this.growProgress * 0.3;
-    if (this.growTimer <= 0) {
-      this.grown = true;
-      const tree = new Tree(this.x, this.y, Math.floor(Math.random() * 9), this.col, this.row);
-      game.entities.push(tree);
-      game.stats.intactTrees = Math.min(100, game.stats.intactTrees + 2);
-      this.dead = true;
+  _refreshSprite() {
+    this.sprite = SpritePainter.seedling_sprite(this.variant, this.protectedMesh);
+  }
+
+  setReforested(success, protectedMesh = false) {
+    if (success) {
+      this.reforested = true;
+      this.needReforest = false;
+      this.protectedMesh = protectedMesh;
+      this._refreshSprite();
+    } else {
+      this.reforested = false;
+      this.needReforest = true;
     }
   }
 
+  update(dt, game) {}
+
   draw(ctx) {
+    if (this.glowing || this.needReforest) {
+      const pulse = 0.5 + 0.5 * Math.sin(Date.now() * 0.006);
+      ctx.save();
+      const color = this.needReforest ? '#ef4444' : '#00C853';
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 10 + pulse * 8;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.ellipse(this.x, this.y - 6, 14 + pulse * 3, 9 + pulse * 2, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
     super.draw(ctx);
   }
 }

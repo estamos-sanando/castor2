@@ -730,4 +730,310 @@ class GameUI {
   showNews(opts) {
     this.showEditorialNewsCard(opts);
   }
+
+  // ── MINIJUEGO "REFORESTACIÓN DE LENGA" (4 PASOS INTERACTIVOS) ──
+  openReforestationMinigame(targetSeedling) {
+    if (document.getElementById('reforestation-minigame-panel')) return;
+
+    this.reforestSeedling = targetSeedling;
+    this.survivalProbability = 100;
+    this.reforestStep = 1;
+    this.mallaInstalled = false;
+    this.reforestActive = true;
+
+    const panel = document.createElement('div');
+    panel.id = 'reforestation-minigame-panel';
+    panel.innerHTML = `
+      <div class="sidebar-card reforest-card arcade-theme-card">
+        <div class="sidebar-header reforest-header">
+          <h4>REFORESTACIÓN NATIVA</h4>
+          <span class="reforest-step-tag" id="reforest-step-tag">PASO 1 DE 4</span>
+        </div>
+
+        <div class="survival-status-box">
+          <div class="survival-info">
+            <span class="stat-lbl">ESTADO DE SUPERVIVENCIA</span>
+            <span class="stat-val survival-pct" id="reforest-survival-val">100%</span>
+          </div>
+          <div class="survival-bar-track">
+            <div class="survival-bar-fill" id="reforest-survival-bar" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <div class="reforest-canvas-container" id="reforest-graphic-box">
+          <canvas id="reforest-inner-canvas" width="344" height="170"></canvas>
+        </div>
+
+        <div class="reforest-controls-box" id="reforest-controls-content">
+        </div>
+      </div>
+    `;
+    document.getElementById('game-container').appendChild(panel);
+
+    this._setupReforestStep(1);
+
+    this._reforestKeyHandler = (e) => {
+      if (e.code === 'Space' && this.reforestActive) {
+        e.preventDefault();
+        this._triggerReforestAction();
+      }
+    };
+    window.addEventListener('keydown', this._reforestKeyHandler);
+  }
+
+  _updateReforestSurvivalUI() {
+    this.survivalProbability = Math.max(0, Math.min(100, Math.round(this.survivalProbability)));
+    const valEl = document.getElementById('reforest-survival-val');
+    const barEl = document.getElementById('reforest-survival-bar');
+    if (valEl) valEl.textContent = `${this.survivalProbability}%`;
+    if (barEl) {
+      barEl.style.width = `${this.survivalProbability}%`;
+      if (this.survivalProbability >= 80) barEl.style.background = '#00C853';
+      else if (this.survivalProbability >= 50) barEl.style.background = '#eab308';
+      else barEl.style.background = '#ef4444';
+    }
+  }
+
+  _setupReforestStep(step) {
+    this.reforestStep = step;
+    const tagEl = document.getElementById('reforest-step-tag');
+    const controlsEl = document.getElementById('reforest-controls-content');
+    if (!controlsEl) return;
+
+    if (this._reforestRaf) cancelAnimationFrame(this._reforestRaf);
+
+    if (step === 1) {
+      if (tagEl) tagEl.textContent = 'PASO 1 DE 4';
+      controlsEl.innerHTML = `
+        <p class="reforest-instruction-text">Paso 1: Presiona <strong>ESPACIO</strong> o haz clic para cavar a la profundidad correcta en la <strong>ZONA VERDE</strong>.</p>
+        <button class="popup-action-btn arcade-action-btn green-btn" id="btn-reforest-action">CAVAR ( ESPACIO )</button>
+      `;
+
+      let needlePos = 0, needleDir = 1, speed = 2.2;
+      const innerCanvas = document.getElementById('reforest-inner-canvas');
+      const ctx = innerCanvas?.getContext('2d');
+
+      const loopStep1 = () => {
+        if (!this.reforestActive || this.reforestStep !== 1) return;
+        needlePos += speed * needleDir;
+        if (needlePos >= 100) { needlePos = 100; needleDir = -1; }
+        else if (needlePos <= 0) { needlePos = 0; needleDir = 1; }
+        this.step1NeedlePos = needlePos;
+
+        if (ctx) {
+          ctx.clearRect(0, 0, 344, 170);
+          ctx.fillStyle = '#3e2723'; ctx.fillRect(0, 0, 344, 170);
+          ctx.fillStyle = '#271715'; ctx.fillRect(0, 110, 344, 60);
+
+          ctx.fillStyle = '#d4af37'; ctx.fillRect(165, 30, 14, 50);
+          ctx.fillStyle = '#9e9e9e'; ctx.beginPath(); ctx.moveTo(160, 80); ctx.lineTo(184, 80); ctx.lineTo(172, 105); ctx.fill();
+
+          ctx.fillStyle = '#ef4444'; ctx.fillRect(30, 130, 284, 20);
+          ctx.fillStyle = '#00C853'; ctx.fillRect(115, 130, 114, 20);
+          ctx.strokeStyle = '#d4af37'; ctx.strokeRect(30, 130, 284, 20);
+
+          const nx = 30 + (needlePos / 100) * 284;
+          ctx.fillStyle = '#ffffff'; ctx.fillRect(nx - 2, 124, 4, 32);
+        }
+
+        this._reforestRaf = requestAnimationFrame(loopStep1);
+      };
+      loopStep1();
+
+    } else if (step === 2) {
+      if (tagEl) tagEl.textContent = 'PASO 2 DE 4';
+      controlsEl.innerHTML = `
+        <p class="reforest-instruction-text">Paso 2: Presiona <strong>ESPACIO</strong> o haz clic cuando la retícula esté bien centrada sobre el agujero.</p>
+        <button class="popup-action-btn arcade-action-btn green-btn" id="btn-reforest-action">COLOCAR BROTE ( ESPACIO )</button>
+      `;
+
+      let t = 0;
+      const innerCanvas = document.getElementById('reforest-inner-canvas');
+      const ctx = innerCanvas?.getContext('2d');
+
+      const loopStep2 = () => {
+        if (!this.reforestActive || this.reforestStep !== 2) return;
+        t += 0.05;
+        const dx = Math.sin(t * 2.2) * 45;
+        const dy = Math.cos(t * 2.8) * 28;
+        this.step2Offset = { dx, dy };
+
+        if (ctx) {
+          ctx.clearRect(0, 0, 344, 170);
+          ctx.fillStyle = '#3e2723'; ctx.fillRect(0, 0, 344, 170);
+          ctx.fillStyle = '#1b0000'; ctx.beginPath(); ctx.ellipse(172, 110, 35, 18, 0, 0, Math.PI * 2); ctx.fill();
+
+          const cx = 172 + dx, cy = 110 + dy;
+          ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(cx, cy, 14, 0, Math.PI * 2); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(cx - 20, cy); ctx.lineTo(cx + 20, cy); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(cx, cy - 20); ctx.lineTo(cx, cy + 20); ctx.stroke();
+        }
+
+        this._reforestRaf = requestAnimationFrame(loopStep2);
+      };
+      loopStep2();
+
+    } else if (step === 3) {
+      if (tagEl) tagEl.textContent = 'PASO 3 DE 4';
+      controlsEl.innerHTML = `
+        <p class="reforest-instruction-text">Paso 3: Presiona en el ritmo justo a medida que los anillos se cierran alrededor del brote.</p>
+        <button class="popup-action-btn arcade-action-btn green-btn" id="btn-reforest-action">APISONAR ( ESPACIO )</button>
+      `;
+
+      this.step3RingCycle = 1;
+      this.step3RingRadius = 60;
+      let radius = 60;
+      const innerCanvas = document.getElementById('reforest-inner-canvas');
+      const ctx = innerCanvas?.getContext('2d');
+
+      const loopStep3 = () => {
+        if (!this.reforestActive || this.reforestStep !== 3) return;
+        radius -= 0.8;
+        if (radius <= 5) {
+          radius = 60;
+          this.survivalProbability -= 10;
+          this._updateReforestSurvivalUI();
+          this.step3RingCycle++;
+          if (this.step3RingCycle > 3) {
+            this._setupReforestStep(4);
+            return;
+          }
+        }
+        this.step3RingRadius = radius;
+
+        if (ctx) {
+          ctx.clearRect(0, 0, 344, 170);
+          ctx.fillStyle = '#3e2723'; ctx.fillRect(0, 0, 344, 170);
+          ctx.fillStyle = '#1b0000'; ctx.beginPath(); ctx.ellipse(172, 110, 30, 14, 0, 0, Math.PI * 2); ctx.fill();
+
+          ctx.fillStyle = '#4a8c2a'; ctx.fillRect(170, 70, 4, 38);
+          ctx.beginPath(); ctx.arc(172, 65, 12, 0, Math.PI * 2); ctx.fill();
+
+          ctx.strokeStyle = this.step3RingCycle === 1 ? '#00C853' : (this.step3RingCycle === 2 ? '#eab308' : '#ff9800');
+          ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.ellipse(172, 110, radius, radius * 0.5, 0, 0, Math.PI * 2); ctx.stroke();
+        }
+
+        this._reforestRaf = requestAnimationFrame(loopStep3);
+      };
+      loopStep3();
+
+    } else if (step === 4) {
+      if (tagEl) tagEl.textContent = 'PASO 4 DE 4';
+      controlsEl.innerHTML = `
+        <p class="reforest-instruction-text">Paso 4: <strong>¡ALERTA!</strong> Haz clic para instalar la <strong>Malla Protectora</strong> sobre el brote.</p>
+        <div class="malla-equip-box" id="btn-equip-malla" style="background: rgba(212, 175, 55, 0.15); border: 1.5px dashed var(--gold); border-radius: 10px; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; margin-bottom: 12px;">
+          <img src="assets/brote4.png" style="height: 32px;" />
+          <span style="font-weight: 700; font-size: 12px; color: var(--gold-light);">${this.mallaInstalled ? '✓ MALLA DE PROTECCIÓN INSTALADA' : 'EQUIPAR MALLA PROTECTORA'}</span>
+        </div>
+        <button class="popup-action-btn arcade-action-btn green-btn" id="btn-reforest-action">FINALIZAR REFORESTACIÓN ➔</button>
+      `;
+
+      const innerCanvas = document.getElementById('reforest-inner-canvas');
+      const ctx = innerCanvas?.getContext('2d');
+      const drawStep4 = () => {
+        if (!ctx) return;
+        ctx.clearRect(0, 0, 344, 170);
+        ctx.fillStyle = '#3e2723'; ctx.fillRect(0, 0, 344, 170);
+        ctx.fillStyle = '#271715'; ctx.beginPath(); ctx.ellipse(172, 110, 28, 12, 0, 0, Math.PI * 2); ctx.fill();
+
+        ctx.fillStyle = '#4a8c2a'; ctx.fillRect(170, 68, 4, 40);
+        ctx.beginPath(); ctx.arc(172, 63, 12, 0, Math.PI * 2); ctx.fill();
+
+        if (this.mallaInstalled) {
+          ctx.strokeStyle = '#9e9e9e'; ctx.lineWidth = 2;
+          ctx.strokeRect(158, 55, 28, 55);
+        }
+      };
+      drawStep4();
+
+      document.getElementById('btn-equip-malla')?.addEventListener('click', () => {
+        this.mallaInstalled = true;
+        const box = document.getElementById('btn-equip-malla');
+        if (box) box.innerHTML = '<img src="assets/brote4.png" style="height: 32px;" /> <span style="font-weight: 700; font-size: 12px; color: #00C853;">✓ MALLA DE PROTECCIÓN INSTALADA</span>';
+        drawStep4();
+      });
+
+    } else if (step === 5) {
+      if (tagEl) tagEl.textContent = 'RESULTADO';
+      const isSuccess = this.survivalProbability >= 80;
+
+      controlsEl.innerHTML = `
+        <div class="${isSuccess ? 'reforest-success-badge' : 'reforest-fail-badge'}">
+          ${isSuccess ? `¡REFORESTACIÓN EXITOSA! (+100 PTS)` : `REFORESTACIÓN INSUFICIENTE (${this.survivalProbability}%)`}
+        </div>
+        <p class="reforest-instruction-text">
+          ${isSuccess 
+            ? 'El brote de Lenga nativa ha sido plantado con éxito y protegido contra herbívoros.' 
+            : 'La probabilidad de supervivencia fue menor al 80%. La casilla requiere replantación.'}
+        </p>
+        <button class="popup-action-btn arcade-action-btn green-btn" id="btn-reforest-action">CONTINUAR ( ESPACIO )</button>
+      `;
+
+      if (this.reforestSeedling) {
+        this.reforestSeedling.setReforested(isSuccess, this.mallaInstalled);
+        if (isSuccess) {
+          this.game.stats.health = Math.min(100, this.game.stats.health + 2);
+        }
+      }
+    }
+
+    document.getElementById('btn-reforest-action')?.addEventListener('click', () => {
+      this._triggerReforestAction();
+    });
+  }
+
+  _triggerReforestAction() {
+    if (this.reforestStep === 1) {
+      const pos = this.step1NeedlePos || 50;
+      if (pos >= 40 && pos <= 60) {
+      } else {
+        this.survivalProbability -= 15;
+        this._updateReforestSurvivalUI();
+      }
+      this._setupReforestStep(2);
+    } else if (this.reforestStep === 2) {
+      const off = this.step2Offset || { dx: 0, dy: 0 };
+      const dist = Math.hypot(off.dx, off.dy);
+      if (dist <= 18) {
+      } else {
+        this.survivalProbability -= 15;
+        this._updateReforestSurvivalUI();
+      }
+      this._setupReforestStep(3);
+    } else if (this.reforestStep === 3) {
+      const radius = this.step3RingRadius || 60;
+      if (radius <= 25 && radius >= 10) {
+      } else {
+        this.survivalProbability -= 10;
+        this._updateReforestSurvivalUI();
+      }
+      this.step3RingCycle = (this.step3RingCycle || 1) + 1;
+      if (this.step3RingCycle > 3) {
+        this._setupReforestStep(4);
+      }
+    } else if (this.reforestStep === 4) {
+      if (!this.mallaInstalled) {
+        this.survivalProbability = Math.round(this.survivalProbability * 0.2);
+        this._updateReforestSurvivalUI();
+      }
+      this._setupReforestStep(5);
+    } else if (this.reforestStep === 5) {
+      this.closeReforestationMinigame();
+    }
+  }
+
+  closeReforestationMinigame() {
+    this.reforestActive = false;
+    if (this._reforestRaf) cancelAnimationFrame(this._reforestRaf);
+    if (this._reforestKeyHandler) window.removeEventListener('keydown', this._reforestKeyHandler);
+
+    const panel = document.getElementById('reforestation-minigame-panel');
+    if (panel) {
+      panel.classList.add('fade-out');
+      setTimeout(() => panel.remove(), 350);
+    }
+    this.game.minigameActive = false;
+  }
 }

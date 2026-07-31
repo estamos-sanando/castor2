@@ -65,34 +65,55 @@ class BeaverGame {
       const canvas = document.getElementById('game-canvas');
       if (canvas) {
         canvas.addEventListener('click', (e) => {
-          if (this.playerCage && this.playerCage.glowing) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = 1280 / rect.width;
-            const scaleY = 720 / rect.height;
-            const clickX = (e.clientX - rect.left) * scaleX;
-            const clickY = (e.clientY - rect.top) * scaleY;
+          const rect = canvas.getBoundingClientRect();
+          const scaleX = 1280 / rect.width;
+          const scaleY = 720 / rect.height;
+          const clickX = (e.clientX - rect.left) * scaleX;
+          const clickY = (e.clientY - rect.top) * scaleY;
 
+          if (this.playerCage && this.playerCage.glowing) {
             if (Math.hypot(clickX - this.playerCage.x, clickY - (this.playerCage.y - 10)) < 55) {
               this.playerCage.glowing = false;
               this.onPlayerCageClicked();
+              return;
             }
+          }
+
+          const targetSeedling = this.entities.find(el => el instanceof Seedling && !el.dead && !el.reforested && Math.hypot(clickX - el.x, clickY - (el.y - 6)) < 32);
+          if (targetSeedling) {
+            this.ui.openReforestationMinigame(targetSeedling);
           }
         });
 
         canvas.addEventListener('mousemove', (e) => {
-          if (this.playerCage && this.playerCage.glowing) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = 1280 / rect.width;
-            const scaleY = 720 / rect.height;
-            const mouseX = (e.clientX - rect.left) * scaleX;
-            const mouseY = (e.clientY - rect.top) * scaleY;
+          const rect = canvas.getBoundingClientRect();
+          const scaleX = 1280 / rect.width;
+          const scaleY = 720 / rect.height;
+          const mouseX = (e.clientX - rect.left) * scaleX;
+          const mouseY = (e.clientY - rect.top) * scaleY;
 
+          let isHovered = false;
+          if (this.playerCage && this.playerCage.glowing) {
             if (Math.hypot(mouseX - this.playerCage.x, mouseY - (this.playerCage.y - 10)) < 55) {
-              canvas.style.cursor = 'pointer';
-              return;
+              isHovered = true;
             }
           }
-          if (!window.ISO_ENGINE || !window.ISO_ENGINE.camera || !window.ISO_ENGINE.camera.isDragging) {
+
+          this.entities.forEach(el => {
+            if (el instanceof Seedling && !el.dead && !el.reforested) {
+              const d = Math.hypot(mouseX - el.x, mouseY - (el.y - 6));
+              if (d < 32) {
+                el.glowing = true;
+                isHovered = true;
+              } else {
+                el.glowing = false;
+              }
+            }
+          });
+
+          if (isHovered) {
+            canvas.style.cursor = 'pointer';
+          } else if (!window.ISO_ENGINE || !window.ISO_ENGINE.camera || !window.ISO_ENGINE.camera.isDragging) {
             canvas.style.cursor = 'default';
           }
         });
@@ -521,9 +542,63 @@ class BeaverGame {
       year: '2026',
       centered: true, // VENTANA CENTRAL DE CAMBIO DE ESCENA
       onAccept: () => {
-        // AL DAR ACEPTAR SE CAMBIA LA ESCENA AL MAPA DE RESTAURACIÓN!
+        // AL DAR ACEPTAR SE CAMBIA LA ESCENA AL MAPA DE RESTAURACIÓN Y SE REMUEVEN ÁRBOLES FANTASMAS!
         this._transitionToMap(3); // map_06_restauracion_parcial.jpg
+        this.spawnReforestationSeedlings();
       }
+    });
+  }
+
+  spawnReforestationSeedlings() {
+    // 1. Quitar todos los árboles fantasmas
+    this.entities.forEach(e => {
+      if (e instanceof Tree && (e.state === 'flooded' || e.state === 'dead' || e.dead)) {
+        e.dead = true;
+      }
+    });
+
+    // 2. Eliminar tocones o brotes viejos si los hubiera
+    this.entities.forEach(e => {
+      if (e instanceof Seedling) e.dead = true;
+    });
+
+    // 3. Colocar 20 brotes distribuidos en el margen izquierdo y 20 en el derecho (total 40)
+    const spots = [];
+    const minDist = 38;
+
+    // Izquierda (20 brotes)
+    for (let i = 0; i < 20; i++) {
+      let attempts = 0;
+      while (attempts < 100) {
+        attempts++;
+        const x = 60 + Math.random() * 460;
+        const y = 110 + Math.random() * 540;
+        if (!spots.some(p => Math.hypot(p.x - x, p.y - y) < minDist)) {
+          spots.push({ x, y });
+          break;
+        }
+      }
+    }
+
+    // Derecha (20 brotes)
+    for (let i = 0; i < 20; i++) {
+      let attempts = 0;
+      while (attempts < 100) {
+        attempts++;
+        const x = 760 + Math.random() * 450;
+        const y = 110 + Math.random() * 540;
+        if (x >= 820 && x <= 980 && y >= 450 && y <= 600) continue; // zona cabaña
+        if (!spots.some(p => Math.hypot(p.x - x, p.y - y) < minDist)) {
+          spots.push({ x, y });
+          break;
+        }
+      }
+    }
+
+    // Instanciar los 40 brotes usando los assets brote.png, brote1.png, brote2.png, brote3.png
+    spots.forEach((spot, idx) => {
+      const seedling = new Seedling(spot.x, spot.y, idx % 4);
+      this.entities.push(seedling);
     });
   }
 
