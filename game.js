@@ -107,9 +107,9 @@ class BeaverGame {
             }
           }
 
-          // Clics para desmantelar diques en el mapa inundado
-          const targetDam = this.entities.find(el => el instanceof Dam && el.active && !el.dead && Math.hypot(clickX - el.x, clickY - el.y) < 70);
-          if (targetDam) {
+          // Clics para desmantelar diques brillantes en el mapa inundado
+          const targetDam = this.entities.find(el => el instanceof Dam && el.active && !el.dead && Math.hypot(clickX - el.x, clickY - el.y) < 75);
+          if (targetDam && (targetDam.glowing || this.damsCanBeDismantled)) {
             targetDam.hp = (targetDam.hp !== undefined ? targetDam.hp : 5) - 1;
             this.particles.burst(targetDam.x, targetDam.y - 10, 'wood', 14);
 
@@ -117,20 +117,32 @@ class BeaverGame {
               targetDam.remove();
               const remainingDams = this.entities.filter(el => el instanceof Dam && el.active && !el.dead && el !== targetDam).length;
 
-              if (remainingDams <= 1 && this.currentMap === 1) {
-                this._transitionToMap(2); // Transición progresiva a drenado parcial
-              }
+              if (remainingDams > 0) {
+                // Transición progresiva al mapa de drenado parcial mientras se muestra la ventana emergente
+                this._transitionToMap(2); // map_05_drenado_parcial.jpg
 
-              if (remainingDams <= 0) {
-                this.restoreEcosystem();
-              } else {
                 this.ui.showEditorialNewsCard({
-                  title: '🪵 DIQUE DESMANTELADO',
+                  title: '🌊 DRENADO PARCIAL DE LA CUENCA',
                   subtitle: `Quedan ${remainingDams} diques en la cuenca por desarmar.`,
-                  text: 'Al remover los troncos estancados, el flujo del agua vuelve a circular libremente y el nivel de inundación desciende.',
-                  fact: 'La desobstrucción manual de represas permite la recuperación de la cuenca.',
+                  text: 'Al remover los troncos estancados, el flujo del agua vuelve a circular libremente y el nivel de inundación desciende progresivamente.',
+                  fact: 'La desobstrucción manual de represas permite la recuperación gradual del suelo.',
                   year: '2026',
                   onAccept: () => {}
+                });
+              } else {
+                // Se removieron TODOS los diques: Transición progresiva al mapa final de Restauración mientras se muestra la ventana emergente
+                this._transitionToMap(3); // map_06_restauracion_parcial.jpg
+
+                this.ui.showEditorialNewsCard({
+                  title: '🌱 DESMANTELAMIENTO COMPLETADO Y REFORESTACIÓN NATIVA',
+                  subtitle: 'La cuenca fueguina se ha desobstruido por completo.',
+                  text: 'Al drenarse el agua estancada, los biólogos y guardaparques inician la reforestación activa con plantines de Lenga nativa.',
+                  fact: 'La recuperación de las cuencas permite el retorno de la flora y fauna nativa.',
+                  year: '2026',
+                  centered: true,
+                  onAccept: () => {
+                    this.prepareReforestationStage();
+                  }
                 });
               }
             }
@@ -574,27 +586,23 @@ class BeaverGame {
       this._rangerCaptureInterval = null;
     }
 
-    this.stats.health = 85;
-    this.stats.hectaresFlooded = 0;
+    this.damsCanBeDismantled = true;
 
+    // Hacer brillar todos los diques activos en el mapa inundado
     this.entities.forEach(e => {
-      if (e instanceof Dam) e.remove();
+      if (e instanceof Dam && e.active) {
+        e.glowing = true;
+        e.hp = 5;
+      }
     });
 
-    // Ventana central con overlay que obliga a leer antes del cambio de escena final
     this.ui.showEditorialNewsCard({
-      title: '🌱 DESMANTELAMIENTO DE DIQUES Y REAPARICIÓN DE LOS PRIMEROS RENUEVOS NATIVOS',
-      subtitle: 'La remoción manual de represas permite que los ríos recuperen su escurrimiento natural.',
-      text: 'Al drenarse el agua estancada, los biólogos y guardaparques reforestan activamente con plantines de Lenga nativa, frenando la invasión de pastos exóticos y devolviendo el equilibrio a la cuenca fueguina.',
-      quote: 'La restauración de un ecosistema devastado por 80 años toma décadas, pero los primeros brotes verdes marcan el retorno del equilibrio.',
-      fact: 'La recuperación de las cuencas de agua dulce permite el retorno de la fauna nativa y la fijación de carbono.',
+      title: '🪵 DESMANTELAMIENTO MANUAL DE DIQUES',
+      subtitle: 'Los diques en el mapa inundado han comenzado a brillar en dorado.',
+      text: 'Haz clic repetidamente (5 veces) sobre cada dique resplandeciente para romper las estructuras de madera y permitir que la cuenca se drene progresivamente.',
+      fact: 'La desobstrucción manual de represas devuelve el escurrimiento natural a los ríos fueguinos.',
       year: '2026',
-      centered: true, // VENTANA CENTRAL DE CAMBIO DE ESCENA
-      onAccept: () => {
-        // AL DAR ACEPTAR SE CAMBIA LA ESCENA AL MAPA DE RESTAURACIÓN Y SE ABRE EL INVENTARIO DE REFORESTACIÓN!
-        this._transitionToMap(3); // map_06_restauracion_parcial.jpg
-        this.prepareReforestationStage();
-      }
+      onAccept: () => {}
     });
   }
 
