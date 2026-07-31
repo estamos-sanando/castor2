@@ -565,7 +565,8 @@ html, body {
   transition: all 0.2s ease;
 }
 
-/* ── MINIJUEGO REFORESTACIÓN DE LENGA (LADO IZQUIERDO) ── */
+/* ── MINIJUEGO CAPTURA DE CASTORES Y REFORESTACIÓN DE LENGA (LADO IZQUIERDO) ── */
+#beaver-catcher-panel,
 #reforestation-minigame-panel {
   position: absolute;
   top: 50%;

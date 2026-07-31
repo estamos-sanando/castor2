@@ -655,16 +655,6 @@ class GameUI {
         beaver.dead = true;
         this.game.particles.burst(beaver.x, beaver.y - 15, 'leaf', 18);
         this.game.stats.beavers = Math.max(0, this.game.stats.beavers - 1);
-
-        const dam = this.game.entities.find(d => d instanceof Dam && d.active && !d.dead);
-        if (dam) {
-          if (dam.level > 1) {
-            dam.level--;
-            dam._refreshSprite();
-          } else {
-            dam.remove();
-          }
-        }
       }
     }
   }

@@ -71,10 +71,38 @@ class BeaverGame {
           const clickX = (clientX - rect.left) * scaleX;
           const clickY = (clientY - rect.top) * scaleY;
 
+          // Paso 1: Clic en la cabaña brillante para que aparezca el guardaparques
+          if (this.placedCabinEntity && this.placedCabinEntity.glowing) {
+            if (Math.hypot(clickX - this.placedCabinEntity.x, clickY - (this.placedCabinEntity.y - 15)) < 60) {
+              this.placedCabinEntity.glowing = false;
+
+              // Aparece el guardaparques parado al lado de la puerta de la cabaña
+              const ranger = new Ranger(this.placedCabinEntity.x - 28, this.placedCabinEntity.y + 4);
+              ranger.stationary = true;
+              this.entities.push(ranger);
+              this.particles.burst(ranger.x, ranger.y - 10, 'leaf', 16);
+
+              // Paso 2: La jaula empieza a brillar para activar el minijuego
+              if (this.playerCage) {
+                this.playerCage.glowing = true;
+              }
+
+              this.ui.showEditorialNewsCard({
+                title: '👨‍✈️ GUARDAPARQUES POSICIONADO',
+                subtitle: 'Estación de monitoreo activada.',
+                text: 'El guardaparques se ha ubicado junto a la cabaña. Haz clic sobre la <strong>Trampa Jaula</strong> (que parpadea en verde/dorado) para abrir el minijuego de captura.',
+                theme: 'info',
+                year: '2016'
+              });
+              return;
+            }
+          }
+
+          // Paso 2: Clic en la jaula brillante para abrir el minijuego
           if (this.playerCage && this.playerCage.glowing) {
             if (Math.hypot(clickX - this.playerCage.x, clickY - (this.playerCage.y - 10)) < 55) {
               this.playerCage.glowing = false;
-              this.onPlayerCageClicked();
+              this.ui.openBeaverCatcherMinigame();
               return;
             }
           }
@@ -469,13 +497,10 @@ class BeaverGame {
     this.cabinPos = { x, y };
     const cabin = new Rock(x, y, 1); // cabana.png
     cabin.scale = 1.0;
+    cabin.glowing = false;
+    this.placedCabinEntity = cabin;
     this.entities.push(cabin);
     this.particles.burst(x, y - 20, 'wood', 14);
-
-    // Colocar SOLAMENTE UN guardabosques estático al lado de la cabaña
-    const ranger = new Ranger(x - 38, y + 6);
-    ranger.stationary = true;
-    this.entities.push(ranger);
 
     this.checkAllThreeItemsInstalled();
   }
@@ -506,14 +531,15 @@ class BeaverGame {
       this.showPlacementArrow = false;
       this.ui.closeSidebarPanel();
 
-      if (this.playerCage) {
-        this.playerCage.glowing = true;
+      // Paso 1: Hacer brillar primero la Cabaña
+      if (this.placedCabinEntity) {
+        this.placedCabinEntity.glowing = true;
       }
 
       this.ui.showEditorialNewsCard({
         title: '¡PUESTO DE CONTROL ENEEI INSTALADO!',
-        subtitle: 'Cabaña, Cartel y Trampa Jaula desplegados en el área de monitoreo.',
-        text: 'Haz clic sobre la <strong>Trampa Jaula</strong> (que parpadea en verde/dorado en el terreno) para iniciar las labores de captura y monitoreo de castores.',
+        subtitle: 'Cabaña, Cartel y Trampa Jaula desplegados.',
+        text: 'Haz clic sobre la <strong>Cabaña Guardaparques</strong> (que parpadea en dorado) para enviar al guardaparques a su puesto de monitoreo.',
         theme: 'info',
         year: '2016'
       });

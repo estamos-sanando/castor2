@@ -341,7 +341,7 @@ class Entity {
           targetW = this.isSmall ? 18 : 28;
         }
       } else if (this instanceof Ranger) {
-        targetW = 34; // Guardaparques proporcionado al mapa
+        targetW = 26; // Guardaparques a escala de la puerta de la cabaña
       } else if (this instanceof Dam) {
         const lvl = Math.max(1, Math.min(3, this.level));
         const isLowerDam = (this.y > 350);
@@ -512,6 +512,7 @@ class Rock extends Entity {
   constructor(x, y, variant = 0) {
     super(x, y);
     this.variant = variant;
+    this.glowing = false;
     this._refreshSprite();
     this.baseY = y;
   }
@@ -520,6 +521,29 @@ class Rock extends Entity {
   }
   update(dt, game) {
     if (Math.random() < 0.03) this._refreshSprite();
+  }
+  draw(ctx) {
+    if (this.glowing) {
+      const pulse = 0.5 + 0.5 * Math.sin(Date.now() * 0.008);
+      ctx.save();
+      const grad = ctx.createRadialGradient(this.x, this.y - 20, 5, this.x, this.y - 20, 50 + pulse * 15);
+      grad.addColorStop(0, `rgba(234, 179, 8, ${0.8 + pulse * 0.2})`);
+      grad.addColorStop(0.5, `rgba(234, 179, 8, ${0.35 + pulse * 0.2})`);
+      grad.addColorStop(1, 'rgba(234, 179, 8, 0)');
+
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.ellipse(this.x, this.y - 15, 48 + pulse * 10, 28 + pulse * 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = '#eab308';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.ellipse(this.x, this.y - 15, 44, 24, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+    super.draw(ctx);
   }
 }
 
