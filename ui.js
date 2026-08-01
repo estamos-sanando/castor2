@@ -145,9 +145,52 @@ class GameUI {
    }
   }
 
-  const isInstruction = opts.isInstruction || opts.type === 'instruction' || (opts.text && (opts.text.toLowerCase().includes('haz clic') || opts.text.toLowerCase().includes('toca o haz clic')));
+  // 1. Tarjeta Final de Cierre del Juego ("80 AÑOS DESPUÉS")
+  if (opts && (opts.isFinal || (opts.title && opts.title.includes('80 AÑOS DESPUÉS')))) {
+   const overlayEl = document.createElement('div');
+   overlayEl.className = 'centered-news-overlay theme-victory';
+   overlayEl.innerHTML = `
+    <div class="game-popup-modal centered-welcome-window final-victory-modal theme-success">
+     <div class="initial-start-logo-wrapper" style="margin-bottom: 8px;">
+      <img src="assets/LOGO.png" class="welcome-start-logo-large" style="height: 85px;" alt="Logo Proyecto Castor" />
+     </div>
 
-  if (isInstruction) {
+     <div class="popup-modal-header">
+      <span class="popup-category-stamp" style="background: rgba(16, 185, 129, 0.25); color: #6ee7b7; border-color: #10b981;">FIN DEL JUEGO</span>
+      <span class="popup-year-badge">1946 — 2026</span>
+     </div>
+     
+     <div class="popup-modal-body">
+      <h2 class="popup-headline" style="color: #6ee7b7; font-size: clamp(17px, 2.8vw, 21px);">${opts.title}</h2>
+      ${opts.subtitle ? `<div class="popup-subhead">${opts.subtitle}</div>` : ''}
+      
+      <div class="popup-text-content">
+       <p class="popup-lead">${opts.text}</p>
+       ${opts.quote ? `<blockquote class="popup-quote final-reflection-quote"><span class="quote-mark">“</span>${opts.quote}<span class="quote-mark">”</span></blockquote>` : ''}
+      </div>
+
+      <div class="popup-footer center-footer" style="margin-top: 20px;">
+       <button class="popup-action-btn start-game-btn-large restart-game-btn" id="btn-restart-game">
+        REINICIAR JUEGO ↻
+       </button>
+      </div>
+     </div>
+    </div>
+   `;
+   document.getElementById('game-container').appendChild(overlayEl);
+
+   if (this.game) this.game.running = false;
+
+   overlayEl.querySelector('#btn-restart-game')?.addEventListener('click', () => {
+    window.location.reload();
+   });
+   return;
+  }
+
+  // 2. Notificación Flotante Superior (Instrucciones)
+  const isInstruction = opts && (opts.isInstruction || opts.type === 'instruction' || (opts.text && (opts.text.toLowerCase().includes('haz clic') || opts.text.toLowerCase().includes('toca o haz clic'))));
+
+  if (isInstruction && !opts.centered) {
    const notifEl = document.createElement('div');
    notifEl.className = 'game-instruction-notification-wrapper';
    notifEl.innerHTML = `
@@ -185,101 +228,64 @@ class GameUI {
 
    notifEl.querySelector('#btn-close-instruction')?.addEventListener('click', closeFn);
    return;
-   if (opts.isFinal || (opts.title && opts.title.includes('80 AÑOS DESPUÉS'))) {
-    const overlayEl = document.createElement('div');
-    overlayEl.className = 'centered-news-overlay theme-victory';
-    overlayEl.innerHTML = `
-     <div class="game-popup-modal centered-welcome-window final-victory-modal theme-success">
-      <div class="initial-start-logo-wrapper" style="margin-bottom: 8px;">
-       <img src="assets/LOGO.png" class="welcome-start-logo-large" style="height: 85px;" alt="Logo Proyecto Castor" />
-      </div>
+  }
 
-      <div class="popup-modal-header">
-       <span class="popup-category-stamp" style="background: rgba(16, 185, 129, 0.25); color: #6ee7b7; border-color: #10b981;">FIN DEL JUEGO</span>
-       <span class="popup-year-badge">1946 — 2026</span>
-      </div>
+  // 3. Ventana Emergente Centrada (Ej: Introducción 1946, Inundación, Restauración)
+  if (opts && opts.centered) {
+   let themeClass = opts.theme ? `theme-${opts.theme}` : (opts.bluish ? 'theme-danger' : 'theme-info');
+   let categoryStamp = ' REPORTE HISTÓRICO';
+   if (themeClass.includes('danger') || opts.bluish) categoryStamp = ' CATÁSTROFE AMBIENTAL';
+   else if (themeClass.includes('warning')) categoryStamp = ' IMPACTO ECOLÓGICO';
+   else if (themeClass.includes('success')) categoryStamp = ' RESTAURACIÓN NATIVA';
+
+   const overlayEl = document.createElement('div');
+   overlayEl.className = `centered-news-overlay ${themeClass}`;
+   overlayEl.innerHTML = `
+    <div class="game-popup-modal centered-welcome-window ${themeClass}">
+     <div class="popup-modal-header">
+      <span class="popup-category-stamp">${categoryStamp}</span>
+      <span class="popup-year-badge">TIERRA DEL FUEGO — ${opts.year || '2005'}</span>
+     </div>
+     
+     <div class="popup-modal-body">
+      <h2 class="popup-headline">${opts.title}</h2>
+      ${opts.subtitle ? `<div class="popup-subhead">${opts.subtitle}</div>` : ''}
       
-      <div class="popup-modal-body">
-       <h2 class="popup-headline" style="color: #6ee7b7; font-size: clamp(17px, 2.8vw, 21px);">${opts.title}</h2>
-       ${opts.subtitle ? `<div class="popup-subhead">${opts.subtitle}</div>` : ''}
-       
-       <div class="popup-text-content">
-        <p class="popup-lead">${opts.text}</p>
-        ${opts.quote ? `<blockquote class="popup-quote final-reflection-quote"><span class="quote-mark">“</span>${opts.quote}<span class="quote-mark">”</span></blockquote>` : ''}
-       </div>
+      <div class="popup-text-content">
+       <p class="popup-lead">${opts.text}</p>
+       ${opts.quote ? `<blockquote class="popup-quote"><span class="quote-mark">“</span>${opts.quote}<span class="quote-mark">”</span></blockquote>` : ''}
+       ${opts.fact ? `<div class="popup-fact-box"><div class="fact-box-title"> DATO DESTACADO</div><div class="fact-box-body">${opts.fact}</div></div>` : ''}
+      </div>
 
-       <div class="popup-footer center-footer" style="margin-top: 20px;">
-        <button class="popup-action-btn start-game-btn-large restart-game-btn" id="btn-restart-game">
-         REINICIAR JUEGO ↻
-        </button>
-       </div>
+      <div class="popup-footer">
+       <button class="popup-action-btn" id="btn-close-journal">ACEPTAR ➔</button>
       </div>
      </div>
-    `;
-    document.getElementById('game-container').appendChild(overlayEl);
+    </div>
+   `;
+   document.getElementById('game-container').appendChild(overlayEl);
 
-    if (this.game) this.game.running = false;
+   if (this.game) this.game.running = true;
 
-    overlayEl.querySelector('#btn-restart-game')?.addEventListener('click', () => {
-     window.location.reload();
-    });
-    return;
-   }
+   const closeFn = () => {
+    overlayEl.classList.add('fade-out');
+    setTimeout(() => {
+     if (overlayEl.parentNode) overlayEl.remove();
+     if (typeof opts.onAccept === 'function') {
+      opts.onAccept();
+     }
+     if (this.newsQueue.length > 0) {
+      const nextOpts = this.newsQueue.shift();
+      this.showEditorialNewsCard(nextOpts);
+     }
+    }, 350);
+   };
 
-   if (opts.centered) {
-    let themeClass = opts.theme ? `theme-${opts.theme}` : (opts.bluish ? 'theme-danger' : 'theme-info');
-    let categoryStamp = ' REPORTE HISTÓRICO';
-    if (themeClass.includes('danger') || opts.bluish) categoryStamp = ' CATÁSTROFE AMBIENTAL';
-    else if (themeClass.includes('warning')) categoryStamp = ' IMPACTO ECOLÓGICO';
-    else if (themeClass.includes('success')) categoryStamp = ' RESTAURACIÓN NATIVA';
+   overlayEl.querySelector('#btn-close-journal')?.addEventListener('click', closeFn);
+   return;
+  }
 
-    const overlayEl = document.createElement('div');
-    overlayEl.className = `centered-news-overlay ${themeClass}`;
-    overlayEl.innerHTML = `
-     <div class="game-popup-modal centered-welcome-window ${themeClass}">
-      <div class="popup-modal-header">
-       <span class="popup-category-stamp">${categoryStamp}</span>
-       <span class="popup-year-badge">TIERRA DEL FUEGO — ${opts.year || '2005'}</span>
-      </div>
-      
-      <div class="popup-modal-body">
-       <h2 class="popup-headline">${opts.title}</h2>
-       ${opts.subtitle ? `<div class="popup-subhead">${opts.subtitle}</div>` : ''}
-       
-       <div class="popup-text-content">
-        <p class="popup-lead">${opts.text}</p>
-        ${opts.quote ? `<blockquote class="popup-quote"><span class="quote-mark">“</span>${opts.quote}<span class="quote-mark">”</span></blockquote>` : ''}
-        ${opts.fact ? `<div class="popup-fact-box"><div class="fact-box-title"> DATO DESTACADO</div><div class="fact-box-body">${opts.fact}</div></div>` : ''}
-       </div>
-
-       <div class="popup-footer">
-        <button class="popup-action-btn" id="btn-close-journal">ACEPTAR ➔</button>
-       </div>
-      </div>
-     </div>
-    `;
-    document.getElementById('game-container').appendChild(overlayEl);
-
-    if (this.game) this.game.running = true;
-
-    const closeFn = () => {
-     overlayEl.classList.add('fade-out');
-     setTimeout(() => {
-      if (overlayEl.parentNode) overlayEl.remove();
-      if (typeof opts.onAccept === 'function') {
-       opts.onAccept();
-      }
-      if (this.newsQueue.length > 0) {
-       const nextOpts = this.newsQueue.shift();
-       this.showEditorialNewsCard(nextOpts);
-      }
-     }, 350);
-    };
-
-    overlayEl.querySelector('#btn-close-journal')?.addEventListener('click', closeFn);
-    return;
-   }
-
+  // 4. Tarjeta Lateral (Default)
   let themeClass = opts.theme ? `theme-${opts.theme}` : 'theme-info';
   let categoryStamp = ' REPORTE HISTÓRICO';
   if (themeClass.includes('danger')) categoryStamp = ' CATÁSTROFE AMBIENTAL';
