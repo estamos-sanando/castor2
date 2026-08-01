@@ -140,8 +140,8 @@ class GameUI {
   }
 
   if (opts && opts.fact && opts.fact.includes('100.000')) {
-   if (this.game && typeof this.game.multiplyBeavers === 'function') {
-    this.game.multiplyBeavers(10);
+   if (this.game && typeof this.game.addExtra20Beavers === 'function') {
+    this.game.addExtra20Beavers();
    }
   }
 

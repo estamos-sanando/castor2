@@ -347,14 +347,11 @@ class BeaverGame {
   });
  }
 
- multiplyBeavers(factor = 10) {
-  if (this._beaversMultiplied10x) return;
-  this._beaversMultiplied10x = true;
+ addExtra20Beavers() {
+  if (this._extra20BeaversAdded) return;
+  this._extra20BeaversAdded = true;
 
-  const currentBeavers = this.entities.filter(e => e instanceof Beaver && !e.dead && !e.captured);
-  const totalToSpawn = (currentBeavers.length || 10) * (factor - 1);
-
-  for (let k = 0; k < totalToSpawn; k++) {
+  for (let k = 0; k < 20; k++) {
    const rand = Math.random();
    let rx, ry;
    if (rand < 0.45) {
