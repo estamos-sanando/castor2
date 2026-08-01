@@ -118,6 +118,7 @@ class BeaverGame {
           const targetDam = this.entities.find(el => el instanceof Dam && isDamClicked(el));
           if (targetDam && (targetDam.glowing || this.damsCanBeDismantled || this.beaversCaptured || this.currentMap >= 2)) {
             targetDam.hp = (targetDam.hp !== undefined ? targetDam.hp : 5) - 1;
+            targetDam._refreshSprite();
             this.particles.burst(targetDam.x, targetDam.y - 10, 'wood', 18);
 
             if (targetDam.hp <= 0) {
@@ -286,6 +287,9 @@ class BeaverGame {
     treePositions.forEach((spot, idx) => {
       const tree = new Tree(spot.x, spot.y, idx % 9);
       tree.scale = 0.8 + Math.random() * 0.5;
+      if (idx % 4 === 0) {
+        tree.willBecomeGhost = true;
+      }
       this.entities.push(tree);
     });
   }
@@ -297,6 +301,24 @@ class BeaverGame {
         e.dead = true;
       }
     });
+  }
+
+  multiplyBeavers(factor = 10) {
+    if (this._beaversMultiplied10x) return;
+    this._beaversMultiplied10x = true;
+
+    const currentBeavers = this.entities.filter(e => e instanceof Beaver && !e.dead && !e.captured);
+    currentBeavers.forEach(b => {
+      for (let k = 0; k < factor - 1; k++) {
+        const rx = Math.max(80, Math.min(1200, b.x + (Math.random() - 0.5) * 160));
+        const ry = Math.max(120, Math.min(640, b.y + (Math.random() - 0.5) * 120));
+        const bNew = new Beaver(rx, ry, Math.random() < 0.35);
+        bNew.wanderOnly = true;
+        this.entities.push(bNew);
+      }
+    });
+
+    this.stats.beavers = this.entities.filter(e => e instanceof Beaver && !e.dead && !e.captured).length;
   }
 
   // ── Liberación de los 20 Castores (1965) ──
@@ -319,7 +341,7 @@ class BeaverGame {
       title: 'EXPANSIÓN IMPARABLE Y ALTERACIÓN DEL 95% DE LAS CUENCAS',
       subtitle: 'Los castores construyen represas alterando la red hidrográfica de Tierra del Fuego.',
       text: 'Los roedores talan la madera nativa con sus potentes incisivos y arrastran los troncos hacia los ríos. Sus represas detienen el flujo natural de las aguas, cruzando el Canal Beagle hasta la Isla Navarino en Chile.',
-      fact: 'El castor no tiene oponentes naturales ni depredadores en toda la Patagonia austral.',
+      fact: 'Al no existir depredadores naturales (como lobos u osos en la Patagonia), la población explotó exponencialmente a más de 100.000 ejemplares.',
       theme: 'warning',
       year: '1965'
     });
@@ -434,55 +456,18 @@ class BeaverGame {
         this._transitionToMap(2); // map_04_bosque_inundado.jpg
         this.stats.hectaresFlooded = 60000;
 
-        // Eliminar tocones y árboles existentes para redistribuir un bosque fantasma completo
+        // Transformar los árboles que quedaron en pie (willBecomeGhost) en Árboles Fantasmas
+        let ghostIdx = 0;
         this.entities.forEach(e => {
           if (e instanceof Tree) {
-            e.dead = true;
-          }
-        });
-
-        // Crear una distribución amplia y pareja de Árboles Fantasmas a ambos lados del mapa
-        const ghostSpots = [];
-        const minDistance = 35;
-
-        // Margen Izquierdo: 18-22 árboles fantasmas distribuidos (x: 50..520, y: 110..650)
-        const targetLeftCount = 18 + Math.floor(Math.random() * 5);
-        for (let i = 0; i < targetLeftCount; i++) {
-          let attempts = 0;
-          while (attempts < 100) {
-            attempts++;
-            const x = 50 + Math.random() * 470;
-            const y = 110 + Math.random() * 540;
-            if (!ghostSpots.some(p => Math.hypot(p.x - x, p.y - y) < minDistance)) {
-              ghostSpots.push({ x, y });
-              break;
+            if (e.willBecomeGhost && !e.dead && e.state !== 'stump_fresh' && e.state !== 'stump_old') {
+              e.ghostVariant = ghostIdx % 5;
+              ghostIdx++;
+              e.setState('flooded');
+            } else if (e.state !== 'stump_fresh' && e.state !== 'stump_old') {
+              e.dead = true;
             }
           }
-        }
-
-        // Margen Derecho: 18-22 árboles fantasmas distribuidos (x: 750..1230, y: 110..650)
-        const targetRightCount = 18 + Math.floor(Math.random() * 5);
-        for (let i = 0; i < targetRightCount; i++) {
-          let attempts = 0;
-          while (attempts < 100) {
-            attempts++;
-            const x = 750 + Math.random() * 480;
-            const y = 110 + Math.random() * 540;
-            if (x >= 820 && x <= 980 && y >= 450 && y <= 600) continue; // Zona de la cabaña
-            if (!ghostSpots.some(p => Math.hypot(p.x - x, p.y - y) < minDistance)) {
-              ghostSpots.push({ x, y });
-              break;
-            }
-          }
-        }
-
-        // Instanciar los Árboles Fantasmas distribuidos usando las 5 variantes
-        ghostSpots.forEach((spot, idx) => {
-          const ghostTree = new Tree(spot.x, spot.y, idx % 9);
-          ghostTree.ghostVariant = idx % 5;
-          ghostTree.scale = 0.8 + Math.random() * 0.45;
-          ghostTree.setState('flooded');
-          this.entities.push(ghostTree);
         });
 
         // Mostrar la ventana de la Estrategia Binacional ANTES de abrir el inventario

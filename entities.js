@@ -41,6 +41,11 @@ const ASSET_MANIFEST = {
   bush_2:          'assets/rama1.png',
 
   // Beaver Dams
+  dique_grande:  'assets/diquegrande.png',
+  dique_medio:   'assets/diquemedio.png',
+  dique_medio1:  'assets/diquemedio1.png',
+  dique_chico:   'assets/diquechico.png',
+  dique_roto:    'assets/diqueroto.png',
   dique_real:    'assets/diquegrande.png',
   dique_nivel_1: 'assets/diquechico.png',
   dique_nivel_2: 'assets/diquemedio.png',
@@ -243,10 +248,19 @@ class SpritePainter {
     return realImg || this._emptyCanvas(32, 24);
   }
 
-  static dam(level = 1, state = 'active') {
+  static dam(level = 1, state = 'active', hp = 5) {
+    if (state === 'dismantled') {
+      return getLoadedImg('dique_roto') || getLoadedImg('dique_chico') || getLoadedImg('dique_real');
+    }
+    if (hp !== undefined && hp < 5) {
+      if (hp === 4) return getLoadedImg('dique_medio') || getLoadedImg('dique_real');
+      if (hp === 3) return getLoadedImg('dique_medio1') || getLoadedImg('dique_real');
+      if (hp === 2) return getLoadedImg('dique_chico') || getLoadedImg('dique_real');
+      if (hp === 1) return getLoadedImg('dique_roto') || getLoadedImg('dique_real');
+    }
     const lvl = Math.max(1, Math.min(3, level));
-    const key = `dique_nivel_${lvl}`;
-    const realImg = getLoadedImg(key) || getLoadedImg('dique_real') || getLoadedImg('log_fresh');
+    const key = (lvl === 3) ? 'dique_grande' : (lvl === 2 ? 'dique_medio' : 'dique_chico');
+    const realImg = getLoadedImg(key) || getLoadedImg(`dique_nivel_${lvl}`) || getLoadedImg('dique_real') || getLoadedImg('log_fresh');
     return realImg || this._emptyCanvas(140 + level * 35, 50 + level * 15);
   }
 
@@ -588,7 +602,7 @@ class Dam extends Entity {
   }
 
   _refreshSprite() {
-    this.sprite = SpritePainter.dam(this.level, this.state);
+    this.sprite = SpritePainter.dam(this.level, this.state, this.hp);
     this.baseY = this.y;
   }
 
@@ -621,9 +635,14 @@ class Dam extends Entity {
     const lvl = Math.max(1, Math.min(3, this.level));
     const isLowerDam = (this.y > 350);
 
-    const targetW = isLowerDam 
+    let targetW = isLowerDam 
       ? (lvl === 1 ? 170 : (lvl === 2 ? 200 : 240))
       : (lvl === 1 ? 150 : (lvl === 2 ? 175 : 200));
+
+    if (this.hp !== undefined && this.hp < 5) {
+      const stageFactor = this.hp === 4 ? 0.92 : (this.hp === 3 ? 0.85 : (this.hp === 2 ? 0.78 : 0.70));
+      targetW *= stageFactor;
+    }
     const w = Math.round(targetW * (this.scale || 1.0));
     const h = Math.round(targetW * (imgH / imgW) * (this.scale || 1.0));
 
@@ -945,7 +964,7 @@ class Beaver extends Entity {
   _doSearch(dt, game) {
     this.action = 'walk';
     const g = (game && game.entities) ? game : dt;
-    const trees = (g && g.entities) ? g.entities.filter(e => e instanceof Tree && e.isHealthy && !e.being_cut) : [];
+    const trees = (g && g.entities) ? g.entities.filter(e => e instanceof Tree && e.isHealthy && !e.being_cut && !e.willBecomeGhost) : [];
     if (trees.length === 0) {
       this.state = 'idle';
       return;

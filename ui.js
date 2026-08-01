@@ -135,17 +135,72 @@ class GameUI {
 
   // ── Tarjeta Emergente Periodística ──
   showEditorialNewsCard(opts) {
-    if (document.querySelector('.left-center-news-popup') || document.querySelector('.centered-news-overlay')) {
+    if (document.querySelector('.left-center-news-popup') || document.querySelector('.centered-news-overlay') || document.querySelector('.game-instruction-notification-wrapper')) {
       this.newsQueue.push(opts);
       return;
     }
 
+    if (opts && opts.fact && opts.fact.includes('100.000')) {
+      if (this.game && typeof this.game.multiplyBeavers === 'function') {
+        this.game.multiplyBeavers(10);
+      }
+    }
+
+    const isInstruction = opts.isInstruction || opts.type === 'instruction' || (opts.text && (opts.text.toLowerCase().includes('haz clic') || opts.text.toLowerCase().includes('toca o haz clic')));
+
+    if (isInstruction) {
+      const notifEl = document.createElement('div');
+      notifEl.className = 'game-instruction-notification-wrapper';
+      notifEl.innerHTML = `
+        <div class="game-instruction-notification-card">
+          <div class="instruction-badge-bar">
+            <span class="instruction-pill-badge"><span class="badge-icon">📌</span> TIERRA DEL FUEGO — ${opts.year || 'ENEEI'}</span>
+          </div>
+          <div class="instruction-content">
+            <h3 class="instruction-title">${opts.title}</h3>
+            ${opts.subtitle ? `<div class="instruction-subtitle">${opts.subtitle}</div>` : ''}
+            <div class="instruction-text">${opts.text}</div>
+          </div>
+          <div class="instruction-footer">
+            <button class="instruction-action-btn" id="btn-close-instruction">ACEPTAR ➔</button>
+          </div>
+        </div>
+      `;
+      document.getElementById('game-container').appendChild(notifEl);
+
+      if (this.game) this.game.running = true;
+
+      const closeFn = () => {
+        notifEl.classList.add('slide-out-top');
+        setTimeout(() => {
+          if (notifEl.parentNode) notifEl.remove();
+          if (typeof opts.onAccept === 'function') {
+            opts.onAccept();
+          }
+          if (this.newsQueue.length > 0) {
+            const nextOpts = this.newsQueue.shift();
+            this.showEditorialNewsCard(nextOpts);
+          }
+        }, 300);
+      };
+
+      notifEl.querySelector('#btn-close-instruction')?.addEventListener('click', closeFn);
+      return;
+    }
+
     if (opts.centered) {
+      let themeClass = opts.theme ? `theme-${opts.theme}` : (opts.bluish ? 'theme-danger' : 'theme-info');
+      let categoryStamp = '📰 REPORTE HISTÓRICO';
+      if (themeClass.includes('danger') || opts.bluish) categoryStamp = '🚨 CATÁSTROFE AMBIENTAL';
+      else if (themeClass.includes('warning')) categoryStamp = '⚠️ IMPACTO ECOLÓGICO';
+      else if (themeClass.includes('success')) categoryStamp = '🌱 RESTAURACIÓN NATIVA';
+
       const overlayEl = document.createElement('div');
-      overlayEl.className = 'centered-news-overlay' + (opts.bluish ? ' bluish-theme' : '');
+      overlayEl.className = `centered-news-overlay ${themeClass}`;
       overlayEl.innerHTML = `
-        <div class="game-popup-modal centered-welcome-window">
+        <div class="game-popup-modal centered-welcome-window ${themeClass}">
           <div class="popup-modal-header">
+            <span class="popup-category-stamp">${categoryStamp}</span>
             <span class="popup-year-badge">TIERRA DEL FUEGO — ${opts.year || '2005'}</span>
           </div>
           
@@ -155,8 +210,8 @@ class GameUI {
             
             <div class="popup-text-content">
               <p class="popup-lead">${opts.text}</p>
-              ${opts.quote ? `<blockquote class="popup-quote">"${opts.quote}"</blockquote>` : ''}
-              ${opts.fact ? `<div class="popup-fact-box"><strong>DATO DESTACADO:</strong> ${opts.fact}</div>` : ''}
+              ${opts.quote ? `<blockquote class="popup-quote"><span class="quote-mark">“</span>${opts.quote}<span class="quote-mark">”</span></blockquote>` : ''}
+              ${opts.fact ? `<div class="popup-fact-box"><div class="fact-box-title">💡 DATO DESTACADO</div><div class="fact-box-body">${opts.fact}</div></div>` : ''}
             </div>
 
             <div class="popup-footer">
@@ -187,11 +242,18 @@ class GameUI {
       return;
     }
 
+    let themeClass = opts.theme ? `theme-${opts.theme}` : 'theme-info';
+    let categoryStamp = '📰 REPORTE HISTÓRICO';
+    if (themeClass.includes('danger')) categoryStamp = '🚨 CATÁSTROFE AMBIENTAL';
+    else if (themeClass.includes('warning')) categoryStamp = '⚠️ IMPACTO ECOLÓGICO';
+    else if (themeClass.includes('success')) categoryStamp = '🌱 RESTAURACIÓN NATIVA';
+
     const cardEl = document.createElement('div');
-    cardEl.className = 'left-center-news-popup';
+    cardEl.className = `left-center-news-popup ${themeClass}`;
     cardEl.innerHTML = `
-      <div class="game-popup-modal left-center-card">
+      <div class="game-popup-modal left-center-card ${themeClass}">
         <div class="popup-modal-header">
+          <span class="popup-category-stamp">${categoryStamp}</span>
           <span class="popup-year-badge">TIERRA DEL FUEGO — ${opts.year || '1946'}</span>
         </div>
         
@@ -201,8 +263,8 @@ class GameUI {
           
           <div class="popup-text-content">
             <p class="popup-lead">${opts.text}</p>
-            ${opts.quote ? `<blockquote class="popup-quote">"${opts.quote}"</blockquote>` : ''}
-            ${opts.fact ? `<div class="popup-fact-box"><strong>DATO DESTACADO:</strong> ${opts.fact}</div>` : ''}
+            ${opts.quote ? `<blockquote class="popup-quote"><span class="quote-mark">“</span>${opts.quote}<span class="quote-mark">”</span></blockquote>` : ''}
+            ${opts.fact ? `<div class="popup-fact-box"><div class="fact-box-title">💡 DATO DESTACADO</div><div class="fact-box-body">${opts.fact}</div></div>` : ''}
           </div>
 
           <div class="popup-footer">
