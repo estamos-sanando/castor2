@@ -129,16 +129,16 @@ class BeaverGame {
         // El mapa cambia cuando el jugador termina de romper todos los diques
         this._transitionToMap(3); // map_06_restauracion_parcial.jpg
 
-        // 1. Colocar el Puente sobre el río
+        // 1. Colocar el Puente centrado sobre el río (cruza de orilla a orilla x: 500 a 780)
         if (!this.bridgeEntity) {
-         const bridge = new Bridge(585, 380);
+         const bridge = new Bridge(640, 310);
          this.bridgeEntity = bridge;
          this.entities.push(bridge);
         }
 
-        // 2. Colocar a la Bióloga a la izquierda del río
+        // 2. Colocar a la Bióloga a la izquierda del río en la zona de pasto
         if (!this.biologistEntity) {
-         const biologist = new Biologist(425, 410);
+         const biologist = new Biologist(410, 410);
          biologist.glowing = true;
          this.biologistEntity = biologist;
          this.entities.push(biologist);

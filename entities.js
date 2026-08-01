@@ -366,10 +366,12 @@ class Entity {
     } else {
      targetW = this.isSmall ? 18 : 28;
     }
-   } else if (this instanceof Ranger || this instanceof Scientist || this instanceof Biologist) {
-    targetW = 18; // Personaje a escala proporcional
+   } else if (this instanceof Ranger || this instanceof Scientist) {
+    targetW = 18; // Guardaparques (altura ~57px)
+   } else if (this instanceof Biologist) {
+    targetW = 29; // Bióloga a la misma altura (~57px) que el guardaparques
    } else if (this instanceof Bridge) {
-    targetW = 230; // Puente sobre el río amplio
+    targetW = 280; // Puente extendido para cruzar ambas orillas del río (x: 500 a 780)
    } else if (this instanceof Dam) {
     const lvl = Math.max(1, Math.min(3, this.level));
     const isLowerDam = (this.y > 350);
@@ -1289,20 +1291,20 @@ class Biologist extends Entity {
   if (this.glowing) {
    const pulse = 0.5 + 0.5 * Math.sin(Date.now() * 0.008);
    ctx.save();
-   const grad = ctx.createRadialGradient(this.x, this.y - 15, 4, this.x, this.y - 15, 38 + pulse * 12);
+   const grad = ctx.createRadialGradient(this.x, this.y - 24, 4, this.x, this.y - 24, 44 + pulse * 12);
    grad.addColorStop(0, `rgba(16, 185, 129, ${0.85 + pulse * 0.15})`);
    grad.addColorStop(0.5, `rgba(16, 185, 129, ${0.4 + pulse * 0.2})`);
    grad.addColorStop(1, 'rgba(16, 185, 129, 0)');
 
    ctx.fillStyle = grad;
    ctx.beginPath();
-   ctx.ellipse(this.x, this.y - 10, 36 + pulse * 8, 22 + pulse * 5, 0, 0, Math.PI * 2);
+   ctx.ellipse(this.x, this.y - 18, 42 + pulse * 8, 26 + pulse * 5, 0, 0, Math.PI * 2);
    ctx.fill();
 
    ctx.strokeStyle = '#10b981';
    ctx.lineWidth = 2;
    ctx.beginPath();
-   ctx.ellipse(this.x, this.y - 10, 32 + pulse * 6, 18 + pulse * 4, 0, 0, Math.PI * 2);
+   ctx.ellipse(this.x, this.y - 18, 38 + pulse * 6, 22 + pulse * 4, 0, 0, Math.PI * 2);
    ctx.stroke();
    ctx.restore();
   }
