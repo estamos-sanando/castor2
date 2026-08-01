@@ -77,15 +77,14 @@ class GameUI {
      <img src="assets/LOGO.png" class="welcome-start-logo-large" alt="Logo Proyecto Castor" />
     </div>
     <div class="popup-modal-header">
-     <span class="popup-year-badge">1946 — TIERRA DEL FUEGO</span>
+     <span class="popup-year-badge">1946 — Tierra del Fuego</span>
     </div>
     
     <div class="popup-modal-body">
-     <h2 class="popup-headline">EN 1946, ARGENTINA INTRODUJO 20 CASTORES PARA CREAR UNA INDUSTRIA PELETERA: 80 AÑOS DESPUÉS, HAN DEVASTADO LOS BOSQUES</h2>
-     <div class="popup-subhead">Impacto de la especie exótica en la Isla Grande de Tierra del Fuego.</div>
+     <h2 class="popup-headline">¿Cómo una decisión tomada hace 80 años transformó un ecosistema?</h2>
      
      <div class="popup-text-content">
-      <p class="popup-lead">La Marina de Guerra Argentina introdujo 10 parejas de <em>Castor canadensis</em> importadas de Canadá. La industria peletera nunca se concretó y los ejemplares fueron abandonados. Sin depredadores naturales en la Patagonia, la especie colonizó la isla alterando el 95% de las cuencas hídricas.</p>
+      <p class="popup-lead">En 1946 se introdujeron veinte castores provenientes de Canadá en Tierra del Fuego con el objetivo de impulsar una industria peletera. Lo que parecía una iniciativa económica terminó generando cambios ambientales que aún hoy siguen presentes.</p>
      </div>
 
      <div class="popup-footer center-footer">

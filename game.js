@@ -272,11 +272,11 @@ class BeaverGame {
   this.started = true;
   this.running = true;
   this.ui.showEditorialNewsCard({
-   title: 'EN 1946, ARGENTINA INTRODUJO 20 CASTORES PARA CREAR UNA INDUSTRIA PELETERA',
-   subtitle: 'La Marina de Guerra Argentina importó 10 parejas de Castor canadensis desde Canadá.',
-   text: 'En 1946, el gobierno introdujo <strong>20 castores provenientes de Canadá (10 parejas)</strong> en la Isla Grande de Tierra del Fuego con el objetivo de fomentar la industria de pieles en un territorio con baja presencia humana.',
-   quote: 'Lo que comenzó como un experimento económico se transformó 80 años después en la mayor catástrofe biológica de los bosques subantárticos.',
-   fact: 'Al no existir depredadores naturales (como lobos u osos en la Patagonia), la población explotó exponencialmente a más de 100.000 ejemplares.',
+   title: '¿Cómo una decisión tomada hace 80 años transformó un ecosistema?',
+   subtitle: '',
+   text: 'En 1946 se introdujeron veinte castores provenientes de Canadá en Tierra del Fuego con el objetivo de impulsar una industria peletera. Lo que parecía una iniciativa económica terminó generando cambios ambientales que aún hoy siguen presentes.',
+   quote: 'Lo que comenzó como una iniciativa económica se transformó en uno de los mayores desafíos ecológicos de la región.',
+   fact: 'Al no existir depredadores naturales en la Patagonia, la población de castores se expandió por toda la Isla Grande.',
    theme: 'info',
    year: '1946'
   });
