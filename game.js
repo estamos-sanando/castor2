@@ -188,12 +188,15 @@ class BeaverGame {
       }
      }
 
-     if (!this.reforestMinigamePlayed) {
-      const targetSeedling = this.entities.find(el => el instanceof Seedling && !el.dead && !el.reforested && Math.hypot(clickX - el.x, clickY - (el.y - 6)) < 55);
-      if (targetSeedling) {
-       this.ui.openReforestationMinigame(targetSeedling);
+      // Clic en cualquier plantín (Seedling) colocado en la tierra para abrir el minijuego de reforestación nativa
+      const clickedSeedling = this.entities.find(el => el instanceof Seedling && !el.dead && !el.reforested && (
+       Math.hypot(clickX - el.x, clickY - (el.y - 6)) < 65 ||
+       (Math.abs(clickX - el.x) < 45 && Math.abs(clickY - el.y) < 45)
+      ));
+      if (clickedSeedling) {
+       this.ui.openReforestationMinigame(clickedSeedling);
+       return;
       }
-     }
     };
 
     canvas.addEventListener('click', (e) => {
@@ -685,18 +688,21 @@ class BeaverGame {
   if (this.placedSeedlingsCount >= 10) {
    setTimeout(() => {
     this.ui.closeSidebarPanel();
+
+    // Hacer brillar todos los plantines para que el usuario haga clic sobre cualquiera de ellos
+    this.entities.forEach(e => {
+     if (e instanceof Seedling && !e.dead && !e.reforested) {
+      e.glowing = true;
+     }
+    });
+
     this.ui.showEditorialNewsCard({
-     title: ' PLANTACIÓN DE 10 BROTES COMPLETADA',
-     subtitle: 'Los 10 plantines de Lenga nativa han sido distribuidos en la cuenca.',
-     text: 'Haz clic en cualquiera de los brotes colocados en el terreno para iniciar el minijuego de <strong>Reforestación de Lenga</strong> y asegurar su crecimiento.',
+     title: 'PLANTACIÓN DE 10 BROTES COMPLETADA',
+     subtitle: 'Haz clic sobre cualquiera de los plantines para iniciar el minijuego.',
+     text: 'Los 10 plantines de Lenga nativa han sido distribuidos en la cuenca. Haz clic sobre cualquiera de los plantines resplandecientes en el terreno para abrir el minijuego de <strong>Reforestación Nativa</strong> y asegurar su crecimiento.',
      theme: 'info',
      year: '2026',
-     onAccept: () => {
-      const firstSeedling = this.entities.find(e => e instanceof Seedling && !e.dead && !e.reforested);
-      if (firstSeedling) {
-       this.ui.openReforestationMinigame(firstSeedling);
-      }
-     }
+     onAccept: () => {}
     });
    }, 500);
   }
