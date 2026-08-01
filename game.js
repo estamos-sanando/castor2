@@ -183,7 +183,15 @@ class BeaverGame {
           const mouseY = (e.clientY - rect.top) * scaleY;
 
           let isHovered = false;
-          if (this.playerCage && this.playerCage.glowing) {
+          if (this.placedCabinEntity) {
+            const dx = Math.abs(mouseX - this.placedCabinEntity.x);
+            const dy = Math.abs(mouseY - (this.placedCabinEntity.y - 15));
+            if (Math.hypot(mouseX - this.placedCabinEntity.x, mouseY - (this.placedCabinEntity.y - 15)) < 65 || (dx < 55 && dy < 45)) {
+              isHovered = true;
+            }
+          }
+
+          if (this.playerCage && (this.playerCage.glowing || this.cagePlaced)) {
             if (Math.hypot(mouseX - this.playerCage.x, mouseY - (this.playerCage.y - 10)) < 55) {
               isHovered = true;
             }
