@@ -842,15 +842,15 @@ class BeaverGame {
    year: '2026',
    centered: true,
    onAccept: () => {
-    // Popup 2: 80 AÑOS DESPUÉS: LA LECCIÓN ECOLÓGICA DE TIERRA DEL FUEGO (FINAL)
+    // Popup 2: 80 AÑOS DESPUÉS: LA LECCIÓN ECOLÓGICA DE TIERRA DEL FUEGO (FINAL DEL JUEGO)
     this.ui.showEditorialNewsCard({
-     title: ' 80 AÑOS DESPUÉS: LA LECCIÓN ECOLÓGICA DE TIERRA DEL FUEGO',
-     subtitle: '1946 - 2026: De la especie exótica invasora a la restauración del bosque subantártico.',
+     title: '80 AÑOS DESPUÉS: LA LECCIÓN ECOLÓGICA DE TIERRA DEL FUEGO',
+     subtitle: '1946 — 2026: De la especie exótica invasora a la restauración del bosque subantártico.',
      text: 'La historia de los 20 castores introducidos en 1946 demuestra las consecuencias irreversibles que provoca la alteración humana de los ecosistemas australes. Este newsgame celebra el esfuerzo conjunto de biólogos, guardaparques y la comunidad fueguina por devolver la vida a la Patagonia.',
      quote: 'La conservación del medio ambiente exige ciencia, rigor y compromiso permanente. El futuro de nuestros bosques está en nuestras manos.',
-     fact: 'Reportaje elaborado con datos oficiales de la Estrategia Binacional ENEEI, FAO, FMAM y Vistazo.',
      year: '2026',
      centered: true,
+     isFinal: true,
      onAccept: () => {
       // Mostrar la Tabla de Posiciones Final / Arcade High Scores
       this.ui.showArcadeLeaderboard(this.stats.health * 25 + 500);
