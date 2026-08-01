@@ -625,8 +625,7 @@ class Dam extends Entity {
  remove() {
   this.state = 'dismantled';
   this.active = false;
-  this._refreshSprite();
-  setTimeout(() => { this.dead = true; }, 6000);
+  this.dead = true;
  }
 
  update(dt, game) {

@@ -708,6 +708,15 @@ class BeaverGame {
   this.targetMap = targetIdx;
   this.crossfading = true;
   this.mapAlpha = 1;
+
+  // Los árboles fantasmas deben desaparecer cuando cambia el mapa a la etapa de restauración
+  if (targetIdx >= 3) {
+   this.entities.forEach(e => {
+    if (e instanceof Tree && (e.state === 'dead' || e.state === 'flooded')) {
+     e.dead = true;
+    }
+   });
+  }
  }
 
  _updateMapTransition(dt) {
