@@ -457,6 +457,7 @@ class BeaverGame {
         this.stats.hectaresFlooded = 60000;
 
         // Transformar los árboles que quedaron en pie (willBecomeGhost) en Árboles Fantasmas
+        // Todos los tocones jóvenes y viejos desaparecen en el mapa inundado.
         let ghostIdx = 0;
         this.entities.forEach(e => {
           if (e instanceof Tree) {
@@ -464,7 +465,7 @@ class BeaverGame {
               e.ghostVariant = ghostIdx % 5;
               ghostIdx++;
               e.setState('flooded');
-            } else if (e.state !== 'stump_fresh' && e.state !== 'stump_old') {
+            } else {
               e.dead = true;
             }
           }

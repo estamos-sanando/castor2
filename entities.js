@@ -517,6 +517,11 @@ class Tree extends Entity {
   get isHealthy() { return (this.state === 'healthy' || this.state === 'chewed') && !this.being_cut; }
 
   update(dt, game) {
+    const isFloodedMap = (window.GAME && (window.GAME.currentMap >= 2 || window.GAME.isFlooded)) || (game && game.currentMap >= 2);
+    if (isFloodedMap && (this.state === 'stump_fresh' || this.state === 'stump_old')) {
+      this.dead = true;
+      return;
+    }
     if (this.state === 'stump_fresh') {
       this._ageTimer = (this._ageTimer || 0) + dt;
       if (this._ageTimer > 120) {
