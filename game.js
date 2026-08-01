@@ -369,7 +369,7 @@ class BeaverGame {
    ry = 110 + Math.random() * 540;
 
    const bNew = new Beaver(rx, ry, Math.random() < 0.35);
-   bNew.wanderOnly = true;
+   bNew.wanderOnly = false;
    bNew.targetX = Math.max(60, Math.min(1220, rx + (Math.random() - 0.5) * 300));
    bNew.targetY = Math.max(110, Math.min(650, ry + (Math.random() - 0.5) * 200));
    bNew.wanderTimer = 1 + Math.random() * 3;
