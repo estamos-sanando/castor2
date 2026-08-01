@@ -73,11 +73,11 @@ class BeaverGame {
 
           // Paso 1: Clic en la cabaña brillante para que aparezca el guardaparques
           if (this.placedCabinEntity && this.placedCabinEntity.glowing) {
-            if (Math.hypot(clickX - this.placedCabinEntity.x, clickY - (this.placedCabinEntity.y - 15)) < 60) {
+            if (Math.hypot(clickX - this.placedCabinEntity.x, clickY - (this.placedCabinEntity.y - 15)) < 75) {
               this.placedCabinEntity.glowing = false;
 
               // Aparece el guardaparques parado del lado derecho de la casa y un poco más alejado
-              const ranger = new Ranger(this.placedCabinEntity.x + 56, this.placedCabinEntity.y + 12);
+              const ranger = new Ranger(this.placedCabinEntity.x + 72, this.placedCabinEntity.y + 14);
               ranger.stationary = true;
               this.entities.push(ranger);
               this.particles.burst(ranger.x, ranger.y - 10, 'leaf', 16);
@@ -186,7 +186,7 @@ class BeaverGame {
           if (this.placedCabinEntity) {
             const dx = Math.abs(mouseX - this.placedCabinEntity.x);
             const dy = Math.abs(mouseY - (this.placedCabinEntity.y - 15));
-            if (Math.hypot(mouseX - this.placedCabinEntity.x, mouseY - (this.placedCabinEntity.y - 15)) < 65 || (dx < 55 && dy < 45)) {
+            if (Math.hypot(mouseX - this.placedCabinEntity.x, mouseY - (this.placedCabinEntity.y - 15)) < 80 || (dx < 70 && dy < 55)) {
               isHovered = true;
             }
           }
