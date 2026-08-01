@@ -352,15 +352,27 @@ class BeaverGame {
   this._beaversMultiplied10x = true;
 
   const currentBeavers = this.entities.filter(e => e instanceof Beaver && !e.dead && !e.captured);
-  currentBeavers.forEach(b => {
-   for (let k = 0; k < factor - 1; k++) {
-    const rx = Math.max(80, Math.min(1200, b.x + (Math.random() - 0.5) * 160));
-    const ry = Math.max(120, Math.min(640, b.y + (Math.random() - 0.5) * 120));
-    const bNew = new Beaver(rx, ry, Math.random() < 0.35);
-    bNew.wanderOnly = true;
-    this.entities.push(bNew);
+  const totalToSpawn = (currentBeavers.length || 10) * (factor - 1);
+
+  for (let k = 0; k < totalToSpawn; k++) {
+   const rand = Math.random();
+   let rx, ry;
+   if (rand < 0.45) {
+    rx = 60 + Math.random() * 460;
+   } else if (rand < 0.90) {
+    rx = 760 + Math.random() * 460;
+   } else {
+    rx = 580 + Math.random() * 120;
    }
-  });
+   ry = 110 + Math.random() * 540;
+
+   const bNew = new Beaver(rx, ry, Math.random() < 0.35);
+   bNew.wanderOnly = true;
+   bNew.targetX = Math.max(60, Math.min(1220, rx + (Math.random() - 0.5) * 300));
+   bNew.targetY = Math.max(110, Math.min(650, ry + (Math.random() - 0.5) * 200));
+   bNew.wanderTimer = 1 + Math.random() * 3;
+   this.entities.push(bNew);
+  }
 
   this.stats.beavers = this.entities.filter(e => e instanceof Beaver && !e.dead && !e.captured).length;
  }
@@ -370,9 +382,13 @@ class BeaverGame {
   if (this.beaversReleased >= 20) return;
 
   for (let i = 0; i < 20; i++) {
-   const rx = 600 + (Math.random() - 0.5) * 80;
-   const ry = 180 + Math.random() * 400;
+   const rand = Math.random();
+   let rx = rand < 0.5 ? (80 + Math.random() * 440) : (760 + Math.random() * 440);
+   let ry = 140 + Math.random() * 480;
    const b = new Beaver(rx, ry);
+   b.targetX = Math.max(60, Math.min(1220, rx + (Math.random() - 0.5) * 240));
+   b.targetY = Math.max(110, Math.min(650, ry + (Math.random() - 0.5) * 180));
+   b.wanderTimer = 1 + Math.random() * 3;
    this.entities.push(b);
   }
   this.beaversReleased = 20;

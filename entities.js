@@ -949,39 +949,46 @@ class Beaver extends Entity {
  }
 
  _doIdle(dt, game) {
-  this.action = 'idle';
-  this.idleTimer -= dt;
   this.wanderTimer -= dt;
-  if (this.wanderTimer <= 0) {
-   this.targetX = Math.max(50, Math.min(1230, this.x + (Math.random() - 0.5) * 120));
-   this.targetY = Math.max(100, Math.min(660, this.y + (Math.random() - 0.5) * 80));
-   this.wanderTimer = 2 + Math.random() * 2;
-   this.action = 'walk';
+  if (this.wanderTimer <= 0 || !this.targetX) {
+   // Seleccionar un nuevo destino aleatorio en toda la extensión del terreno
+   const rand = Math.random();
+   if (rand < 0.45) {
+    this.targetX = 60 + Math.random() * 460;
+   } else if (rand < 0.90) {
+    this.targetX = 760 + Math.random() * 460;
+   } else {
+    this.targetX = 580 + Math.random() * 120;
+   }
+   this.targetY = 110 + Math.random() * 540;
+   this.wanderTimer = 3.5 + Math.random() * 4.5;
   }
-  this._moveTo(this.targetX, this.targetY, dt, 18);
+
+  const arrived = this._moveTo(this.targetX, this.targetY, dt, this.speed);
+  this.action = arrived ? 'idle' : (this.carryingLog ? 'carry' : 'walk');
+
+  this.idleTimer -= dt;
   if (this.idleTimer <= 0) {
-   if (this.wanderOnly) {
-    this.idleTimer = 1 + Math.random() * 2;
+   if (this.wanderOnly || (game && (game.currentMap >= 2 || game.isFlooded))) {
+    this.idleTimer = 2 + Math.random() * 3;
     this.state = 'idle';
    } else {
     this.state = 'search';
-    this.idleTimer = 2 + Math.random() * 2;
+    this.idleTimer = 3 + Math.random() * 3;
    }
   }
  }
 
  _doSearch(dt, game) {
-  this.action = 'walk';
   const g = (game && game.entities) ? game : dt;
   const trees = (g && g.entities) ? g.entities.filter(e => e instanceof Tree && e.isHealthy && !e.being_cut && !e.willBecomeGhost) : [];
   if (trees.length === 0) {
-   this.state = 'idle';
+   this._doIdle(dt, game);
    return;
   }
 
   // Seleccionar aleatoriamente en toda la extensión del bosque (cercanos, medios y lejanos)
   const chosen = trees[Math.floor(Math.random() * trees.length)];
-
   chosen.being_cut = true;
   this.targetTree = chosen;
   this.targetX = chosen.x + (Math.random() - 0.5) * 10;
