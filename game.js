@@ -156,22 +156,24 @@ class BeaverGame {
        }
        return;
       }
+     }
 
-      // Clic en la Bióloga (a la izquierda del río) para iniciar la reforestación nativa
-      if (this.biologistEntity && !this.reforestationStarted) {
-       if (Math.hypot(clickX - this.biologistEntity.x, clickY - (this.biologistEntity.y - 15)) < 60) {
-        this.biologistEntity.glowing = false;
-        this.reforestationStarted = true;
-        this.prepareReforestationStage();
+     // Clic en la Bióloga (a la izquierda del río) para iniciar la reforestación nativa y abrir el inventario
+     if (this.biologistEntity && !this.reforestationStarted) {
+      const dx = Math.abs(clickX - this.biologistEntity.x);
+      const dy = Math.abs(clickY - (this.biologistEntity.y - 15));
+      if (Math.hypot(clickX - this.biologistEntity.x, clickY - (this.biologistEntity.y - 15)) < 70 || (dx < 60 && dy < 60)) {
+       this.biologistEntity.glowing = false;
+       this.reforestationStarted = true;
+       this.prepareReforestationStage();
 
-        this.ui.showEditorialNewsCard({
-         title: 'REFORESTACIÓN NATIVA INICIADA',
-         subtitle: 'Arrastra los 10 brotes de Lenga para plantarlos en el terreno.',
-         text: 'La Bióloga de campo ha desplegado los brotes nativos. Arrastra cada uno de los 10 brotes con el mouse o la pantalla táctil para restituir el bosque de Lenga.',
-         year: '2026'
-        });
-        return;
-       }
+       this.ui.showEditorialNewsCard({
+        title: 'REFORESTACIÓN NATIVA INICIADA',
+        subtitle: 'Arrastra los 10 brotes de Lenga para plantarlos en el terreno.',
+        text: 'La Bióloga de campo ha desplegado los brotes nativos. Arrastra cada uno de los 10 brotes desde el inventario hacia el suelo degradado para restituir el bosque de Lenga.',
+        year: '2026'
+       });
+       return;
       }
      }
 
