@@ -1192,7 +1192,7 @@ html, body {
 /* ── NOTIFICACIÓN DE INSTRUCCIÓN / GUÍA DE JUEGO (HUD TOAST TOP-CENTER) ── */
 .game-instruction-notification-wrapper {
   position: absolute;
-  top: 35px;
+  top: 105px;
   left: 50%;
   transform: translateX(-50%);
   width: 520px;
