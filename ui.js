@@ -599,10 +599,14 @@ class GameUI {
     panel.id = 'beaver-catcher-panel';
     panel.innerHTML = `
       <div class="sidebar-card catcher-card arcade-theme-card">
-        <div class="sidebar-header">
-          <h4>CONTROL PRECISO EN ZONA VERDE</h4>
+        <div class="catcher-badge-bar">
+          <span class="catcher-pill-badge">🎯 MINIJUEGO ENEEI</span>
+          <span class="catcher-step-tag">2016</span>
         </div>
-        <p class="sidebar-desc">Presiona <strong>ESPACIO</strong> o el botón cuando la aguja esté en la <strong>ZONA VERDE</strong> para sumar puntos y erradicar castores.</p>
+        <div class="sidebar-header">
+          <h4>CONTROL PRECISIÓN EN ZONA VERDE</h4>
+        </div>
+        <p class="sidebar-desc">Presiona <strong>ESPACIO</strong> o el botón cuando la aguja esté en la <strong>ZONA VERDE</strong> para sumar puntos y capturar castores.</p>
         
         <div class="catcher-stats-grid">
           <div class="catcher-stat-box">
@@ -665,7 +669,7 @@ class GameUI {
         timerEl.textContent = `0:${secs}`;
       }
 
-      if (this.timeLeft <= 0 || this.game.stats.beavers <= 0) {
+      if (this.timeLeft <= 0) {
         this.finishBeaverCatcherMinigame();
       }
     }, 1000);
@@ -716,9 +720,9 @@ class GameUI {
       this.arcadeScore += ptsAdded;
       if (scoreEl) scoreEl.textContent = `${this.arcadeScore} PTS`;
 
+      // Los castores NO desaparecen durante el juego (se mantienen en pantalla)
       const beaver = this.game.entities.find(b => b instanceof Beaver && !b.dead);
       if (beaver) {
-        beaver.dead = true;
         this.game.particles.burst(beaver.x, beaver.y - 15, 'leaf', 18);
         this.game.stats.beavers = Math.max(0, this.game.stats.beavers - 1);
       }
@@ -737,6 +741,7 @@ class GameUI {
       setTimeout(() => panel.remove(), 400);
     }
 
+    // Los castores desaparecen al finalizar el minijuego
     this.game.entities.forEach(e => {
       if (e instanceof Beaver) e.dead = true;
     });
@@ -749,12 +754,37 @@ class GameUI {
       if (e instanceof Dam) e.glowing = true;
     });
 
-    // Tarjeta periodística puramente informativa en el lateral izquierdo que NO frena la interacción
-    this.showEditorialNewsCard({
-      title: '⚡ DESMANTELAMIENTO DE REPRESAS',
-      subtitle: 'Haz clic o toca 5 veces sobre cada dique para desarmarlo.',
-      text: 'Los diques de castores están parpadeando en la cuenca. Toca o haz clic reiteradamente sobre cada represa para desarmar los troncos acumulados y liberar el agua estancada.',
-      year: '2026'
+    // Abrir la ventana con el GIF animado de captura (SIN TÍTULO)
+    const gifOverlay = document.createElement('div');
+    gifOverlay.id = 'capture-gif-overlay';
+    gifOverlay.className = 'centered-news-overlay theme-success';
+    gifOverlay.innerHTML = `
+      <div class="game-popup-modal capture-gif-modal theme-success">
+        <div class="capture-gif-container">
+          <img src="assets/captura.gif" alt="Registro de campo" class="capture-gif-img" />
+        </div>
+        <div class="popup-footer center-footer">
+          <button class="popup-action-btn start-game-btn-large" id="btn-close-gif-modal">
+            CONTINUAR AL DESMANTELAMIENTO DE DIQUES ➔
+          </button>
+        </div>
+      </div>
+    `;
+    document.getElementById('game-container').appendChild(gifOverlay);
+
+    if (this.game) this.game.running = true;
+
+    gifOverlay.querySelector('#btn-close-gif-modal')?.addEventListener('click', () => {
+      gifOverlay.classList.add('fade-out');
+      setTimeout(() => {
+        if (gifOverlay.parentNode) gifOverlay.remove();
+        this.showEditorialNewsCard({
+          title: '⚡ DESMANTELAMIENTO DE REPRESAS',
+          subtitle: 'Haz clic o toca 5 veces sobre cada dique para desarmarlo.',
+          text: 'Los diques de castores están parpadeando en la cuenca. Toca o haz clic reiteradamente sobre cada represa para desarmar los troncos acumulados y liberar el agua estancada.',
+          year: '2026'
+        });
+      }, 300);
     });
   }
 
