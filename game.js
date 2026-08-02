@@ -398,6 +398,15 @@ class BeaverGame {
   this.act = 2;
 
   this.ui.onBeaversReleased();
+
+   this.ui.showEditorialNewsCard({
+    title: 'EXPANSIÓN IMPARABLE Y ALTERACIÓN DEL 95% DE LAS CUENCAS',
+    subtitle: 'Los castores construyen represas alterando la red hidrográfica de Tierra del Fuego.',
+    text: 'Los roedores talan la madera nativa con sus potentes incisivos y arrastran los troncos hacia los ríos. Sus represas detienen el flujo natural de las aguas, cruzando el Canal Beagle hasta la Isla Navarino en Chile.',
+    fact: 'Al no existir depredadores naturales (como lobos u osos en la Patagonia), la población explotó exponencialmente a más de 100.000 ejemplares.',
+    theme: 'warning',
+    year: '1965'
+   });
  }
 
  // ── Evento: Árbol Talado -> Soltar Rama (rama.png) y Tocón (toconjoven.png) ──
