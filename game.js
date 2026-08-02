@@ -512,8 +512,7 @@ class BeaverGame {
    fact: 'Las inundaciones anegan puentes, carreteras y sistemas de agua potable en toda la Isla Grande.',
    year: '2005',
    centered: true,
-   bluish: true,
-   theme: 'warning',
+   theme: 'danger',
    onAccept: () => {
     // AL DAR ACEPTAR SE CAMBIA EL MAPA PROGRESIVAMENTE Y SE DISTRIBUYEN ÁRBOLES FANTASMAS POR TODO EL MAPA
     this._transitionToMap(2); // map_04_bosque_inundado.jpg
