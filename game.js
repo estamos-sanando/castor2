@@ -398,15 +398,6 @@ class BeaverGame {
   this.act = 2;
 
   this.ui.onBeaversReleased();
-
-  this.ui.showEditorialNewsCard({
-   title: 'EXPANSIÓN IMPARABLE Y ALTERACIÓN DEL 95% DE LAS CUENCAS',
-   subtitle: 'Los castores construyen represas alterando la red hidrográfica de Tierra del Fuego.',
-   text: 'Los roedores talan la madera nativa con sus potentes incisivos y arrastran los troncos hacia los ríos. Sus represas detienen el flujo natural de las aguas, cruzando el Canal Beagle hasta la Isla Navarino en Chile.',
-   fact: 'Al no existir depredadores naturales (como lobos u osos en la Patagonia), la población explotó exponencialmente a más de 100.000 ejemplares.',
-   theme: 'warning',
-   year: '1965'
-  });
  }
 
  // ── Evento: Árbol Talado -> Soltar Rama (rama.png) y Tocón (toconjoven.png) ──
@@ -420,19 +411,6 @@ class BeaverGame {
 
   this.stats.forestLoss = Math.min(100, this.stats.forestLoss + 1);
   this.stats.health = Math.max(0, 100 - this.stats.forestLoss);
-
-  if (!this._lengaWarnShown) {
-   this._lengaWarnShown = true;
-   this.ui.showEditorialNewsCard({
-    title: 'LA BIOLOGÍA DE LA LENGA: 200 AÑOS EN CRECER Y NO REBROTA DEL TOCÓN',
-    subtitle: 'A diferencia de los bosques del Hemisferio Norte, la flora fueguina no evolucionó con el castor.',
-    text: 'Cuando un bosque nativo de Canadá o Estados Unidos es talado, los árboles rebrotan de sus raíces. Nothofagus pumilio carece de esta propiedad biológica: cada Lenga caída muere definitivamente.',
-    quote: 'Un castor derriba en pocas horas un árbol centenario que tardó dos siglos en alcanzar la madurez.',
-    fact: 'Cada árbol perdido en Tierra del Fuego es irrecuperable a escala humana.',
-    theme: 'warning',
-    year: '1980'
-   });
-  }
  }
 
  // ── Evento: Entrega de Madera al Río ──
@@ -503,16 +481,16 @@ class BeaverGame {
 
  // ── Inundación y Transformación a Árboles Fantasma ──
  triggerFloodedCrisis() {
-  // Ventana central con overlay azulado que resalta el impacto ecológico
+  // Ventana central con overlay que resalta el impacto ecológico cuando los dos diques grandes están construidos
   this.ui.showEditorialNewsCard({
-   title: 'DEVASTACIÓN DEL BOSQUE NATIVO DE LENGA Y GUINDO',
-   subtitle: 'Las represas de madera sofocan las raíces de los árboles ancestrales.',
-   text: 'El agua estancada priva de oxígeno a las raíces de los árboles en pie. A diferencia de las especies del hemisferio norte, <strong>la Lenga y el Guindo patagónico NO rebrotan del tocón</strong> ni toleran raíces sumergidas, convirtiéndose en "bosques fantasma" grises e inertes.',
-   quote: 'Los castores alteran la cuenca hidrográfica modificando los ríos y facilitando la invasión de plantas exóticas.',
-   fact: 'Se estima que más de 60.000 hectáreas de bosque nativo han sido severamente destruidas en toda la Isla Grande.',
-   year: '2005',
+   title: 'LA BIOLOGÍA DE LA LENGA: 200 AÑOS EN CRECER Y NO REBROTA DEL TOCÓN',
+   subtitle: 'A diferencia de los bosques del Hemisferio Norte, la flora fueguina no evolucionó con el castor.',
+   text: 'Cuando un bosque nativo de Canadá o Estados Unidos es talado, los árboles rebrotan de sus raíces. Nothofagus pumilio carece de esta propiedad biológica: cada Lenga caída muere definitivamente.',
+   quote: 'Un castor derriba en pocas horas un árbol centenario que tardó dos siglos en alcanzar la madurez.',
+   fact: 'Cada árbol perdido en Tierra del Fuego es irrecuperable a escala humana.',
+   year: '1980',
    centered: true,
-   bluish: true,
+   theme: 'warning',
    onAccept: () => {
     // AL DAR ACEPTAR SE CAMBIA EL MAPA PROGRESIVAMENTE Y SE DISTRIBUYEN ÁRBOLES FANTASMAS POR TODO EL MAPA
     this._transitionToMap(2); // map_04_bosque_inundado.jpg
