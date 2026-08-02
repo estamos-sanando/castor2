@@ -420,6 +420,19 @@ class BeaverGame {
 
   this.stats.forestLoss = Math.min(100, this.stats.forestLoss + 1);
   this.stats.health = Math.max(0, 100 - this.stats.forestLoss);
+
+   if (!this._lengaWarnShown) {
+    this._lengaWarnShown = true;
+    this.ui.showEditorialNewsCard({
+     title: 'LA BIOLOGÍA DE LA LENGA: 200 AÑOS EN CRECER Y NO REBROTA DEL TOCÓN',
+     subtitle: 'A diferencia de los bosques del Hemisferio Norte, la flora fueguina no evolucionó con el castor.',
+     text: 'Cuando un bosque nativo de Canadá o Estados Unidos es talado, los árboles rebrotan de sus raíces. Nothofagus pumilio carece de esta propiedad biológica: cada Lenga caída muere definitivamente.',
+     quote: 'Un castor derriba en pocas horas un árbol centenario que tardó dos siglos en alcanzar la madurez.',
+     fact: 'Cada árbol perdido en Tierra del Fuego es irrecuperable a escala humana.',
+     theme: 'warning',
+     year: '1980'
+    });
+   }
  }
 
  // ── Evento: Entrega de Madera al Río ──
@@ -492,13 +505,14 @@ class BeaverGame {
  triggerFloodedCrisis() {
   // Ventana central con overlay que resalta el impacto ecológico cuando los dos diques grandes están construidos
   this.ui.showEditorialNewsCard({
-   title: 'LA BIOLOGÍA DE LA LENGA: 200 AÑOS EN CRECER Y NO REBROTA DEL TOCÓN',
-   subtitle: 'A diferencia de los bosques del Hemisferio Norte, la flora fueguina no evolucionó con el castor.',
-   text: 'Cuando un bosque nativo de Canadá o Estados Unidos es talado, los árboles rebrotan de sus raíces. Nothofagus pumilio carece de esta propiedad biológica: cada Lenga caída muere definitivamente.',
-   quote: 'Un castor derriba en pocas horas un árbol centenario que tardó dos siglos en alcanzar la madurez.',
-   fact: 'Cada árbol perdido en Tierra del Fuego es irrecuperable a escala humana.',
-   year: '1980',
+   title: '60.000 HECTÁREAS DE BOSQUES FANTASMA Y USD $66.5 MILLONES EN DAÑOS ANUALES',
+   subtitle: 'Las represas anegan el suelo, ahogan las raíces de las lengas y destruyen las turberas.',
+   text: 'El agua estancada priva de oxígeno a las raíces de los árboles en pie, secándolos y convirtiéndolos en "bosques fantasma" grises e inertes. Además, destruye las turberas patagónicas, principales captadoras de carbono del planeta.',
+   quote: 'Las pérdidas económicas anuales superan los 66.5 millones de dólares en infraestructura, ganadería y conservación.',
+   fact: 'Las inundaciones anegan puentes, carreteras y sistemas de agua potable en toda la Isla Grande.',
+   year: '2005',
    centered: true,
+   bluish: true,
    theme: 'warning',
    onAccept: () => {
     // AL DAR ACEPTAR SE CAMBIA EL MAPA PROGRESIVAMENTE Y SE DISTRIBUYEN ÁRBOLES FANTASMAS POR TODO EL MAPA
