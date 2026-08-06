@@ -2606,6 +2606,7 @@ button:active,
 .tutorial-header h2 {
   color: #111 !important;
   text-shadow: none !important;
+  text-transform: uppercase !important;
 }
 
 .popup-lead, .popup-text-content, .popup-subhead,
