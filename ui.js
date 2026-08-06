@@ -73,9 +73,6 @@ class GameUI {
   this.tutorialEl.id = 'tutorial-overlay';
   this.tutorialEl.innerHTML = `
    <div class="game-popup-modal centered-welcome-window initial-start-modal">
-    <div class="initial-start-logo-wrapper">
-     <img src="assets/LOGO.png" class="welcome-start-logo-large" alt="Logo Proyecto Castor" />
-    </div>
     <div class="popup-modal-header">
      <span class="popup-year-badge">1946 — Tierra del Fuego</span>
     </div>
@@ -151,9 +148,6 @@ class GameUI {
    overlayEl.className = 'centered-news-overlay theme-victory';
    overlayEl.innerHTML = `
     <div class="game-popup-modal centered-welcome-window final-victory-modal theme-success">
-     <div class="initial-start-logo-wrapper" style="margin-bottom: 8px;">
-      <img src="assets/LOGO.png" class="welcome-start-logo-large" style="height: 85px;" alt="Logo Proyecto Castor" />
-     </div>
 
      <div class="popup-modal-header">
       <span class="popup-category-stamp" style="background: rgba(16, 185, 129, 0.25); color: #6ee7b7; border-color: #10b981;">FIN DEL JUEGO</span>
