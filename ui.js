@@ -44,7 +44,7 @@ class GameUI {
      
      <div class="central-beaver-btn-wrapper" id="beaver-btn-wrapper">
       <button class="pure-image-btn" id="btn-add-beaver" title="LIBERAR 20 CASTORES (1946)">
-       <img src="assets/BOTON.png" alt="Agregar Castores" />
+       <img src="assets/BOTONCASTOR.png" alt="Agregar Castores" />
       </button>
      </div>
     </div>
