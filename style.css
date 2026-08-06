@@ -3,7 +3,7 @@
   Diseño de HUD con Barra Táctica Inferior (Cero superposiciones)
   ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -32,7 +32,7 @@ html, body {
  width: 100%; height: 100%;
  overflow: hidden;
  background: #040804;
- font-family: 'Inter', sans-serif;
+ font-family: 'Space Mono', monospace;
  color: var(--text);
  -webkit-font-smoothing: antialiased;
 }
@@ -2121,4 +2121,153 @@ html, body {
   min-height: 44px;
   touch-action: manipulation;
  }
+}
+
+/* ============================================================
+   BRUTALIST GLOBAL OVERRIDES — Archivo + Space Mono + Square
+   ============================================================ */
+
+/* ── Tipografía: títulos → Archivo, texto → Space Mono ── */
+h1, h2, h3, h4, h5, h6,
+.popup-headline,
+.news-title,
+.tutorial-header h2,
+.sidebar-game-title,
+.sidebar-section-title,
+.guide-title,
+.sidebar-header h4,
+.instruction-title,
+.journal-headline,
+.journal-section-title,
+.fact-box-title,
+.popup-category-stamp,
+.popup-year-badge,
+.news-badge,
+.instruction-pill-badge,
+.catcher-pill-badge {
+  font-family: 'Archivo', sans-serif !important;
+  font-weight: 800 !important;
+}
+
+body,
+p, span, li, td, th, label, input, textarea, select,
+.popup-lead,
+.popup-subhead,
+.popup-text-content,
+.popup-quote,
+.fact-box-body,
+.news-text,
+.news-footer,
+.guide-step,
+.tutorial-body p,
+.tutorial-subtitle,
+.sidebar-desc,
+.instruction-text,
+.instruction-subtitle,
+.instruction-step-year,
+.leaderboard-row,
+.ins-item,
+.reforest-instruction-text,
+.catcher-step-tag,
+.stat-lbl {
+  font-family: 'Space Mono', monospace !important;
+}
+
+/* ── Botones: cuadrados, blancos, borde negro, sombra azul ── */
+button,
+.popup-action-btn,
+.popup-start-btn,
+.tutorial-start-btn,
+.arcade-action-btn,
+.restart-game-btn,
+.btn-speed,
+.btn-plant,
+.btn-liberar,
+.hud-btn,
+.speed-toggle-btn,
+.central-beaver-btn,
+.start-game-btn-large,
+.precision-submit-btn,
+.initials-submit-btn,
+.malla-deploy-btn,
+.reforest-btn,
+.dique-btn,
+.debug-btn,
+.arcade-leaderboard-btn {
+  border-radius: 0 !important;
+  background: #ffffff !important;
+  border: 4px solid #111 !important;
+  box-shadow: 6px 6px 0 #0033CC !important;
+  color: #111 !important;
+  font-family: 'Archivo', sans-serif !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.5px !important;
+  text-shadow: none !important;
+  transition: transform 0.1s ease, box-shadow 0.1s ease !important;
+}
+
+button:hover,
+.popup-action-btn:hover,
+.popup-start-btn:hover,
+.tutorial-start-btn:hover,
+.arcade-action-btn:hover,
+.restart-game-btn:hover,
+.btn-speed:hover,
+.btn-plant:hover,
+.btn-liberar:hover,
+.hud-btn:hover,
+.speed-toggle-btn:hover,
+.central-beaver-btn:hover,
+.start-game-btn-large:hover,
+.malla-deploy-btn:hover,
+.reforest-btn:hover,
+.dique-btn:hover {
+  transform: translate(-2px, -2px) !important;
+  box-shadow: 8px 8px 0 #0033CC !important;
+  background: #f0f4ff !important;
+}
+
+button:active,
+.popup-action-btn:active,
+.popup-start-btn:active,
+.tutorial-start-btn:active,
+.arcade-action-btn:active,
+.restart-game-btn:active,
+.btn-speed:active,
+.btn-liberar:active,
+.hud-btn:active,
+.speed-toggle-btn:active,
+.central-beaver-btn:active,
+.start-game-btn-large:active {
+  transform: translate(4px, 4px) !important;
+  box-shadow: 2px 2px 0 #0033CC !important;
+}
+
+/* ── Contenedores: sin bordes redondeados ── */
+.game-popup-modal,
+.sidebar-card,
+.sidebar-guide-box,
+.tutorial-box,
+.news-card,
+.journal-popup-window,
+.game-instruction-notification-card,
+.popup-fact-box,
+.leaderboard-table-container,
+.arcade-theme-card,
+.reforest-card,
+#hud-right-sidebar,
+#eneei-sidebar-panel .sidebar-card {
+  border-radius: 0 !important;
+}
+
+/* ── Badges inline: cuadrados, fuente Archivo ── */
+.news-badge,
+.popup-category-stamp,
+.popup-year-badge,
+.instruction-pill-badge,
+.catcher-pill-badge,
+.reforest-step-tag {
+  border-radius: 0 !important;
+  font-family: 'Archivo', sans-serif !important;
+  font-weight: 800 !important;
 }
