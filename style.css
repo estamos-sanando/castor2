@@ -2561,7 +2561,11 @@ button:active,
 }
 
 .popup-fact-box {
-  background: #f0f4ff !important;
+  background-color: #f8f9ff !important;
+  background-image:
+    linear-gradient(rgba(0, 51, 204, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 51, 204, 0.12) 1px, transparent 1px) !important;
+  background-size: 20px 20px !important;
   border: 2px solid #111 !important;
   box-shadow: 4px 4px 0 #0033CC !important;
 }
