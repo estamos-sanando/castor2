@@ -116,7 +116,7 @@ class BeaverGame {
      };
 
      const targetDam = this.entities.find(el => el instanceof Dam && isDamClicked(el));
-     if (targetDam && (targetDam.glowing || this.damsCanBeDismantled || this.beaversCaptured || this.currentMap >= 2)) {
+     if (targetDam && this.damsCanBeDismantled) {
       targetDam.hp = (targetDam.hp !== undefined ? targetDam.hp : 5) - 1;
       targetDam._refreshSprite();
       this.particles.burst(targetDam.x, targetDam.y - 10, 'wood', 18);
