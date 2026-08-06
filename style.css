@@ -2624,7 +2624,12 @@ button:active,
 
 .popup-lead, .popup-text-content, .popup-subhead,
 .guide-step, .news-text, .tutorial-body p,
-.instruction-text, .sidebar-desc, .fact-box-body {
+.instruction-text, .sidebar-desc, .fact-box-body,
+.reforest-instruction-text, .reforest-instruction-text *,
+.reforest-card p, .reforest-card span, .reforest-card strong, .reforest-card label,
+.reforest-controls-box, .reforest-controls-box *,
+.catcher-stat-box, .stat-lbl, .stat-val, .timer-val,
+.precision-feedback-lbl {
   color: #111 !important;
 }
 
@@ -2632,6 +2637,11 @@ button:active,
 .tutorial-body strong,
 .instruction-text strong {
   color: #0033CC !important;
+}
+
+.reforest-instruction-text strong {
+  color: #111 !important;
+  font-weight: 800 !important;
 }
 
 /* ── FILAS DE TABLA ── */
