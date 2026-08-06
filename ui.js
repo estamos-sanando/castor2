@@ -1572,7 +1572,7 @@ class GameUI {
   this.showEditorialNewsCard({
    title: ' REFORESTACIÓN EXITOSA EN LA CUENCA',
    subtitle: 'Plantines de Lenga nativa sembrados y protegidos.',
-   text: 'Al presionar <strong>ACEPTAR</strong>, los plantines de Lenga nativa iniciarán su maduración acelerada hasta convertirse en un bosque autóctono frondoso.',
+   text: 'Al presionar <strong>ACEPTAR</strong>, los plantines de Lenga nativa comenzarán a crecer hasta convertirse en un bosque autóctono frondoso.',
    fact: 'La Lenga (Nothofagus pumilio) es la especie arbórea clave para la regeneración del suelo subantártico.',
    year: '2026',
    centered: true,
