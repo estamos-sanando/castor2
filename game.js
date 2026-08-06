@@ -653,8 +653,8 @@ class BeaverGame {
 
   this.ui.showEditorialNewsCard({
    title: ' DESMANTELAMIENTO MANUAL DE DIQUES',
-   subtitle: 'Los diques en el mapa inundado han comenzado a brillar en dorado.',
-   text: 'Haz clic repetidamente (5 veces) sobre cada dique resplandeciente para romper las estructuras de madera y permitir que la cuenca se drene progresivamente.',
+   subtitle: 'Haz clic o toca 5 veces sobre cada dique para desarmarlo.',
+   text: 'Haz clic repetidamente (5 veces) sobre cada dique para romper las estructuras de madera y permitir que la cuenca se drene progresivamente.',
    fact: 'La desobstrucción manual de represas devuelve el escurrimiento natural a los ríos fueguinos.',
    year: '2026',
    onAccept: () => {

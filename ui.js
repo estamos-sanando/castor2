@@ -819,7 +819,7 @@ class GameUI {
     this.showEditorialNewsCard({
      title: ' DESMANTELAMIENTO DE REPRESAS',
      subtitle: 'Haz clic o toca 5 veces sobre cada dique para desarmarlo.',
-     text: 'Los diques de castores están parpadeando en la cuenca. Toca o haz clic reiteradamente sobre cada represa para desarmar los troncos acumulados y liberar el agua estancada.',
+     text: 'Toca o haz clic reiteradamente sobre cada represa para desarmar los troncos acumulados y liberar el agua estancada.',
      year: '2026',
      onAccept: () => {
       // Habilitar interacción y parpadeo azul en diques
