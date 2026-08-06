@@ -2507,7 +2507,7 @@ button:active,
   color: #111 !important;
 }
 
-/* ── FONDO CUADRICULADO — Popups principales + Sidebar ── */
+/* ── POPUP MODALS INTERMEDIOS — fondo blanco plano ── */
 .game-popup-modal,
 .game-popup-modal.theme-danger,
 .game-popup-modal.theme-warning,
@@ -2515,7 +2515,20 @@ button:active,
 .game-popup-modal.theme-info,
 .game-popup-modal.bluish-theme,
 .game-popup-modal.reddish-theme,
-.tutorial-box,
+.tutorial-box {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  border: 4px solid #111 !important;
+  box-shadow: 12px 12px 0 #0033CC !important;
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  color: #111 !important;
+}
+
+/* ── FONDO CUADRICULADO — Solo inicio, final y sidebar ── */
+.game-popup-modal.initial-start-modal,
+.game-popup-modal.final-victory-modal,
 #hud-right-sidebar {
   background-color: #f8f9ff !important;
   background-image:
