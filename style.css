@@ -1155,8 +1155,8 @@ html, body {
 /* ── TARJETA EMERGENTE IZQUIERDA CENTRADA — RECORTE DE DIARIO VINTAGE ── */
 .left-center-news-popup {
  position: absolute;
- left: 45px;
- top: 48%;
+ left: 20px;
+ top: 62%;
  transform: translateY(-50%);
  width: 450px;
  max-width: 90vw;
@@ -1221,8 +1221,8 @@ html, body {
 
 .left-center-news-popup {
  position: absolute;
- left: 45px;
- top: 48%;
+ left: 20px;
+ top: 62%;
  transform: translateY(-50%);
  width: 480px;
  max-width: 90vw;
