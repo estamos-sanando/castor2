@@ -563,13 +563,13 @@ class GameUI {
 
     if (activeType === type) {
      activeType = null;
-     item.style.borderColor = 'rgba(212, 175, 55, 0.6)';
+     item.style.borderColor = 'rgba(0, 51, 204, 0.6)';
      item.style.background = 'rgba(255, 255, 255, 0.06)';
     } else {
      activeType = type;
      [cabinItem, signItem, cageItem].forEach(i => {
       if (i) {
-       i.style.borderColor = 'rgba(212, 175, 55, 0.6)';
+       i.style.borderColor = 'rgba(0, 51, 204, 0.6)';
        i.style.background = 'rgba(255, 255, 255, 0.06)';
       }
      });
@@ -989,7 +989,7 @@ class GameUI {
   `;
 
   overlay.innerHTML = `
-   <div style="position: relative; width: 90%; max-width: 820px; border: 2.5px solid var(--gold); border-radius: 16px; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.9), 0 0 25px rgba(212,175,55,0.4); background: #000;">
+   <div style="position: relative; width: 90%; max-width: 820px; border: 2.5px solid #0033CC; border-radius: 16px; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.9), 0 0 25px rgba(0, 51, 204, 0.4); background: #000;">
     <video id="captura-mp4-video" src="assets/captura.mp4" autoplay playsinline style="width: 100%; height: auto; max-height: 75vh; object-fit: contain; display: block;"></video>
     <button id="btn-skip-captura-video" class="popup-action-btn arcade-action-btn green-btn" style="position: absolute; bottom: 20px; right: 20px; z-index: 10; padding: 10px 24px; font-weight: 700; box-shadow: 0 4px 15px rgba(0,0,0,0.8);">CONTINUAR ➔</button>
    </div>
@@ -1079,7 +1079,7 @@ class GameUI {
    barEl.style.width = `${this.reforestProgress}%`;
    if (this.reforestProgress >= 100) barEl.style.background = '#00C853';
    else if (this.reforestProgress >= 50) barEl.style.background = '#22c55e';
-   else barEl.style.background = '#eab308';
+   else barEl.style.background = '#0033CC';
   }
  }
 
@@ -1186,7 +1186,7 @@ class GameUI {
      ctx.ellipse(0, 0, 68 * fillPct, 34 * fillPct, 0, 0, Math.PI * 2);
      ctx.fill();
 
-     ctx.strokeStyle = 'rgba(212, 175, 55, 0.3)';
+     ctx.strokeStyle = 'rgba(0, 51, 204, 0.3)';
      ctx.lineWidth = 1.5;
      ctx.stroke();
      ctx.restore();
@@ -1296,7 +1296,7 @@ class GameUI {
      } else {
       ctx.fillStyle = '#ef4444'; ctx.fillRect(100, 195, 300, 22);
       ctx.fillStyle = '#00C853'; ctx.fillRect(190, 195, 120, 22);
-      ctx.strokeStyle = '#d4af37'; ctx.strokeRect(100, 195, 300, 22);
+      ctx.strokeStyle = '#0033CC'; ctx.strokeRect(100, 195, 300, 22);
      }
 
      const nx = 100 + (needlePos / 100) * 300;
@@ -1393,7 +1393,7 @@ class GameUI {
      if (imgPlanta) ctx.drawImage(imgPlanta, 250 - 45, 160 - 110, 90, 120);
 
      // Anillos concéntricos de ritmo con pulso y sombra brillante
-     const color = this.step3RingCycle === 1 ? '#00C853' : (this.step3RingCycle === 2 ? '#eab308' : '#ff9800');
+     const color = this.step3RingCycle === 1 ? '#00C853' : (this.step3RingCycle === 2 ? '#0033CC' : '#ff9800');
      ctx.save();
      ctx.strokeStyle = color;
      ctx.shadowColor = color;
