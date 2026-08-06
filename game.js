@@ -640,12 +640,13 @@ class BeaverGame {
    this._rangerCaptureInterval = null;
   }
 
-  this.damsCanBeDismantled = true;
+  // damsCanBeDismantled empieza en false — se activa en onAccept del popup
+  this.damsCanBeDismantled = false;
 
-  // Hacer brillar todos los diques activos en el mapa inundado
+  // Preparar los diques (hp listo) pero sin glowing aún
   this.entities.forEach(e => {
    if (e instanceof Dam && e.active) {
-    e.glowing = true;
+    e.glowing = false;
     e.hp = 5;
    }
   });
@@ -656,7 +657,15 @@ class BeaverGame {
    text: 'Haz clic repetidamente (5 veces) sobre cada dique resplandeciente para romper las estructuras de madera y permitir que la cuenca se drene progresivamente.',
    fact: 'La desobstrucción manual de represas devuelve el escurrimiento natural a los ríos fueguinos.',
    year: '2026',
-   onAccept: () => {}
+   onAccept: () => {
+    // Ahora sí se habilita la interacción y el parpadeo
+    this.damsCanBeDismantled = true;
+    this.entities.forEach(e => {
+     if (e instanceof Dam && e.active && !e.dead) {
+      e.glowing = true;
+     }
+    });
+   }
   });
  }
 

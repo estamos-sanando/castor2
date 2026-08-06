@@ -649,6 +649,27 @@ class Dam extends Entity {
    ? (lvl === 1 ? 170 : (lvl === 2 ? 200 : 240))
    : (lvl === 1 ? 150 : (lvl === 2 ? 175 : 200));
 
+  // Resplandor pulsante en diques — solo cuando el jugador puede desmantelarlos
+  const canDismantle = window.GAME && window.GAME.damsCanBeDismantled;
+  if (canDismantle && this.active) {
+   const pulse = 0.5 + 0.5 * Math.sin(Date.now() * 0.006);
+   const glowGrad = ctx.createRadialGradient(Math.round(this.x), Math.round(this.y), w * 0.1, Math.round(this.x), Math.round(this.y), w * 0.65 + pulse * 20);
+   glowGrad.addColorStop(0, `rgba(0, 51, 204, ${0.75 + pulse * 0.25})`);
+   glowGrad.addColorStop(0.5, `rgba(0, 51, 204, ${0.3 + pulse * 0.2})`);
+   glowGrad.addColorStop(1, 'rgba(0, 51, 204, 0)');
+
+   ctx.fillStyle = glowGrad;
+   ctx.beginPath();
+   ctx.ellipse(Math.round(this.x), Math.round(this.y), w * 0.62, h * 0.5, 0, 0, Math.PI * 2);
+   ctx.fill();
+
+   ctx.strokeStyle = `rgba(0, 102, 255, ${0.6 + pulse * 0.4})`;
+   ctx.lineWidth = 3;
+   ctx.beginPath();
+   ctx.ellipse(Math.round(this.x), Math.round(this.y), w * 0.55, h * 0.42, 0, 0, Math.PI * 2);
+   ctx.stroke();
+  }
+
   if (this.hp !== undefined && this.hp < 5) {
    const stageFactor = this.hp === 4 ? 0.92 : (this.hp === 3 ? 0.85 : (this.hp === 2 ? 0.78 : 0.70));
    targetW *= stageFactor;
