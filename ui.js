@@ -251,7 +251,7 @@ class GameUI {
         ${opts.fact ? `
         <div class="popup-fact-box collapsed" style="cursor: pointer;" title="Haz clic para ver el dato destacado">
          <div class="fact-box-title">
-          <span>💡 DATO DESTACADO</span>
+          <span>DATO DESTACADO</span>
           <span class="fact-toggle-btn">[ VER DATO ➔ ]</span>
          </div>
          <div class="fact-box-body" style="display: none;">${opts.fact}</div>
@@ -335,7 +335,7 @@ class GameUI {
        ${opts.fact ? `
        <div class="popup-fact-box collapsed" style="cursor: pointer;" title="Haz clic para ver el dato destacado">
         <div class="fact-box-title">
-         <span>💡 DATO DESTACADO</span>
+         <span>DATO DESTACADO</span>
          <span class="fact-toggle-btn">[ VER DATO ➔ ]</span>
         </div>
         <div class="fact-box-body" style="display: none;">${opts.fact}</div>
