@@ -1169,8 +1169,8 @@ html, body {
  left: clamp(10px, 1.5vw, 20px);
  top: 50%;
  transform: translateY(-50%);
- width: clamp(290px, 36vw, 450px);
- max-width: calc(100vw - clamp(215px, 25vw, 290px) - 20px);
+ width: clamp(320px, 42vw, 520px);
+ max-width: calc(100vw - clamp(215px, 24vw, 285px) - 30px);
  max-height: calc(96vh - 20px);
  z-index: 220;
  pointer-events: auto;
@@ -1237,8 +1237,8 @@ html, body {
  left: clamp(10px, 1.5vw, 20px);
  top: 50%;
  transform: translateY(-50%);
- width: clamp(290px, 36vw, 480px);
- max-width: calc(100vw - clamp(215px, 25vw, 290px) - 20px);
+ width: clamp(320px, 42vw, 520px);
+ max-width: calc(100vw - clamp(215px, 24vw, 285px) - 30px);
  max-height: calc(96vh - 20px);
  z-index: 220;
  pointer-events: none;
@@ -1437,16 +1437,34 @@ html, body {
  flex-direction: column;
 }
 
+/* Cuando está dentro del wrapper lateral, respetar el ancho del padre */
+.left-center-news-popup .game-popup-modal {
+ width: 100%;
+}
+
 .game-popup-modal::-webkit-scrollbar {
  width: 0;
 }
 
-/* El cuerpo interno del modal ocupa el espacio flex restante */
+/* El cuerpo interno del modal: flex para que el footer siempre sea visible */
 .popup-modal-body {
  flex: 1 1 auto;
  min-height: 0;
  display: flex;
  flex-direction: column;
+ overflow: hidden;
+}
+
+/* El texto principal puede comprimirse verticalmente */
+.popup-text-content {
+ flex: 1 1 auto;
+ min-height: 0;
+ overflow: hidden;
+}
+
+/* El pie (botón) nunca se corta */
+.popup-footer {
+ flex-shrink: 0;
 }
 
 /* Theme variants for .game-popup-modal — keep brutalist base, only accent shadow changes */
