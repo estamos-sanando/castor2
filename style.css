@@ -69,17 +69,19 @@ html, body {
 
 #hud-right-sidebar {
  position: absolute;
- right: 16px;
- top: 16px;
- width: 260px;
+ right: clamp(8px, 1.2vw, 16px);
+ top: clamp(8px, 1.2vh, 16px);
+ width: clamp(200px, 22vw, 260px);
+ max-height: calc(100vh - clamp(16px, 2.4vh, 32px));
  height: auto;
+ overflow: hidden;
  background: var(--brut-bg);
  border: var(--brut-border);
  border-radius: 0;
- padding: 16px;
+ padding: clamp(10px, 1.5vh, 16px) clamp(10px, 1.2vw, 16px);
  display: flex;
  flex-direction: column;
- gap: 12px;
+ gap: clamp(6px, 1vh, 12px);
  color: var(--brut-text);
  box-shadow: var(--brut-shadow);
  backdrop-filter: none;
@@ -116,36 +118,36 @@ html, body {
 
 .sidebar-game-title {
  font-family: 'Cinzel', serif;
- font-size: 13.5px;
+ font-size: clamp(10.5px, 1.1vw, 13.5px);
  font-weight: 800;
  color: #0033CC;
- line-height: 1.35;
- letter-spacing: 1px;
+ line-height: 1.3;
+ letter-spacing: 0.8px;
 }
 
 .sidebar-guide-box {
  background: #f0f4ff;
  border: 2px solid #111;
  border-radius: 0;
- padding: 12px 14px;
+ padding: clamp(7px, 1.1vh, 12px) clamp(9px, 1.1vw, 14px);
  margin-top: 2px;
  box-shadow: 4px 4px 0 #0033CC;
 }
 
 .guide-title {
  font-family: 'Cinzel', serif;
- font-size: 11px;
+ font-size: clamp(9px, 0.95vw, 11px);
  font-weight: 700;
  color: #0033CC;
- margin-bottom: 8px;
+ margin-bottom: clamp(4px, 0.6vh, 8px);
  letter-spacing: 0.5px;
 }
 
 .guide-step {
- font-size: 11.5px;
- line-height: 1.45;
+ font-size: clamp(9.5px, 1vw, 11.5px);
+ line-height: 1.4;
  color: #333333;
- margin-bottom: 6px;
+ margin-bottom: clamp(3px, 0.5vh, 6px);
 }
 
 .guide-step strong {
@@ -154,13 +156,13 @@ html, body {
 
 .sidebar-section-title {
  font-family: 'Cinzel', serif;
- font-size: 11px;
+ font-size: clamp(9px, 0.95vw, 11px);
  font-weight: 700;
  color: #0033CC;
- letter-spacing: 1px;
+ letter-spacing: 0.8px;
  border-bottom: 2px solid #111;
- padding-bottom: 4px;
- margin-top: 4px;
+ padding-bottom: 3px;
+ margin-top: 3px;
 }
 
 .hud-stats-vertical {
@@ -269,7 +271,7 @@ html, body {
 }
 
 .central-beaver-btn-wrapper .pure-image-btn img {
- height: 85px;
+ height: clamp(50px, 8vh, 85px);
  width: auto;
  transition: transform 0.2s ease, filter 0.2s ease;
 }
@@ -334,7 +336,7 @@ html, body {
 }
 
 .pure-image-btn img {
- height: 80px;
+ height: clamp(48px, 7.5vh, 80px);
  width: auto;
  display: block;
  object-fit: contain;
@@ -413,12 +415,13 @@ html, body {
 /* ── Tarjetas Periodísticas Modales Grandes (Fijas en el centro) ── */
 #news-container {
  position: absolute;
- top: 45%;
+ top: 50%;
  left: 50%;
  transform: translate(-50%, -50%);
  z-index: 50;
  pointer-events: none;
  width: min(540px, 90vw);
+ max-height: 90vh;
 }
 
 .news-card {
@@ -426,12 +429,14 @@ html, body {
  background: var(--brut-bg);
  border: var(--brut-border);
  border-radius: 0;
- padding: 24px 28px;
+ padding: clamp(14px, 2.5vw, 24px) clamp(16px, 3vw, 28px);
  box-shadow: var(--brut-shadow);
  backdrop-filter: none;
  animation: news-popup 0.4s cubic-bezier(0.17, 0.67, 0.36, 1.2) forwards;
  cursor: pointer;
  color: var(--brut-text);
+ max-height: 90vh;
+ overflow: hidden;
 }
 
 .news-card.news-exit {
@@ -462,19 +467,19 @@ html, body {
 
 .news-title {
  font-family: 'Cinzel', serif;
- font-size: 18px;
+ font-size: clamp(13px, 2vw, 18px);
  font-weight: 700;
  color: #111111;
- line-height: 1.35;
- margin-bottom: 10px;
+ line-height: 1.3;
+ margin-bottom: 8px;
  text-shadow: none;
 }
 
 .news-text {
- font-size: 13.5px;
- line-height: 1.65;
+ font-size: clamp(11px, 1.5vw, 13.5px);
+ line-height: 1.55;
  color: #222222;
- margin-bottom: 16px;
+ margin-bottom: 12px;
 }
 
 .news-footer {
@@ -505,28 +510,32 @@ html, body {
 
 .tutorial-box {
  max-width: 580px;
- width: 90%;
+ width: 92%;
+ max-height: calc(96vh - 16px);
+ overflow: hidden;
  background: var(--brut-bg);
  border: var(--brut-border);
  border-radius: 0;
- padding: 36px 40px;
+ padding: clamp(18px, 3.5vh, 36px) clamp(20px, 3.5vw, 40px);
  box-shadow: var(--brut-shadow);
  color: var(--brut-text);
+ display: flex;
+ flex-direction: column;
 }
 
-.tutorial-header { text-align: center; margin-bottom: 20px; }
-.tutorial-logo { font-size: 44px; display: block; margin-bottom: 8px; }
+.tutorial-header { text-align: center; margin-bottom: clamp(10px, 2vh, 20px); flex-shrink: 0; }
+.tutorial-logo { font-size: clamp(28px, 5vh, 44px); display: block; margin-bottom: 6px; }
 
 .tutorial-header h2 {
  font-family: 'Cinzel', serif;
- font-size: 22px;
+ font-size: clamp(15px, 2.5vw, 22px);
  color: #0033CC;
- letter-spacing: 1.5px;
+ letter-spacing: 1px;
 }
 
-.tutorial-subtitle { font-size: 11px; color: #555555; text-transform: uppercase; letter-spacing: 1.5px; }
+.tutorial-subtitle { font-size: clamp(9px, 1vw, 11px); color: #555555; text-transform: uppercase; letter-spacing: 1px; }
 
-.tutorial-body p { font-size: 13.5px; line-height: 1.65; color: #222222; margin-bottom: 12px; }
+.tutorial-body p { font-size: clamp(11.5px, 1.5vw, 13.5px); line-height: 1.55; color: #222222; margin-bottom: clamp(6px, 1vh, 12px); }
 .tutorial-body strong { color: #0033CC; }
 .tutorial-body em { color: #333333; font-style: italic; }
 
@@ -534,32 +543,34 @@ html, body {
  background: rgba(0,0,0,0.35);
  border: 1px solid rgba(0, 51, 204, 0.2);
  border-radius: var(--radius);
- padding: 14px 16px;
+ padding: clamp(8px, 1.5vh, 14px) clamp(10px, 1.5vw, 16px);
  display: flex;
  flex-direction: column;
- gap: 8px;
- margin-top: 10px;
+ gap: clamp(4px, 0.8vh, 8px);
+ margin-top: clamp(6px, 1vh, 10px);
+ flex-shrink: 0;
 }
 
-.ins-item { font-size: 12.5px; line-height: 1.5; color: var(--text-dim); }
+.ins-item { font-size: clamp(10.5px, 1.2vw, 12.5px); line-height: 1.45; color: var(--text-dim); }
 .ins-item strong { color: var(--text); }
 
 .tutorial-start-btn {
  display: block;
  width: 100%;
- margin-top: 24px;
- padding: 14px;
+ margin-top: clamp(12px, 2vh, 24px);
+ padding: clamp(10px, 1.5vh, 14px);
  background: linear-gradient(135deg, #27ae60, #1e8449);
  border: 1px solid var(--gold);
  border-radius: 30px;
  color: #fff;
  font-family: 'Cinzel', serif;
- font-size: 15px;
+ font-size: clamp(12px, 1.5vw, 15px);
  font-weight: 700;
- letter-spacing: 1.5px;
+ letter-spacing: 1px;
  cursor: pointer;
  box-shadow: 0 0 24px rgba(46,204,113,0.3);
  transition: transform 0.15s, box-shadow 0.15s;
+ flex-shrink: 0;
 }
 
 .tutorial-start-btn:hover {
@@ -1155,13 +1166,15 @@ html, body {
 /* ── TARJETA EMERGENTE IZQUIERDA CENTRADA — RECORTE DE DIARIO VINTAGE ── */
 .left-center-news-popup {
  position: absolute;
- left: 20px;
- top: 62%;
+ left: clamp(10px, 1.5vw, 20px);
+ top: 50%;
  transform: translateY(-50%);
- width: 450px;
- max-width: 90vw;
+ width: clamp(290px, 36vw, 450px);
+ max-width: calc(100vw - clamp(215px, 25vw, 290px) - 20px);
+ max-height: calc(96vh - 20px);
  z-index: 220;
  pointer-events: auto;
+ overflow: hidden;
  animation: slideInLeftCenter 0.45s cubic-bezier(0.17, 0.67, 0.36, 1.2);
 }
 
@@ -1221,13 +1234,15 @@ html, body {
 
 .left-center-news-popup {
  position: absolute;
- left: 20px;
- top: 62%;
+ left: clamp(10px, 1.5vw, 20px);
+ top: 50%;
  transform: translateY(-50%);
- width: 480px;
- max-width: 90vw;
+ width: clamp(290px, 36vw, 480px);
+ max-width: calc(100vw - clamp(215px, 25vw, 290px) - 20px);
+ max-height: calc(96vh - 20px);
  z-index: 220;
  pointer-events: none;
+ overflow: hidden;
  animation: slideInLeftCenter 0.45s cubic-bezier(0.17, 0.67, 0.36, 1.2);
 }
 
@@ -1242,13 +1257,15 @@ html, body {
 /* ── NOTIFICACIÓN DE INSTRUCCIÓN / GUÍA DE JUEGO (HUD TOAST TOP-CENTER) ── */
 .game-instruction-notification-wrapper {
  position: absolute;
- top: 105px;
+ top: clamp(55px, 9vh, 105px);
  left: 50%;
  transform: translateX(-50%);
- width: 520px;
- max-width: 92vw;
+ width: clamp(290px, 50vw, 520px);
+ max-width: calc(100vw - clamp(215px, 25vw, 285px) - 20px);
+ max-height: calc(96vh - 20px);
  z-index: 380;
  pointer-events: auto;
+ overflow: hidden;
  animation: notificationSlideDown 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -1285,11 +1302,12 @@ html, body {
  border: var(--brut-border);
  box-shadow: var(--brut-shadow);
  border-radius: 0;
- padding: 18px 22px;
+ padding: clamp(12px, 2vh, 18px) clamp(14px, 2vw, 22px);
  display: flex;
  flex-direction: column;
- gap: 10px;
+ gap: clamp(6px, 1vh, 10px);
  color: var(--brut-text);
+ overflow: hidden;
 }
 
 .instruction-badge-bar {
@@ -1325,12 +1343,12 @@ html, body {
 .instruction-content {
  display: flex;
  flex-direction: column;
- gap: 4px;
+ gap: 3px;
 }
 
 .instruction-title {
  font-family: 'Inter', sans-serif;
- font-size: 18px;
+ font-size: clamp(12px, 1.8vw, 18px);
  font-weight: 800;
  color: #0033CC;
  text-shadow: none;
@@ -1340,7 +1358,7 @@ html, body {
 
 .instruction-subtitle {
  font-family: 'Inter', sans-serif;
- font-size: 13.5px;
+ font-size: clamp(10.5px, 1.3vw, 13.5px);
  font-weight: 600;
  color: #555555;
  font-style: italic;
@@ -1348,10 +1366,10 @@ html, body {
 
 .instruction-text {
  font-family: 'Inter', sans-serif;
- font-size: 14px;
- line-height: 1.5;
+ font-size: clamp(11px, 1.4vw, 14px);
+ line-height: 1.45;
  color: #222222;
- margin-top: 4px;
+ margin-top: 3px;
 }
 
 .instruction-text strong {
@@ -1362,7 +1380,7 @@ html, body {
 .instruction-footer {
  display: flex;
  justify-content: flex-end;
- margin-top: 6px;
+ margin-top: clamp(4px, 0.8vh, 6px);
 }
 
 .instruction-action-btn {
@@ -1402,29 +1420,33 @@ html, body {
 
 .game-popup-modal {
  width: min(540px, 92vw);
- max-height: calc(88vh - 20px);
- overflow-y: auto;
+ max-height: calc(96vh - 20px);
+ overflow: hidden;
  margin: auto;
  background: var(--brut-bg);
  border: var(--brut-border);
  border-radius: 0;
- padding: clamp(16px, 3.5vw, 26px);
+ padding: clamp(12px, 2.5vw, 22px);
  color: var(--brut-text);
  box-shadow: var(--brut-shadow);
  backdrop-filter: none;
  -webkit-backdrop-filter: none;
  position: relative;
  box-sizing: border-box;
- scrollbar-width: thin;
- scrollbar-color: #0033CC transparent;
+ display: flex;
+ flex-direction: column;
 }
 
 .game-popup-modal::-webkit-scrollbar {
- width: 6px;
+ width: 0;
 }
-.game-popup-modal::-webkit-scrollbar-thumb {
- background: rgba(0, 51, 204, 0.4);
- border-radius: 4px;
+
+/* El cuerpo interno del modal ocupa el espacio flex restante */
+.popup-modal-body {
+ flex: 1 1 auto;
+ min-height: 0;
+ display: flex;
+ flex-direction: column;
 }
 
 /* Theme variants for .game-popup-modal — keep brutalist base, only accent shadow changes */
@@ -1457,10 +1479,11 @@ html, body {
  justify-content: space-between;
  align-items: center;
  flex-wrap: wrap;
- gap: 8px;
+ gap: 6px;
  border-bottom: 2px solid #111;
- padding-bottom: 10px;
- margin-bottom: 14px;
+ padding-bottom: 8px;
+ margin-bottom: 10px;
+ flex-shrink: 0;
 }
 
 .popup-category-stamp {
@@ -1517,28 +1540,28 @@ html, body {
 
 .popup-headline {
  font-family: 'Cinzel', serif;
- font-size: clamp(16px, 2.5vw, 19px);
+ font-size: clamp(13px, 2vw, 19px);
  font-weight: 800;
  color: #111111;
- line-height: 1.32;
- margin-bottom: 6px;
+ line-height: 1.28;
+ margin-bottom: clamp(4px, 0.8vh, 6px);
  text-shadow: none;
 }
 
 .popup-subhead {
  font-family: 'Inter', sans-serif;
- font-size: clamp(12px, 1.8vw, 13.5px);
+ font-size: clamp(11px, 1.5vw, 13.5px);
  font-weight: 500;
  color: #555555;
- margin-bottom: 12px;
+ margin-bottom: clamp(6px, 1.2vh, 12px);
  font-style: italic;
- line-height: 1.45;
+ line-height: 1.4;
 }
 
 .popup-text-content {
  font-family: 'Inter', sans-serif;
- font-size: clamp(12.5px, 1.8vw, 14px);
- line-height: 1.55;
+ font-size: clamp(11px, 1.4vw, 13.5px);
+ line-height: 1.5;
  color: #222222;
 }
 
@@ -1550,10 +1573,10 @@ html, body {
 .popup-quote {
  background: #f0f4ff;
  border-left: 4px solid #0033CC;
- padding: 10px 14px;
- margin: 12px 0;
+ padding: clamp(7px, 1vh, 10px) clamp(10px, 1.4vw, 14px);
+ margin: clamp(8px, 1.2vh, 12px) 0;
  font-style: italic;
- font-size: clamp(12px, 1.7vw, 13px);
+ font-size: clamp(10.5px, 1.4vw, 13px);
  color: #0033CC;
  border-radius: 0;
  position: relative;
@@ -1585,24 +1608,24 @@ html, body {
  background: #f0f4ff;
  border: 2px solid #111;
  border-radius: 0;
- padding: 10px 14px;
- margin-top: 12px;
+ padding: clamp(7px, 1vh, 10px) clamp(10px, 1.4vw, 14px);
+ margin-top: clamp(8px, 1.2vh, 12px);
  display: flex;
  flex-direction: column;
  gap: 4px;
 }
 
 .fact-box-title {
- font-size: 11px;
+ font-size: clamp(9px, 0.95vw, 11px);
  font-weight: 800;
- letter-spacing: 0.8px;
+ letter-spacing: 0.6px;
  color: #0033CC;
  text-transform: uppercase;
 }
 
 .fact-box-body {
- font-size: 12.5px;
- line-height: 1.45;
+ font-size: clamp(10.5px, 1.3vw, 12.5px);
+ line-height: 1.4;
  color: #222222;
  font-weight: 500;
 }
@@ -1620,9 +1643,10 @@ html, body {
 .theme-warning .fact-box-title { color: #fdba74; }
 
 .popup-footer {
- margin-top: 18px;
+ margin-top: clamp(10px, 1.8vh, 18px);
  display: flex;
  justify-content: flex-end;
+ flex-shrink: 0;
 }
 
 .popup-action-btn, .popup-start-btn {
@@ -2022,34 +2046,65 @@ html, body {
 }
 
 /* ============================================================
-  RESPONSIVO ADAPTABLE (MÓVILES, TABLETS Y ESCRITORIO)
+  RESPONSIVO ADAPTABLE — SIN SCROLL EN VENTANAS
   ============================================================ */
-@media (max-width: 1024px) {
- #hud-right-sidebar {
-  width: 240px;
-  padding: 14px 12px;
- }
- .bottom-left-news-popup {
-  width: 360px;
- }
+
+/* ── Pantallas grandes 1280px+ ── */
+@media (min-width: 1280px) {
+ .game-popup-modal { width: min(560px, 42vw); }
 }
 
+/* ── Tablets 769-1024px ── */
+@media (max-width: 1024px) and (min-width: 769px) {
+ #hud-right-sidebar {
+  width: clamp(190px, 23vw, 235px);
+  padding: 10px;
+  gap: 8px;
+ }
+ .game-popup-modal { width: min(480px, 54vw); }
+ .left-center-news-popup {
+  width: clamp(260px, 40vw, 400px);
+  max-width: calc(100vw - clamp(200px, 25vw, 245px) - 20px);
+ }
+ .game-instruction-notification-wrapper {
+  width: clamp(260px, 46vw, 480px);
+  max-width: calc(100vw - clamp(200px, 25vw, 245px) - 20px);
+ }
+ .bottom-left-news-popup { width: 340px; }
+}
+
+/* ── Tablets pequeñas 768px ── */
 @media (max-width: 768px) {
  #hud-right-sidebar {
-  width: 200px;
-  padding: 10px 8px;
-  gap: 8px;
+  width: 190px;
+  padding: 8px 7px;
+  gap: 6px;
  }
  .pill-label { font-size: 9px; }
  .pill-val { font-size: 11px; }
 
  #eneei-sidebar-panel {
-  left: 10px;
-  bottom: 10px;
+  left: 8px;
+  bottom: 8px;
   top: auto;
   transform: none;
-  width: calc(100vw - 230px);
-  max-width: 280px;
+  width: calc(100vw - 210px);
+  max-width: 270px;
+ }
+
+ .left-center-news-popup {
+  left: 8px;
+  width: calc(100vw - 210px);
+  max-width: 340px;
+  top: 50%;
+ }
+
+ .game-instruction-notification-wrapper {
+  width: calc(100vw - 210px);
+  max-width: 380px;
+  top: 48px;
+  left: 8px;
+  transform: none;
  }
 
  #reforestation-minigame-panel {
@@ -2058,60 +2113,117 @@ html, body {
   transform: translate(-50%, -50%);
   width: 92vw;
   max-width: 380px;
-  max-height: 92vh;
-  overflow-y: auto;
+  max-height: 94vh;
+  overflow: hidden;
  }
 
  .editorial-card {
   width: 92vw !important;
-  max-height: 88vh !important;
-  overflow-y: auto;
-  padding: 16px !important;
+  max-height: 90vh !important;
+  overflow: hidden;
+  padding: 14px !important;
  }
 }
 
+/* ── Móviles 600px ── */
 @media (max-width: 600px) {
  #hud-right-sidebar {
-  top: 8px;
-  right: 8px;
-  width: calc(100vw - 16px);
-  max-width: 220px;
+  top: 6px;
+  right: 6px;
+  width: 170px;
+  padding: 6px;
+  gap: 5px;
  }
 
  #eneei-sidebar-panel {
-  left: 8px;
-  right: 8px;
-  bottom: 8px;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
   width: auto;
   max-width: 100%;
  }
 
- .journal-headline { font-size: 15px !important; }
- .journal-lead { font-size: 11px !important; }
- .popup-action-btn { padding: 10px 18px !important; font-size: 12px !important; }
+ .left-center-news-popup {
+  left: 6px;
+  width: calc(100vw - 185px);
+  max-width: none;
+ }
+
+ .game-instruction-notification-wrapper {
+  left: 6px;
+  right: 182px;
+  width: auto;
+  transform: none;
+  top: 38px;
+ }
+
+ .journal-headline { font-size: 14px !important; }
+ .popup-action-btn { padding: 8px 14px !important; font-size: 11px !important; }
 }
 
+/* ── Pantallas bajas 700px de alto ── */
+@media (max-height: 700px) {
+ #hud-right-sidebar {
+  gap: clamp(4px, 0.8vh, 8px);
+  padding: clamp(7px, 1.2vh, 12px);
+ }
+ .sidebar-guide-box { padding: 6px 8px; }
+ .guide-step { margin-bottom: 2px; }
+ .central-beaver-btn-wrapper { padding-top: 4px; }
+ .pure-image-btn img { height: clamp(38px, 6vh, 60px); }
+ .central-beaver-btn-wrapper .pure-image-btn img { height: clamp(38px, 6vh, 60px); }
+
+ .game-popup-modal { padding: clamp(10px, 1.8vh, 16px); }
+ .popup-modal-header { padding-bottom: 6px; margin-bottom: 7px; }
+ .popup-headline { font-size: clamp(12px, 2vh, 16px); margin-bottom: 3px; }
+ .popup-subhead { margin-bottom: 4px; }
+ .popup-quote { margin: 5px 0; padding: 5px 9px; }
+ .popup-fact-box { margin-top: 5px; padding: 5px 9px; }
+ .popup-footer { margin-top: 7px; }
+
+ .tutorial-box { padding: 14px 16px; }
+ .tutorial-header { margin-bottom: 8px; }
+ .tutorial-logo { font-size: 28px; margin-bottom: 3px; }
+ .tutorial-start-btn { margin-top: 9px; padding: 9px; }
+ .tutorial-instructions { padding: 6px 9px; gap: 3px; margin-top: 5px; }
+
+ .game-instruction-notification-wrapper { top: 38px; }
+ .game-instruction-notification-card { padding: 10px 13px; gap: 5px; }
+ .instruction-title { font-size: clamp(11px, 2.2vh, 15px); }
+ .instruction-text { font-size: clamp(9.5px, 1.8vh, 12px); }
+}
+
+/* ── Pantallas muy bajas 550px de alto ── */
 @media (max-height: 550px) {
  #hud-right-sidebar {
-  top: 6px;
-  right: 6px;
-  padding: 6px 8px;
-  gap: 4px;
+  top: 4px;
+  right: 4px;
+  padding: 5px 6px;
+  gap: 3px;
  }
+ .sidebar-guide-box { padding: 4px 6px; }
+ .guide-step { font-size: 9px; margin-bottom: 1px; }
+ .central-beaver-btn-wrapper { display: none; }
+
+ .game-popup-modal { padding: 8px 12px; max-height: 98vh; }
+ .popup-headline { font-size: 12px; }
+ .popup-quote { margin: 4px 0; padding: 4px 8px; font-size: 10px; }
+ .popup-fact-box { margin-top: 4px; padding: 4px 8px; }
+ .popup-footer { margin-top: 5px; }
 
  #reforestation-minigame-panel {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 92vw;
-  max-width: 440px;
-  max-height: 96vh;
-  overflow-y: auto;
+  width: 94vw;
+  max-height: 98vh;
+  overflow: hidden;
  }
+ .reforest-card { padding: 8px !important; }
+ .reforest-canvas-container { height: 100px !important; }
 
- .reforest-card { padding: 10px !important; }
- .reforest-canvas-container { height: 125px !important; }
- .editorial-card { max-height: 94vh !important; overflow-y: auto; padding: 12px !important; }
+ .game-instruction-notification-wrapper { top: 28px; }
+ .instruction-text { font-size: 9px; }
 }
 
 @media (hover: none) and (pointer: coarse) {
@@ -2261,62 +2373,6 @@ button:active,
 }
 
 /* ── Badges inline: cuadrados, fuente Archivo ── */
-.news-badge,
- }
-}
-
-@media (max-width: 600px) {
- #hud-right-sidebar {
-  top: 8px;
-  right: 8px;
-  width: calc(100vw - 16px);
-  max-width: 220px;
- }
-
- #eneei-sidebar-panel {
-  left: 8px;
-  right: 8px;
-  bottom: 8px;
-  width: auto;
-  max-width: 100%;
- }
-
- .journal-headline { font-size: 15px !important; }
- .journal-lead { font-size: 11px !important; }
- .popup-action-btn { padding: 10px 18px !important; font-size: 12px !important; }
-}
-
-@media (max-height: 550px) {
- #hud-right-sidebar {
-  top: 6px;
-  right: 6px;
-  padding: 6px 8px;
-  gap: 4px;
- }
-
- #reforestation-minigame-panel {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 92vw;
-  max-width: 440px;
-  max-height: 96vh;
-  overflow-y: auto;
- }
-
- .reforest-card { padding: 10px !important; }
- .reforest-canvas-container { height: 125px !important; }
- .editorial-card { max-height: 94vh !important; overflow-y: auto; padding: 12px !important; }
-}
-
-@media (hover: none) and (pointer: coarse) {
- .popup-action-btn,
- .sidebar-item,
- .malla-equip-box {
-  min-height: 44px;
-  touch-action: manipulation;
- }
-}
 
 /* ============================================================
    BRUTALIST GLOBAL OVERRIDES — Archivo + Space Mono + Square
