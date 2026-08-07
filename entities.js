@@ -962,7 +962,9 @@ class Beaver extends Entity {
    }
   }
 
-  if (this.action !== 'build' && this.isInWater(game)) {
+  // Solo usar la animación de nadar en los mapas del río (no en el mapa inundado)
+  const isFloodedMap = game && (game.currentMap >= 2 || game.isFlooded);
+  if (!isFloodedMap && this.action !== 'build' && this.isInWater(game)) {
    this.action = 'swim';
   }
 
