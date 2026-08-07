@@ -1631,6 +1631,20 @@ html, body {
  display: flex;
  flex-direction: column;
  gap: 4px;
+ cursor: pointer;
+ user-select: none;
+ transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.popup-fact-box:hover {
+ transform: translate(-1px, -1px);
+ box-shadow: 6px 6px 0 #0033CC !important;
+ background-color: #f0f4ff !important;
+}
+
+.popup-fact-box:active {
+ transform: translate(2px, 2px);
+ box-shadow: 2px 2px 0 #0033CC !important;
 }
 
 .fact-box-title {
@@ -1639,6 +1653,36 @@ html, body {
  letter-spacing: 0.6px;
  color: #0033CC;
  text-transform: uppercase;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ width: 100%;
+}
+
+.fact-toggle-btn {
+ background: #0033CC !important;
+ color: #ffffff !important;
+ font-family: 'Archivo', sans-serif !important;
+ font-weight: 800 !important;
+ font-size: 9.5px !important;
+ padding: 2px 7px !important;
+ border: 2px solid #111 !important;
+ box-shadow: 2px 2px 0 #111 !important;
+ letter-spacing: 0.5px !important;
+ border-radius: 0 !important;
+ display: inline-flex !important;
+ align-items: center !important;
+ gap: 3px !important;
+ transition: background 0.15s ease;
+}
+
+.popup-fact-box:hover .fact-toggle-btn {
+ background: #002299 !important;
+}
+
+.popup-fact-box.expanded .fact-toggle-btn {
+ background: #111111 !important;
+ color: #ffffff !important;
 }
 
 .fact-box-body {
@@ -1646,6 +1690,15 @@ html, body {
  line-height: 1.4;
  color: #222222;
  font-weight: 500;
+ margin-top: 4px;
+ padding-top: 4px;
+ border-top: 1px dashed rgba(0, 51, 204, 0.25);
+ animation: factBodyFade 0.2s ease-out forwards;
+}
+
+@keyframes factBodyFade {
+ from { opacity: 0; transform: translateY(-3px); }
+ to { opacity: 1; transform: translateY(0); }
 }
 
 .theme-danger .popup-fact-box {

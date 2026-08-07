@@ -248,7 +248,99 @@ class GameUI {
       <div class="popup-text-content">
        <p class="popup-lead">${opts.text}</p>
        ${opts.quote ? `<blockquote class="popup-quote"><span class="quote-mark">“</span>${opts.quote}<span class="quote-mark">”</span></blockquote>` : ''}
-       ${opts.fact ? `<div class="popup-fact-box"><div class="fact-box-title"> DATO DESTACADO</div><div class="fact-box-body">${opts.fact}</div></div>` : ''}
+        ${opts.fact ? `
+        <div class="popup-fact-box collapsed" style="cursor: pointer;" title="Haz clic para ver el dato destacado">
+         <div class="fact-box-title">
+          <span>💡 DATO DESTACADO</span>
+          <span class="fact-toggle-btn">[ VER DATO ➔ ]</span>
+         </div>
+         <div class="fact-box-body" style="display: none;">${opts.fact}</div>
+        </div>
+        ` : ''}
+       </div>
+
+       <div class="popup-footer">
+        <button class="popup-action-btn" id="btn-close-journal">ACEPTAR ➔</button>
+       </div>
+      </div>
+     </div>
+    `;
+    document.getElementById('game-container').appendChild(overlayEl);
+
+    if (this.game) this.game.running = true;
+
+    const factBox = overlayEl.querySelector('.popup-fact-box');
+    if (factBox) {
+     factBox.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const body = factBox.querySelector('.fact-box-body');
+      const toggleBtn = factBox.querySelector('.fact-toggle-btn');
+      if (!body) return;
+      const isHidden = body.style.display === 'none';
+      if (isHidden) {
+       body.style.display = 'block';
+       factBox.classList.add('expanded');
+       factBox.classList.remove('collapsed');
+       if (toggleBtn) toggleBtn.innerHTML = '[ OCULTAR ▲ ]';
+      } else {
+       body.style.display = 'none';
+       factBox.classList.remove('expanded');
+       factBox.classList.add('collapsed');
+       if (toggleBtn) toggleBtn.innerHTML = '[ VER DATO ➔ ]';
+      }
+     });
+    }
+
+    const closeFn = () => {
+     overlayEl.classList.add('fade-out');
+     setTimeout(() => {
+      if (overlayEl.parentNode) overlayEl.remove();
+      if (typeof opts.onAccept === 'function') {
+       opts.onAccept();
+      }
+      if (this.newsQueue.length > 0) {
+       const nextOpts = this.newsQueue.shift();
+       this.showEditorialNewsCard(nextOpts);
+      }
+     }, 350);
+    };
+
+    overlayEl.querySelector('#btn-close-journal')?.addEventListener('click', closeFn);
+    return;
+   }
+
+   // 4. Tarjeta Lateral (Default)
+   let themeClass = opts.theme ? `theme-${opts.theme}` : 'theme-info';
+   let categoryStamp = ' REPORTE HISTÓRICO';
+   if (themeClass.includes('danger')) categoryStamp = ' CATÁSTROFE AMBIENTAL';
+   else if (themeClass.includes('warning')) categoryStamp = ' IMPACTO ECOLÓGICO';
+   else if (themeClass.includes('success')) categoryStamp = ' RESTAURACIÓN NATIVA';
+
+   const cardEl = document.createElement('div');
+   cardEl.className = `left-center-news-popup ${themeClass}`;
+   cardEl.innerHTML = `
+    <div class="game-popup-modal left-center-card ${themeClass}">
+     <div class="popup-modal-header">
+      <span class="popup-category-stamp">${categoryStamp}</span>
+      <span class="popup-year-badge">TIERRA DEL FUEGO — ${opts.year || '1946'}</span>
+     </div>
+     
+     <div class="popup-modal-body">
+      <h2 class="popup-headline">${opts.title}</h2>
+      ${opts.subtitle ? `<div class="popup-subhead">${opts.subtitle}</div>` : ''}
+      
+      <div class="popup-text-content">
+       <p class="popup-lead">${opts.text}</p>
+       ${opts.quote ? `<blockquote class="popup-quote"><span class="quote-mark">“</span>${opts.quote}<span class="quote-mark">”</span></blockquote>` : ''}
+       ${opts.fact ? `
+       <div class="popup-fact-box collapsed" style="cursor: pointer;" title="Haz clic para ver el dato destacado">
+        <div class="fact-box-title">
+         <span>💡 DATO DESTACADO</span>
+         <span class="fact-toggle-btn">[ VER DATO ➔ ]</span>
+        </div>
+        <div class="fact-box-body" style="display: none;">${opts.fact}</div>
+       </div>
+       ` : ''}
       </div>
 
       <div class="popup-footer">
@@ -257,14 +349,36 @@ class GameUI {
      </div>
     </div>
    `;
-   document.getElementById('game-container').appendChild(overlayEl);
+   document.getElementById('game-container').appendChild(cardEl);
 
    if (this.game) this.game.running = true;
 
+   const cardFactBox = cardEl.querySelector('.popup-fact-box');
+   if (cardFactBox) {
+    cardFactBox.addEventListener('click', (e) => {
+     e.stopPropagation();
+     const body = cardFactBox.querySelector('.fact-box-body');
+     const toggleBtn = cardFactBox.querySelector('.fact-toggle-btn');
+     if (!body) return;
+     const isHidden = body.style.display === 'none';
+     if (isHidden) {
+      body.style.display = 'block';
+      cardFactBox.classList.add('expanded');
+      cardFactBox.classList.remove('collapsed');
+      if (toggleBtn) toggleBtn.innerHTML = '[ OCULTAR ▲ ]';
+     } else {
+      body.style.display = 'none';
+      cardFactBox.classList.remove('expanded');
+      cardFactBox.classList.add('collapsed');
+      if (toggleBtn) toggleBtn.innerHTML = '[ VER DATO ➔ ]';
+     }
+    });
+   }
+
    const closeFn = () => {
-    overlayEl.classList.add('fade-out');
+    cardEl.classList.add('slide-out-left');
     setTimeout(() => {
-     if (overlayEl.parentNode) overlayEl.remove();
+     if (cardEl.parentNode) cardEl.remove();
      if (typeof opts.onAccept === 'function') {
       opts.onAccept();
      }
@@ -275,61 +389,7 @@ class GameUI {
     }, 350);
    };
 
-   overlayEl.querySelector('#btn-close-journal')?.addEventListener('click', closeFn);
-   return;
-  }
-
-  // 4. Tarjeta Lateral (Default)
-  let themeClass = opts.theme ? `theme-${opts.theme}` : 'theme-info';
-  let categoryStamp = ' REPORTE HISTÓRICO';
-  if (themeClass.includes('danger')) categoryStamp = ' CATÁSTROFE AMBIENTAL';
-  else if (themeClass.includes('warning')) categoryStamp = ' IMPACTO ECOLÓGICO';
-  else if (themeClass.includes('success')) categoryStamp = ' RESTAURACIÓN NATIVA';
-
-  const cardEl = document.createElement('div');
-  cardEl.className = `left-center-news-popup ${themeClass}`;
-  cardEl.innerHTML = `
-   <div class="game-popup-modal left-center-card ${themeClass}">
-    <div class="popup-modal-header">
-     <span class="popup-category-stamp">${categoryStamp}</span>
-     <span class="popup-year-badge">TIERRA DEL FUEGO — ${opts.year || '1946'}</span>
-    </div>
-    
-    <div class="popup-modal-body">
-     <h2 class="popup-headline">${opts.title}</h2>
-     ${opts.subtitle ? `<div class="popup-subhead">${opts.subtitle}</div>` : ''}
-     
-     <div class="popup-text-content">
-      <p class="popup-lead">${opts.text}</p>
-      ${opts.quote ? `<blockquote class="popup-quote"><span class="quote-mark">“</span>${opts.quote}<span class="quote-mark">”</span></blockquote>` : ''}
-      ${opts.fact ? `<div class="popup-fact-box"><div class="fact-box-title"> DATO DESTACADO</div><div class="fact-box-body">${opts.fact}</div></div>` : ''}
-     </div>
-
-     <div class="popup-footer">
-      <button class="popup-action-btn" id="btn-close-journal">ACEPTAR ➔</button>
-     </div>
-    </div>
-   </div>
-  `;
-  document.getElementById('game-container').appendChild(cardEl);
-
-  if (this.game) this.game.running = true;
-
-  const closeFn = () => {
-   cardEl.classList.add('slide-out-left');
-   setTimeout(() => {
-    if (cardEl.parentNode) cardEl.remove();
-    if (typeof opts.onAccept === 'function') {
-     opts.onAccept();
-    }
-    if (this.newsQueue.length > 0) {
-     const nextOpts = this.newsQueue.shift();
-     this.showEditorialNewsCard(nextOpts);
-    }
-   }, 350);
-  };
-
-  cardEl.querySelector('#btn-close-journal')?.addEventListener('click', closeFn);
+   cardEl.querySelector('#btn-close-journal')?.addEventListener('click', closeFn);
  }
 
  // ── Ventana Lateral Izquierda de Inventario con Drag & Drop ──
