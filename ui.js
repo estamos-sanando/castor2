@@ -81,7 +81,7 @@ class GameUI {
      <h2 class="popup-headline">¿Cómo una decisión tomada hace 80 años transformó un ecosistema?</h2>
      
      <div class="popup-text-content">
-      <p class="popup-lead">En 1946 se introdujeron veinte castores provenientes de Canadá en Tierra del Fuego con el objetivo de impulsar una industria peletera. Lo que parecía una iniciativa económica terminó generando cambios ambientales que aún hoy siguen presentes.</p>
+      <p class="popup-lead">En 1946 se introdujeron veinticinco parejas de castores provenientes de Canadá en Tierra del Fuego con el objetivo de impulsar una industria peletera. Lo que parecía una iniciativa económica terminó generando cambios ambientales que aún hoy siguen presentes.</p>
      </div>
 
      <div class="popup-footer center-footer">

@@ -282,7 +282,7 @@ class BeaverGame {
   this.ui.showEditorialNewsCard({
    title: '¿Cómo una decisión tomada hace 80 años transformó un ecosistema?',
    subtitle: '',
-   text: 'En 1946 se introdujeron veinte castores provenientes de Canadá en Tierra del Fuego con el objetivo de impulsar una industria peletera. Lo que parecía una iniciativa económica terminó generando cambios ambientales que aún hoy siguen presentes.',
+   text: 'En 1946 se introdujeron veinticinco parejas de castores provenientes de Canadá en Tierra del Fuego con el objetivo de impulsar una industria peletera. Lo que parecía una iniciativa económica terminó generando cambios ambientales que aún hoy siguen presentes.',
    quote: 'Lo que comenzó como una iniciativa económica se transformó en uno de los mayores desafíos ecológicos de la región.',
    fact: 'Al no existir depredadores naturales en la Patagonia, la población de castores se expandió por toda la Isla Grande.',
    theme: 'info',
@@ -858,7 +858,7 @@ class BeaverGame {
     this.ui.showEditorialNewsCard({
      title: '80 AÑOS DESPUÉS: LA LECCIÓN ECOLÓGICA DE TIERRA DEL FUEGO',
      subtitle: '1946 — 2026: De la especie exótica invasora a la restauración del bosque subantártico.',
-     text: 'La introducción de 20 castores en 1946 demuestra cómo una intervención humana puede transformar de manera irreversible los ecosistemas australes. Este proyecto celebra el esfuerzo conjunto de biólogos, guardaparques y la comunidad fueguina por devolver la vida a la Patagonia.',
+     text: 'La introducción de veinticinco parejas de castores en 1946 demuestra cómo una intervención humana puede transformar de manera irreversible los ecosistemas australes. Este proyecto celebra el esfuerzo conjunto de biólogos, guardaparques y la comunidad fueguina por devolver la vida a la Patagonia.',
      quote: 'La conservación del medio ambiente exige ciencia, rigor y compromiso permanente. El futuro de nuestros bosques está en nuestras manos.',
      year: '2026',
      centered: true,
