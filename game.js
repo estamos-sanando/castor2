@@ -189,13 +189,16 @@ class BeaverGame {
      }
 
       // Clic en cualquier plantín (Seedling) colocado en la tierra para abrir el minijuego de reforestación nativa
-      const clickedSeedling = this.entities.find(el => el instanceof Seedling && !el.dead && !el.reforested && (
-       Math.hypot(clickX - el.x, clickY - (el.y - 6)) < 65 ||
-       (Math.abs(clickX - el.x) < 45 && Math.abs(clickY - el.y) < 45)
-      ));
-      if (clickedSeedling) {
-       this.ui.openReforestationMinigame(clickedSeedling);
-       return;
+      // SOLO se activa cuando los 10 plantines ya fueron colocados y el plantín está brillando (glowing)
+      if ((this.placedSeedlingsCount || 0) >= 10) {
+       const clickedSeedling = this.entities.find(el => el instanceof Seedling && !el.dead && !el.reforested && el.glowing && (
+        Math.hypot(clickX - el.x, clickY - (el.y - 6)) < 65 ||
+        (Math.abs(clickX - el.x) < 45 && Math.abs(clickY - el.y) < 45)
+       ));
+       if (clickedSeedling) {
+        this.ui.openReforestationMinigame(clickedSeedling);
+        return;
+       }
       }
     };
 
