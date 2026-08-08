@@ -2117,8 +2117,30 @@ html, body {
 }
 
 /* ============================================================
-  RESPONSIVO ADAPTABLE — SIN SCROLL EN VENTANAS
-  ============================================================ */
+   RESPONSIVO ADAPTABLE — SIN SCROLL EN VENTANAS
+   ============================================================ */
+
+/* ── Canvas en móviles: Zoom equilibrado ── */
+@media (max-width: 768px) and (orientation: portrait) {
+ #game-canvas {
+  width: 100vw;
+  height: auto;
+  max-height: 65vh;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  margin: auto;
+ }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+ #game-canvas {
+  width: 100vw;
+  height: 100vh;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  margin: auto;
+ }
+}
 
 /* ── Pantallas grandes 1280px+ ── */
 @media (min-width: 1280px) {
@@ -2144,10 +2166,10 @@ html, body {
  .bottom-left-news-popup { width: 340px; }
 }
 
-/* ── Tablets pequeñas 768px ── */
+/* ── Tablets pequeñas y Móviles 768px ── */
 @media (max-width: 768px) {
  #hud-right-sidebar {
-  width: 190px;
+  width: 170px;
   padding: 8px 7px;
   gap: 6px;
  }
@@ -2159,40 +2181,96 @@ html, body {
   bottom: 8px;
   top: auto;
   transform: none;
-  width: calc(100vw - 210px);
-  max-width: 270px;
+  width: calc(100vw - 190px);
+  max-width: 260px;
  }
 
  .left-center-news-popup {
-  left: 8px;
-  width: calc(100vw - 210px);
-  max-width: 340px;
-  top: 50%;
+  position: fixed !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: min(320px, 86vw) !important;
+  max-height: 80vh !important;
+  margin: 0 !important;
+  z-index: 1000 !important;
+ }
+
+ .game-popup-modal {
+  width: min(320px, 86vw) !important;
+  max-height: 80vh !important;
+  padding: 10px 12px !important;
+ }
+
+ .popup-modal-body,
+ .popup-text-content {
+  max-height: 46vh !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+ }
+
+ .popup-headline {
+  font-size: clamp(12px, 3.6vw, 14.5px) !important;
+  margin-bottom: 3px !important;
+ }
+
+ .popup-subhead {
+  font-size: 10.5px !important;
+  margin-bottom: 4px !important;
+ }
+
+ .popup-lead {
+  font-size: 10px !important;
+  line-height: 1.35 !important;
+ }
+
+ .popup-quote {
+  font-size: 9.5px !important;
+  padding: 4px 6px !important;
+  margin: 4px 0 !important;
+ }
+
+ .popup-fact-box {
+  font-size: 9.5px !important;
+  padding: 4px 6px !important;
+  margin-top: 4px !important;
+ }
+
+ .popup-action-btn,
+ .popup-start-btn,
+ .start-game-btn-large {
+  font-size: 10.5px !important;
+  padding: 6px 12px !important;
+  border-width: 3px !important;
+  box-shadow: 4px 4px 0 #0033CC !important;
+  min-height: 36px !important;
  }
 
  .game-instruction-notification-wrapper {
-  width: calc(100vw - 210px);
-  max-width: 380px;
-  top: 48px;
-  left: 8px;
-  transform: none;
+  width: min(320px, 86vw) !important;
+  left: 50% !important;
+  top: 10px !important;
+  transform: translateX(-50%) !important;
  }
 
- #reforestation-minigame-panel {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 92vw;
-  max-width: 380px;
-  max-height: 94vh;
+ #reforestation-minigame-panel,
+ .arcade-theme-card,
+ .catcher-minigame-modal,
+ .reforest-minigame-modal {
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: min(320px, 86vw) !important;
+  max-height: 80vh !important;
+  padding: 10px !important;
   overflow: hidden;
  }
 
  .editorial-card {
-  width: 92vw !important;
-  max-height: 90vh !important;
+  width: min(320px, 86vw) !important;
+  max-height: 80vh !important;
   overflow: hidden;
-  padding: 14px !important;
+  padding: 10px 12px !important;
  }
 }
 
@@ -2201,10 +2279,17 @@ html, body {
  #hud-right-sidebar {
   top: 6px;
   right: 6px;
-  width: 170px;
-  padding: 6px;
-  gap: 5px;
+  width: clamp(130px, 34vw, 150px);
+  padding: 5px 7px;
+  gap: 4px;
  }
+
+ .sidebar-game-title { font-size: 9.5px !important; }
+ .sidebar-guide-box { padding: 4px 6px !important; margin-top: 2px !important; }
+ .guide-title { font-size: 8.5px !important; margin-bottom: 2px !important; }
+ .guide-step { font-size: 8.5px !important; line-height: 1.25 !important; margin-bottom: 2px !important; }
+ .pure-image-btn img,
+ .central-beaver-btn-wrapper .pure-image-btn img { height: clamp(32px, 5vh, 40px) !important; }
 
  #eneei-sidebar-panel {
   left: 6px;
@@ -2214,54 +2299,40 @@ html, body {
   max-width: 100%;
  }
 
- .left-center-news-popup {
-  left: 6px;
-  width: calc(100vw - 185px);
-  max-width: none;
- }
-
- .game-instruction-notification-wrapper {
-  left: 6px;
-  right: 182px;
-  width: auto;
-  transform: none;
-  top: 38px;
- }
-
- .journal-headline { font-size: 14px !important; }
- .popup-action-btn { padding: 8px 14px !important; font-size: 11px !important; }
+ .journal-headline { font-size: 13px !important; }
+ .popup-action-btn { padding: 6px 12px !important; font-size: 10.5px !important; }
 }
 
 /* ── Pantallas bajas 700px de alto ── */
 @media (max-height: 700px) {
  #hud-right-sidebar {
-  gap: clamp(4px, 0.8vh, 8px);
-  padding: clamp(7px, 1.2vh, 12px);
+  gap: clamp(3px, 0.7vh, 6px);
+  padding: clamp(5px, 1vh, 10px);
  }
- .sidebar-guide-box { padding: 6px 8px; }
+ .sidebar-guide-box { padding: 4px 6px; }
  .guide-step { margin-bottom: 2px; }
- .central-beaver-btn-wrapper { padding-top: 4px; }
- .pure-image-btn img { height: clamp(38px, 6vh, 60px); }
- .central-beaver-btn-wrapper .pure-image-btn img { height: clamp(38px, 6vh, 60px); }
+ .central-beaver-btn-wrapper { padding-top: 2px; }
+ .pure-image-btn img { height: clamp(32px, 5vh, 46px); }
+ .central-beaver-btn-wrapper .pure-image-btn img { height: clamp(32px, 5vh, 46px); }
 
- .game-popup-modal { padding: clamp(10px, 1.8vh, 16px); }
- .popup-modal-header { padding-bottom: 6px; margin-bottom: 7px; }
- .popup-headline { font-size: clamp(12px, 2vh, 16px); margin-bottom: 3px; }
- .popup-subhead { margin-bottom: 4px; }
- .popup-quote { margin: 5px 0; padding: 5px 9px; }
- .popup-fact-box { margin-top: 5px; padding: 5px 9px; }
- .popup-footer { margin-top: 7px; }
+ .game-popup-modal { padding: clamp(8px, 1.5vh, 14px); }
+ .popup-modal-header { padding-bottom: 5px; margin-bottom: 5px; }
+ .popup-headline { font-size: clamp(11.5px, 1.8vh, 14.5px); margin-bottom: 3px; }
+ .popup-subhead { margin-bottom: 3px; }
+ .popup-quote { margin: 4px 0; padding: 4px 8px; }
+ .popup-fact-box { margin-top: 4px; padding: 4px 8px; }
+ .popup-footer { margin-top: 5px; }
 
- .tutorial-box { padding: 14px 16px; }
- .tutorial-header { margin-bottom: 8px; }
- .tutorial-logo { font-size: 28px; margin-bottom: 3px; }
- .tutorial-start-btn { margin-top: 9px; padding: 9px; }
- .tutorial-instructions { padding: 6px 9px; gap: 3px; margin-top: 5px; }
+ .tutorial-box { padding: 10px 12px; }
+ .tutorial-header { margin-bottom: 6px; }
+ .tutorial-logo { font-size: 22px; margin-bottom: 2px; }
+ .tutorial-start-btn { margin-top: 7px; padding: 7px; }
+ .tutorial-instructions { padding: 5px 7px; gap: 3px; margin-top: 4px; }
 
- .game-instruction-notification-wrapper { top: 38px; }
- .game-instruction-notification-card { padding: 10px 13px; gap: 5px; }
- .instruction-title { font-size: clamp(11px, 2.2vh, 15px); }
- .instruction-text { font-size: clamp(9.5px, 1.8vh, 12px); }
+ .game-instruction-notification-wrapper { top: 28px; }
+ .game-instruction-notification-card { padding: 8px 10px; gap: 4px; }
+ .instruction-title { font-size: clamp(10px, 2vh, 13px); }
+ .instruction-text { font-size: clamp(9px, 1.6vh, 11px); }
 }
 
 /* ── Pantallas muy bajas 550px de alto ── */
@@ -2269,25 +2340,13 @@ html, body {
  #hud-right-sidebar {
   top: 4px;
   right: 4px;
-  padding: 5px 6px;
+  padding: 4px 5px;
   gap: 3px;
  }
- .sidebar-guide-box { padding: 4px 6px; }
- .guide-step { font-size: 9px; margin-bottom: 1px; }
+ .sidebar-guide-box { padding: 3px 5px; }
+ .guide-step { font-size: 8.5px; margin-bottom: 1px; }
  .central-beaver-btn-wrapper { display: none; }
 
- .game-popup-modal { padding: 8px 12px; max-height: 98vh; }
- .popup-headline { font-size: 12px; }
- .popup-quote { margin: 4px 0; padding: 4px 8px; font-size: 10px; }
- .popup-fact-box { margin-top: 4px; padding: 4px 8px; }
- .popup-footer { margin-top: 5px; }
-
- #reforestation-minigame-panel {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 94vw;
-  max-height: 98vh;
   overflow: hidden;
  }
  .reforest-card { padding: 8px !important; }

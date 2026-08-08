@@ -202,12 +202,16 @@ class BeaverGame {
       }
     };
 
+    let lastTouchTime = 0;
+
     canvas.addEventListener('click', (e) => {
+     if (Date.now() - lastTouchTime < 400) return;
      handleCanvasPointer(e.clientX, e.clientY);
     });
 
     canvas.addEventListener('touchstart', (e) => {
      if (e.touches && e.touches.length > 0) {
+      lastTouchTime = Date.now();
       const touch = e.touches[0];
       handleCanvasPointer(touch.clientX, touch.clientY);
      }
